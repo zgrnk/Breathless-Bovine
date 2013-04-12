@@ -45,7 +45,7 @@ public class Block extends TrackElement
         id = -1;
     }
 
-    public Block(int id, String lineId, String sectionId, )
+    //public Block(int id, String lineId, String sectionId, )
 
     public boolean isOccupied() {
         /* TODO: Correctly evaluate failure mode */
