@@ -18,6 +18,8 @@ public class Switch extends TrackElement {
         id = -1;
     }
 
+    public 
+
     public void connect(Block main, Block straight, Block diverg) {
         this.blkMain = main;
         this.blkStraight = straight;

@@ -45,6 +45,25 @@ public class Block extends TrackElement
         id = -1;
     }
 
+    public Block(double length, double grade, double speedLimit, boolean isBidir,
+                 boolean isUground, boolean isYard, boolean isStation,
+                 boolean isCrossing, String stationName) {
+        this.length = length;
+        this.grade = grade;
+        this.speedLimit = speedLimit;
+        this.isBidir = isBidir;
+        this.isUground = isUground;
+        this.isYard = isYard;
+        this.isStation = isStation;
+        this.isCrossing = isCrossing;
+        this.stationName = stationName;
+    }
+
+    public void connect(TrackElement prev, TrackElement next) {
+        this.prev = prev;
+        this.next = next;
+    }
+
     private Block getSwitchDest(Switch sw, boolean dryRun)
     {
         if (!dryRun) System.out.printf("Switch %d from block %d\n", sw.id, this.id);
