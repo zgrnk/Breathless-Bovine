@@ -22,10 +22,15 @@ public class Block extends TrackElement
     public TrackElement next;
 
     /* Dynamic info*/
-    public boolean isOccupied;
+    public boolean occupied;
     public boolean brokenRailFailure;
     public boolean trackCircuitFailure;
     public boolean powerFailure;
+
+    public double mbSpeed;
+    public double mbAuthority;
+    public double fbSpeed;
+    public double fbAuthority;
 
     /* etc */
     public int fwdId;
@@ -39,6 +44,14 @@ public class Block extends TrackElement
         next = null;
         id = -1;
     }
+
+    public Block(int id, String lineId, String sectionId, )
+
+    public boolean isOccupied() {
+        /* TODO: Correctly evaluate failure mode */
+        return occupied;
+    }
+
 
     private Block getSwitchDest(Switch sw, boolean dryRun)
     {
