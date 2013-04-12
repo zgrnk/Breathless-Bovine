@@ -8,9 +8,7 @@ public class TKMGui extends JPanel implements ActionListener {
     private Switch selectedSwitch;
     private Block selectedBlock;
 
-    private Layout lyt;
-
-    //private FlowLayout flayout;
+    private TrackLayout lyt;
 
     JComboBox cbBlock;
     JComboBox cbSwitch;
@@ -36,7 +34,7 @@ public class TKMGui extends JPanel implements ActionListener {
 
     public void loadGui() {
 
-        lyt = new Layout();
+        lyt = new TrackLayout();
 
         lyt.parseTrackDB("track_db.csv");
         lyt.constructTrack();
@@ -45,24 +43,15 @@ public class TKMGui extends JPanel implements ActionListener {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         JPanel pControl = new JPanel();
-        JPanel pSelector = new JPanel();
         JPanel pInfo = new JPanel();
         JPanel pBlkInfo = new JPanel();
         JPanel pSwInfo = new JPanel();
 
         pMap = new TrackMapPanel(lyt);
         pControl.setLayout(new BoxLayout(pControl, BoxLayout.Y_AXIS));
-        pSelector.setLayout(new GridLayout(0,2));
-        pSelector.setMaximumSize(new Dimension(500,20));
         pInfo.setLayout(new BoxLayout(pInfo, BoxLayout.PAGE_AXIS));
         pBlkInfo.setLayout(new GridLayout(0,2));
         pSwInfo.setLayout(new GridLayout(0,2));
-
-        int totalHeight = (int) pSelector.getPreferredSize().getHeight() +
-                          (int) pBlkInfo.getPreferredSize().getHeight() +
-                          (int) pSwInfo.getPreferredSize().getHeight();
-                                
-        //setPreferredSize(new Dimension(500, totalHeight));
 
         //JComboBox elemCombo = new JComboBox(lyt.getIdArray());
         cbBlock = new JComboBox(lyt.getBlocks().toArray());
@@ -98,16 +87,9 @@ public class TKMGui extends JPanel implements ActionListener {
         cboxBlkUground = new JCheckBox();
         cboxBlkCrossing = new JCheckBox();
 
-
         cboxSwDiv = new JCheckBox();
         cboxSwDiv.addActionListener(this);
 
-        /* Layout */
-        //pSelector.add(new JLabel("Select element"));
-        //pSelector.add(elemCombo);
-        //pSelector.add(new JLabel("Element type"));
-        //pSelector.add(lblElemId);
-        
         pBlkInfo.add(new JLabel("Block Info"));
         pBlkInfo.add(new JLabel(""));
         pBlkInfo.add(new JLabel("Select Block"));
@@ -145,11 +127,9 @@ public class TKMGui extends JPanel implements ActionListener {
         pInfo.add(new JSeparator(JSeparator.HORIZONTAL));
         pInfo.add(pSwInfo);
         pInfo.add(Box.createVerticalGlue());
-        //pControl.add(pSelector);
         pControl.add(pInfo);
         pControl.add(bTest);
         pControl.add(lblTest);
-        
         
         pControl.add(Box.createVerticalGlue());
         pControl.setMaximumSize(new Dimension(400, 65535));

@@ -7,6 +7,9 @@ public class Block extends TrackElement
     public static final boolean DIRECTION_FWD = false;
     public static final boolean DIRECTION_REV = true;
 
+    /* To avoid rounding errors in floating-pt compares */
+    public static final double SMALL_FLOATING = 0.00001;
+
     /* TODO: clean this up */
 
 
@@ -95,6 +98,7 @@ public class Block extends TrackElement
 
     public static void advanceTrain(TrainLocation resp, double distance) {
 
+        /* Change distance based on */
         if (resp.direction == DIRECTION_FWD) {
             resp.distance += distance;
         } else {
@@ -117,10 +121,10 @@ public class Block extends TrackElement
             if (dest.getNext(resp.direction, true) == resp.block) {
                 /* Default direction is opposite current default */
                 resp.direction = !resp.direction;
-                if (resp.distance < 0.0000001) resp.distance = -resp.distance;
+                if (resp.distance < SMALL_FLOATING) resp.distance = -resp.distance;
                 else resp.distance = dest.length - (resp.distance - resp.block.length);
             } else { /* default direction doesn't change */
-                if (resp.distance < 0.0000001) resp.distance = resp.distance + dest.length;
+                if (resp.distance < SMALL_FLOATING) resp.distance = resp.distance + dest.length;
                 else resp.distance = resp.distance - resp.block.length;
             }
             
@@ -129,8 +133,7 @@ public class Block extends TrackElement
         
     }
 
-    public String toString()
-    {
+    public String toString() {
         return ("Block " + Integer.toString(id));
     }
 }
