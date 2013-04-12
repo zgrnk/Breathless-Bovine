@@ -18,6 +18,13 @@ public class Switch extends TrackElement {
         id = -1;
     }
 
+    public Switch(int id, String lineId, String sectionId, boolean state) {
+        this.id = id;
+        this.lineId = lineId;
+        this.sectionId = sectionId;
+        this.state = state;
+    }
+
     public void connect(Block main, Block straight, Block diverg) {
         this.blkMain = main;
         this.blkStraight = straight;
