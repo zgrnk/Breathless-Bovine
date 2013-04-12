@@ -1,3 +1,4 @@
+package TKM;
 
 public class Switch extends TrackElement {
     public static final boolean STATE_STRAIGHT = false;
