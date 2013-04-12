@@ -1,4 +1,6 @@
-
+/* TKM - Stephen Albert */
+/* Block.java */
+/* Represents a track block */
 
 public class Block extends TrackElement
 {
