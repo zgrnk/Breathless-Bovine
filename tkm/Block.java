@@ -45,7 +45,30 @@ public class Block extends TrackElement
         id = -1;
     }
 
-    //public Block(int id, String lineId, String sectionId, )
+    public Block(int id, String lineId, String sectionId, double length, double grade,
+                    double speedLimit, boolean isBidir, boolean isUground, boolean isYard,
+                    boolean isStation, boolean isCrossing, String stationName) {
+        this.id = id;
+        this.lineId = lineId;
+        this.sectionId = sectionId;
+        this.length = length;
+        this.grade = grade;
+        this.speedLimit = speedLimit;
+        this.isBidir = isBidir;
+        this.isUground = isUground;
+        this.isYard = isYard;
+        this.isStation = isStation;
+        this.isCrossing = isCrossing;
+        this.stationName = stationName;
+    }
+
+
+    public void connect(Block prev, Block next)
+    {
+        this.prev = prev;
+        this.next = next;
+    }
+                        
 
     public boolean isOccupied() {
         /* TODO: Correctly evaluate failure mode */
