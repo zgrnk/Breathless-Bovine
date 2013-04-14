@@ -129,6 +129,7 @@ public class Block extends TrackElement
 
     public static void advanceTrain(TrainLocation resp, double distance) {
 
+        /* Ensure we can legally travel in the requested direction */
         if (resp.direction == DIRECTION_FWD) {
             resp.distance += distance;
         } else {
@@ -140,6 +141,7 @@ public class Block extends TrackElement
             resp.distance -= distance;
         }
 
+        /* Determine the new location of the front of the train */
         if (0. < resp.distance && resp.distance < resp.block.length) {
             /* Stay within current block */
             return;
@@ -160,6 +162,9 @@ public class Block extends TrackElement
             
             resp.block = dest;
         }
+
+        /* Determine the new occupancy states of all blocks involved */
+        resp.block.occupied = true;
         
     }
 
