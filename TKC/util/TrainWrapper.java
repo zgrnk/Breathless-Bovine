@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import TKC.util.Limits;
 import TKM.Block;
+import TNM.Train;
 
 public class TrainWrapper {
 	public Train train;
