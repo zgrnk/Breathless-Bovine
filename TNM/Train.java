@@ -1,3 +1,6 @@
+package TNM;
+import TKM;
+
 /*
 XXX
 */

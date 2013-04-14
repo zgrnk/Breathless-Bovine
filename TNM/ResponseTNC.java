@@ -1,3 +1,5 @@
+package TNM;
+
 public class ResponseTNC
 {
 	public double powerCommand;

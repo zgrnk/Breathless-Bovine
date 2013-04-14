@@ -1,3 +1,6 @@
+package TNM;
+import TKM;
+
 public class GPS
 {
 	public Block block;

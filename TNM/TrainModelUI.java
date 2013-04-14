@@ -1,3 +1,7 @@
+package TNM;
+import TKM;
+import TNC;
+
 /*
 XXX
 change resolution of screen so that both popups fully appear
