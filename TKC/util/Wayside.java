@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import CTCOffice.CTCOffice;
 import TKM.Block;
 
 
@@ -57,7 +58,7 @@ public class Wayside {
 		while (itr.hasNext())
 		{
 			temp = itr.next();
-			if(temp.isOccupied) {
+			if(temp.occupied) {
 				activeBlocks.add(temp);
 				
 				//DEBUG
@@ -73,8 +74,8 @@ public class Wayside {
 	 */
 	private void setLimits(Integer blockID, Limits current) {
 		Block temp = blockTable.get(blockID);
-		temp.suggestedAuthority = current.getAuthority();
-		temp.suggestedSpeed = current.getSpeedLimit();
+		temp.fbAuthority = current.getAuthority();
+		temp.fbSpeed = current.getSpeedLimit();
 	}
 	
 	/**
