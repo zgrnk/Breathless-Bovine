@@ -64,6 +64,9 @@ public class Block extends TrackElement
         this.isStation = isStation;
         this.isCrossing = isCrossing;
         this.stationName = stationName;
+        this.brokenRailFailure = brokenRailFailure;
+        this.trackCircuitFailure = trackCircuitFailure;
+        this.powerFailure = powerFailure;
     }
 
 
