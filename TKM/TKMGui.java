@@ -40,8 +40,6 @@ public class TKMGui extends JPanel implements ActionListener {
         lyt = new TrackLayout();
 
         lyt.parseTrackDB("track_db.csv");
-        lyt.constructTrack();
-
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 

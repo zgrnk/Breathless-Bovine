@@ -1,5 +1,5 @@
 package TNM;
-import TKM;
+import TKM.*;
 
 public class GPS
 {
