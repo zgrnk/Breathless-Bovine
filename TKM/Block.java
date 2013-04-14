@@ -128,7 +128,6 @@ public class Block extends TrackElement
     }
 
     public static void advanceTrain(TrainLocation resp, double distance) {
-
         /* Ensure we can legally travel in the requested direction */
         if (resp.direction == DIRECTION_FWD) {
             resp.distance += distance;

@@ -278,5 +278,7 @@ public class TrackLayout {
         } catch (IOException e) {
             System.err.println("Caught IOException: " + e.getMessage());
         }
+
+        constructTrack();
     }
 }
