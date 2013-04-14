@@ -282,6 +282,10 @@ public class CTCOffice extends PApplet {
 					+ theEvent.getController().getName());
 		}
 	}
+	
+	public ArrayList<Train> getTrainsInBlock(int blockNum){
+		
+	}
 
 	public void testInit() {
 		tnmUI = new TrainModelUI();
