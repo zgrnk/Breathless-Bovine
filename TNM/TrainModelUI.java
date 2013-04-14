@@ -1,8 +1,10 @@
 /*
 XXX
 change resolution of screen so that both popups fully appear
-If a train is applying a brake and accel of train not including friction is negative, does friction need to be calculated opposite to this deceleration?
 handle case if train starts rolling backwards while attempting to go uphill
+	train position may needchanged to prevBlock and routeIndex--
+when train moves out of block, don't want to necessarily change isOccupied to false since there may be another train in the block
+handle crashing of trains?...
 XXX
 */
 
@@ -253,7 +255,7 @@ public class TrainModelUI
 			jp.add(dwPanel2);
 			
 			dynamicWindow = new JFrame();
-			dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI (Train ID: --)");
+			dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   --)");
 			dynamicWindow.setSize(1300, 700);
 			dynamicWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 			dynamicWindow.add(jp);
@@ -314,7 +316,7 @@ public class TrainModelUI
 			JScrollPane staticJSP = new JScrollPane(swPanel);
 			
 			staticWindow = new JFrame();
-			staticWindow.setTitle("Train Model (Chris Paskie)   -   Static Values (Train ID: --)");
+			staticWindow.setTitle("Train Model (Chris Paskie)   -   Static Values   (Train ID:   --)");
 			staticWindow.setSize(700, 600);
 			staticWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 			staticWindow.add(staticJSP);
@@ -476,19 +478,19 @@ public class TrainModelUI
 			refreshUI += soloDelta;
 			for (int i=0; i<trainList.size(); i++)
 				trainList.get(i).timeTick(time, ((double)(period))*delta/1000.0, false);
-				// XXX - trainList.get(i).timeTick(time, ((double)(period))*delta/1000.0, isSolo);
+				// YYY - trainList.get(i).timeTick(time, ((double)(period))*delta/1000.0, isSolo);
 			
-			if (isSolo)
+			if (refreshUI >= 1000)
 			{
-				soloTime += period;
-				if (soloTime >= 24*60*60)
-					soloTime = soloTime % (24*60*60);
-			}
-			else
-				soloTime = time;
-			
-			if (refreshUI > 1000)
-			{
+				if (isSolo)
+				{
+					soloTime += period;
+					if (soloTime >= 24*60*60)
+						soloTime = soloTime % (24*60*60);
+				}
+				else
+					soloTime = time;
+				
 				refreshUI = refreshUI % 1000;
 				setSelectedId(selectedId);
 			}
@@ -633,8 +635,7 @@ public class TrainModelUI
 			};
 			new javax.swing.Timer(soloDelta, taskPerformer).start();
 			
-			/*
-			XXX
+			/* YYY
 			// Disable all "Toggle" buttons that are associated with a manual entry.
 			btnToggleManRecPower.setEnabled(false);
 			btnToggleManDesSpdLmt.setEnabled(false);
@@ -652,8 +653,7 @@ public class TrainModelUI
 				t.setIssetDoorsOpenUseManual(true);
 				t.setIssetTargetTemperatureManual(true);
 			}
-			XXX
-			*/
+			YYY */
 			
 			tnmUI.setSelectedId(trainList.get(0).getId());
 			tnmUI.setIsPaused(tnmUI.getIsPaused());

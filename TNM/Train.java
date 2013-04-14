@@ -596,7 +596,7 @@ public class Train
 	
 	public void timeTick(double time, double period, boolean isSolo)
 	{
-//System.out.println("XXX - ////////////////////////////////////////////////////");
+System.out.println("XXX - ////////////////////////////////////////////////////");
 		// TrainController timeTick and Response
 		ResponseTNC tncResponse = new ResponseTNC(0.0, false, false, false, false, 0.0, "");
 		if (!isSolo)
@@ -631,17 +631,28 @@ public class Train
 			double accelEngine;
 			if (issetEngineFailure)
 				accelEngine = 0.0;
-			else if (curVelocity == 0.0)
-				accelEngine = motorPower / (maxSpeed * totalMass);
 			else
 			{
 				if (!isSolo  &&  !issetManualPower)
-					accelEngine = receivedPower / (curVelocity * totalMass);
+				{
+					if (curVelocity <= 0.0)
+						accelEngine = receivedPower / (0.0001 * totalMass);
+					else
+						accelEngine = receivedPower / (curVelocity * totalMass);
+				}
 				else
-					accelEngine = manualPower / (curVelocity * totalMass);
+				{
+					if (curVelocity <= 0.0)
+						accelEngine = manualPower / (0.0001 * totalMass);
+					else
+						accelEngine = manualPower / (curVelocity * totalMass);
+				}
 			}
-			if (accelEngine > (motorPower / (maxSpeed * totalMass)))
-				accelEngine = motorPower / (maxSpeed * totalMass);
+System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
+System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
+System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
+			if (accelEngine > (motorPower /  (0.0001 * totalMass)))
+				accelEngine = motorPower / (0.0001 * totalMass);
 			double velEngine = accelEngine * period;
 			if (velEngine > maxSpeed)
 				velEngine = maxSpeed;
@@ -687,16 +698,14 @@ public class Train
 			else if (newVelocity == 0.0)
 				accelFriction = 0.0;
 			double velFriction = accelFriction * period;
-/*
 System.out.println("XXX - accelEngine\t"+accelEngine);
 System.out.println("XXX - accelBrakes\t"+accelBrakes);
 System.out.println("XXX - accelGravity\t"+accelGravity);
 System.out.println("XXX - accelFriction\t"+accelFriction);
-System.out.println("XXX - velEngine\t"+velEngine);
-System.out.println("XXX - velBrakes\t"+velBrakes);
+System.out.println("XXX - velEngine\t\t"+velEngine);
+System.out.println("XXX - velBrakes\t\t"+velBrakes);
 System.out.println("XXX - velGravity\t"+velGravity);
 System.out.println("XXX - velFriction\t"+velFriction);
-*/
 			
 			// Current
 			curAccel += (accelBrakes + accelFriction);
@@ -707,7 +716,7 @@ System.out.println("XXX - velFriction\t"+velFriction);
 				curVelocity = 0.0;
 			else
 				curVelocity = newVelocity;
-//System.out.println("XXX - curVelocity\t"+curVelocity);
+System.out.println("XXX - curVelocity\t"+curVelocity);
 			
 			// Position
 			if (positionDefaultDirection)
@@ -858,7 +867,7 @@ System.out.println("XXX - "+time+"\ttime");
 System.out.println("XXX - "+period+"\tperiod");
 System.out.println("XXX - "+dispatchTime+"\tdispatchTime");
 */
-		if (positionBlock.isYard  &&  issetDoorsOpen  &&  engineer.getGoOnBreak()  &&  routeIndex > 0  &&  routeIndex < route.size() - 1  &&  engineer.timeOnBreakStarts >= time)
+		if (positionBlock.isYard  &&  issetDoorsOpen  &&  engineer.getGoOnBreak()  &&  routeIndex > 0  &&  routeIndex < route.size() - 1  &&  engineer.timeOnBreakStarts >= time  &&  numCrew > 0)
 		{
 			// Break Starts
 			numCrew -= 1;
@@ -870,19 +879,19 @@ System.out.println("XXX - "+dispatchTime+"\tdispatchTime");
 			// On Break
 			engineer.timeOnBreak += period;
 			
-			if (issetDoorsOpen  &&  engineer.timeOnBreak >= 30*60)
+			if (issetDoorsOpen  &&  engineer.timeOnBreak >= 30*60  &&  numCrew <= 0)
 			{
 				// Break Ends
 				numCrew += 1;
 				engineer.onBreak = false;
 			}
 		}
-		else if (positionBlock.isYard  &&  issetDoorsOpen  &&  routeIndex == 0  &&  ((time - period < dispatchTime  &&  time >= dispatchTime)  ||  (time - period < 0  &&  24*60*60 + time - period < dispatchTime)))
+		else if (positionBlock.isYard  &&  issetDoorsOpen  &&  routeIndex == 0  &&  ((time - period < dispatchTime  &&  time >= dispatchTime)  ||  (time - period < 0  &&  24*60*60 + time - period < dispatchTime))  &&  numCrew <= 0)
 		{
 			// Shift Starts
 			numCrew += 1;
 		}
-		else if (positionBlock.isYard  &&  issetDoorsOpen  &&  routeIndex == route.size() - 1)
+		else if (positionBlock.isYard  &&  issetDoorsOpen  &&  routeIndex == route.size() - 1  &&  numCrew > 0)
 		{
 			// Shift Ends
 			numCrew -= 1;
