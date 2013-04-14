@@ -1,18 +1,17 @@
 package TKM;
 
+/* TKM */
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 public class TKMGui extends JPanel implements ActionListener {
 
-
     private Switch selectedSwitch;
     private Block selectedBlock;
 
-    private Layout lyt;
-
-    //private FlowLayout flayout;
+    private TrackLayout lyt;
 
     JComboBox cbBlock;
     JComboBox cbSwitch;
@@ -38,7 +37,7 @@ public class TKMGui extends JPanel implements ActionListener {
 
     public void loadGui() {
 
-        lyt = new Layout();
+        lyt = new TrackLayout();
 
         lyt.parseTrackDB("track_db.csv");
         lyt.constructTrack();
@@ -54,19 +53,10 @@ public class TKMGui extends JPanel implements ActionListener {
 
         pMap = new TrackMapPanel(lyt);
         pControl.setLayout(new BoxLayout(pControl, BoxLayout.Y_AXIS));
-        pSelector.setLayout(new GridLayout(0,2));
-        pSelector.setMaximumSize(new Dimension(500,20));
         pInfo.setLayout(new BoxLayout(pInfo, BoxLayout.PAGE_AXIS));
         pBlkInfo.setLayout(new GridLayout(0,2));
         pSwInfo.setLayout(new GridLayout(0,2));
 
-        int totalHeight = (int) pSelector.getPreferredSize().getHeight() +
-                          (int) pBlkInfo.getPreferredSize().getHeight() +
-                          (int) pSwInfo.getPreferredSize().getHeight();
-                                
-        //setPreferredSize(new Dimension(500, totalHeight));
-
-        //JComboBox elemCombo = new JComboBox(lyt.getIdArray());
         cbBlock = new JComboBox(lyt.getBlocks().toArray());
         cbSwitch = new JComboBox(lyt.getSwitches().toArray());
         cbBlock.setMaximumSize(new Dimension(200,20));
