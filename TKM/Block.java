@@ -3,7 +3,10 @@ package TKM;
 public class Block extends TrackElement
 {
     public static final boolean DIRECTION_FWD = false;
-    public static final boolean DIRECTION_REV = true;
+    public static final boolean DIRECTION_REV = true; 
+
+    /* For sane double comparisons */
+    public static final double SMALL_DOUBLE = 0.00001;
 
     /* TODO: clean this up */
 
@@ -63,7 +66,7 @@ public class Block extends TrackElement
     }
 
 
-    public void connect(Block prev, Block next)
+    public void connect(TrackElement prev, TrackElement next)
     {
         this.prev = prev;
         this.next = next;
@@ -152,10 +155,10 @@ public class Block extends TrackElement
             if (dest.getNext(resp.direction, true) == resp.block) {
                 /* Default direction is opposite current default */
                 resp.direction = !resp.direction;
-                if (resp.distance < 0.0000001) resp.distance = -resp.distance;
+                if (resp.distance < SMALL_DOUBLE) resp.distance = -resp.distance;
                 else resp.distance = dest.length - (resp.distance - resp.block.length);
             } else { /* default direction doesn't change */
-                if (resp.distance < 0.0000001) resp.distance = resp.distance + dest.length;
+                if (resp.distance < SMALL_DOUBLE) resp.distance = resp.distance + dest.length;
                 else resp.distance = resp.distance - resp.block.length;
             }
             

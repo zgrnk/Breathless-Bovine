@@ -22,7 +22,6 @@ public class TrackLayout {
 	
     TrainLocation tloc;
 
-
     boolean dir = Block.DIRECTION_FWD;
 
     private ArrayList<TrackElement> elements;
@@ -64,24 +63,6 @@ public class TrackLayout {
     public AbstractList<Switch> getSwitches()
     {
         return switches;
-    }
-
-    public String[] getIdArray()
-    {
-        /* Turn element list into strings */
-        String[] rets = new String[elements.size()];
-
-        ListIterator<TrackElement> iter = elements.listIterator();
-
-        int i = 0;
-        
-        while (iter.hasNext()) {
-            TrackElement elem = iter.next();
-            rets[i] = Integer.toString(elem.id);
-            i++;
-        }
-
-        return rets;
     }
 
     public void chooChoo(TrackMapPanel pMap) {
