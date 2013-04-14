@@ -50,7 +50,8 @@ public class Block extends TrackElement
 
     public Block(int id, String lineId, String sectionId, double length, double grade,
                     double speedLimit, boolean isBidir, boolean isUground, boolean isYard,
-                    boolean isStation, boolean isCrossing, String stationName) {
+                    boolean isStation, boolean isCrossing, String stationName,
+                    boolean brokenRailFailure, boolean trackCircuitFailure, boolean powerFailure) {
         this.id = id;
         this.lineId = lineId;
         this.sectionId = sectionId;
