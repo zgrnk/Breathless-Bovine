@@ -16,7 +16,7 @@ import java.util.ListIterator;
 public class TrackMapPanel extends JPanel {
 
     BufferedImage img;
-    TrackLayout lyt;
+    Layout lyt;
 
     private int x;
     private int y;
@@ -46,7 +46,7 @@ public class TrackMapPanel extends JPanel {
             
     }
 
-    public TrackMapPanel(TrackLayout lyt) {
+    public TrackMapPanel(Layout lyt) {
         try {
             img = ImageIO.read(new File("map.png"));
         } catch (IOException e) {}

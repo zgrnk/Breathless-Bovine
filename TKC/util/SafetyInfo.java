@@ -1,4 +1,4 @@
-package nsecs.TKC.util;
+package TKC.util;
 
 /**
  * 
