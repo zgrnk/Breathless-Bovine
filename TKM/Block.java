@@ -143,7 +143,7 @@ public class Block extends TrackElement
         if (train.positionDirection == DIRECTION_FWD) {
             train.positionMeters += distance;
         } else {
-            if (!train.positionBlock.isBidir) {
+            if (!train.positionBlock.isBidir && !train.positionBlock.isYard) {
                 System.out.printf("Unauthorized travel direction!\n");
                 //resp.failed = true;
                 return;

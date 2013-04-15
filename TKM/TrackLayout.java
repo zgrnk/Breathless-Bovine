@@ -28,7 +28,7 @@ public class TrackLayout {
     private ArrayList<TrackElement> elements;
     private ArrayList<Block> blocks;
     private ArrayList<Switch> switches;
-    private Block yard;
+    public Block yard;
     private TrackElement selected;
 
     public void setSelectedElement(TrackElement t) {
