@@ -6,7 +6,7 @@ package TKC.util;
  *
  */
 public class SafetyInfo {
-	public Component switchState;
+	public boolean switchState;
 	public Component lightState;
 	public boolean safetyState;
 	
@@ -16,7 +16,7 @@ public class SafetyInfo {
 	 * @param lState current light state
 	 * @param safState current safety state
 	 */
-	public SafetyInfo(Component swState, Component lState, boolean safState)
+	public SafetyInfo(boolean swState, Component lState, boolean safState)
 	{
 		this.switchState = swState;
 		this.lightState = lState;

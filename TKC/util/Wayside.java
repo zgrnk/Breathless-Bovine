@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 import CTCOffice.CTCOffice;
 import TKM.Block;
+import TKM.Switch;
+import TNM.Train;
 
 
 /**
@@ -24,6 +26,7 @@ public class Wayside {
 	
 	private CTCOffice mainCTCOffice;
 	private SafetyInfo currStateInfo;
+	private Switch	centralSwitch;
 	
 	
 	/**
@@ -158,17 +161,14 @@ public class Wayside {
 						ComponentType.LIGHT_COMP, currStateInfo.lightState.getState());
 			}
 			
-			if (currStateInfo.switchState.getState() != 0) {
-				toggleComponent(currStateInfo.switchState.getBlockLocation(), 
-						ComponentType.SWITCH_COMP, currStateInfo.switchState.getState());
-			}
+			toggleSwitch(currStateInfo.switchState);
 			
 			//calculate limits
 			for (TrainWrapper sTrain : trainList)
 			{
 				Limits newLimits;
 				double auth;
-				double speedLimit = sTrain.getBlockLocation().postedSpeedLimit;
+				double speedLimit = sTrain.getBlockLocation().speedLimit;
 				
 				double distance = Double.MAX_VALUE;
 				for (TrainWrapper tTrain : trainList)
@@ -216,15 +216,15 @@ public class Wayside {
 	 */
 	private void toggleComponent(Integer blkID, ComponentType type, int state) {
 		switch (type) {
-		case SWITCH_COMP:
-			blockTable.get(blkID).switchState = state;
-			System.out.print("CHANGED SWITCH STATE TOO: " + state + "\n");
-			break;
 		case LIGHT_COMP:
 			//set light state
 			//blockTable.get(blkID).lightState = state;
 			break;
 		}
+	}
+	
+	private void toggleSwitch(boolean currState) {
+		this.centralSwitch.state = currState;
 	}
 	
 	/**
