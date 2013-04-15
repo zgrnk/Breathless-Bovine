@@ -16,11 +16,12 @@ import java.io.Console;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import TNM.Train;
 
     
 public class TrackLayout {
 	
-    TrainLocation tloc;
+    //TrainLocation tloc;
 
     boolean dir = Block.DIRECTION_FWD;
 
@@ -49,8 +50,7 @@ public class TrackLayout {
                 return elem;
             }
         }
-
-
+        
         System.out.printf("Could not find element %d\n", id);
         return null;
     }
@@ -72,6 +72,8 @@ public class TrackLayout {
         //sw.state = Switch.STATE_DIVERGENT;
         
         /* run this once */
+        /* FIXME use Train instead of TrainLocation *
+        
         if (tloc == null) tloc = new TrainLocation(yard, Block.DIRECTION_FWD, 0.0);
 
         System.out.printf("(%s) Block %d, dir:%s, dist:%f", tloc.block.sectionId, tloc.block.id, Boolean.toString(tloc.direction), tloc.distance);
@@ -101,7 +103,7 @@ public class TrackLayout {
             //    System.out.printf("Arrived at same block!\n");
             //    return;
             //}
-
+        */
     }
 
     public void constructTrack() {
@@ -182,8 +184,6 @@ public class TrackLayout {
                     System.exit(1);
                 }
 
-                //System.out.println(tokens[0]);
-
                 if (tokens[0].equals("BLOCKS")) {
                     mode = 0;
                     skip = true;
@@ -204,7 +204,7 @@ public class TrackLayout {
                         blk.id = Integer.parseInt(tokens[2]);
                         blk.length = Double.parseDouble(tokens[3]);
                         blk.grade = Double.parseDouble(tokens[4]);
-                        blk.speedLimit = Integer.parseInt(tokens[5]);
+                        blk.speedLimit = Double.parseDouble(tokens[5]) * 0.27777;
                         blk.isUground = tokens[6].equals("y");
                         //blk.hasSwitch [7]
                         blk.revId = Integer.parseInt(tokens[8]);
@@ -213,8 +213,6 @@ public class TrackLayout {
                         blk.isBidir = false;
                         
                         if (tokens[10].equals("both")) {
-                            //blk.allowFwd = true;
-                            //blk.allowRev = true;
                             blk.isBidir = true;
                         }
 
@@ -226,9 +224,10 @@ public class TrackLayout {
                         blk.mapX2 = Integer.parseInt(tokens[15]);
                         blk.mapY2 = Integer.parseInt(tokens[16]);
 
+                        blk.isYard = (blk.id == 0);
+
                         //System.out.printf("Block:  id=%d, length=%f station=%s\n",
                         //    blk.id, blk.length, blk.stationName);
-
 
                         elements.add(blk);
                         blocks.add(blk);

@@ -53,7 +53,7 @@ public class Block extends TrackElement
                     boolean isStation, boolean isCrossing, String stationName,
                     boolean brokenRailFailure, boolean trackCircuitFailure, boolean powerFailure) {
         this.id = id;
-        this.lineId = lineId;
+        this.lineId = lineId;   
         this.sectionId = sectionId;
         this.length = length;
         this.grade = grade;
@@ -134,44 +134,65 @@ public class Block extends TrackElement
         return dest;
     }
 
-    public static void advanceTrain(TrainLocation resp, double distance) {
+    public static void advanceTrain(Train train, double distance) {
+        /* TODO: Implement negative distance */
+        if (distance < 0.0) distance = 0.0;
+        
         /* Ensure we can legally travel in the requested direction */
-        if (resp.direction == DIRECTION_FWD) {
-            resp.distance += distance;
+        if (train.positionDirection == DIRECTION_FWD) {
+            train.positionMeters += distance;
         } else {
-            if (!resp.block.isBidir) {
+            if (!train.positionBlock.isBidir) {
                 System.out.printf("Unauthorized travel direction!\n");
-                resp.failed = true;
+                //resp.failed = true;
                 return;
             }
-            resp.distance -= distance;
+            train.positionMeters -= distance;
         }
 
         /* Determine the new location of the front of the train */
-        if (0. < resp.distance && resp.distance < resp.block.length) {
+        if (0. < train.positionMeters && train.positionMeters < train.positionBlock.length) {
+
             /* Stay within current block */
+            train.positionBlock.occupied = true;
+
+            /* Have we become fully inside this block? */
+            if ((
+                    direction == DIRECTION_FWD &&
+                    train.distance > train.length
+                ) || (
+                    direction == DIRECTION_REV &&
+                    (train.positionBlock.length - train.distance) > train.length
+                ) {
+                    train.positionBlockTail.occupied = false;
+                    train.positionBlockTail = train.positionBlock;
+                }
             return;
         } else {
+            
             /* Move to next block */
-            Block dest = resp.block.getNext(resp.direction, false);
+            Block dest = train.positionBlock.getNext(train.positionDirection, false);
 
             /* Default direction may have changed */
-            if (dest.getNext(resp.direction, true) == resp.block) {
+            if (dest.getNext(train.positionDirection, true) == train.positionBlock) {
                 /* Default direction is opposite current default */
-                resp.direction = !resp.direction;
-                if (resp.distance < SMALL_DOUBLE) resp.distance = -resp.distance;
-                else resp.distance = dest.length - (resp.distance - resp.block.length);
+                train.positionDirection = !train.positionDirection;
+                if (train.positionMeters < SMALL_DOUBLE) train.positionMeters = -train.positionMeters;
+                else train.positionMeters = dest.length - (train.positionMeters - train.positionBlock.length);
             } else { /* default direction doesn't change */
-                if (resp.distance < SMALL_DOUBLE) resp.distance = resp.distance + dest.length;
-                else resp.distance = resp.distance - resp.block.length;
+                if (train.positionMeters < SMALL_DOUBLE) train.positionMeters = train.positionMeters + dest.length;
+                else train.positionMeters = train.positionMeters - train.positionBlock.length;
             }
             
-            resp.block = dest;
-        }
+            /* Determine the new occupancy states of all blocks involved */
+            /* TODO: Make this work correctly */
+            dest.occupied = true;
 
-        /* Determine the new occupancy states of all blocks involved */
-        resp.block.occupied = true;
-        
+            train.positionBlock = dest;
+
+            /* TODO: Make this more realistic */
+            train.routeIndex++;
+        }
     }
 
     public String toString()
