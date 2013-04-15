@@ -18,78 +18,78 @@ import java.io.*;
 
 public class Train
 {
-	private double g = 9.80665;
+	public double g = 9.80665;
 	
-	private TrainController tnc;
+	public TrainController tnc;
 	
 	// Static Values
-	private int id;
-	private String stringId;
-	private double length;
-	private double width;
-	private double height;
-	private int numCars;
-	private double motorPower;
-	private double maxSpeed;
-	private double serviceBrakeDecel;
-	private double emerBrakeDecel;
-	private double frictionCoeff;
-	private double emptyTrainMass;
-	private double personMass;
-	private int maxCapacitySeated;
-	private int maxCapacityStanding;
-	private int maxCapacityPassengers;
-	private int maxCapacityCrew;
+	public int id;
+	public String stringId;
+	public double length;
+	public double width;
+	public double height;
+	public int numCars;
+	public double motorPower;
+	public double maxSpeed;
+	public double serviceBrakeDecel;
+	public double emerBrakeDecel;
+	public double frictionCoeff;
+	public double emptyTrainMass;
+	public double personMass;
+	public int maxCapacitySeated;
+	public int maxCapacityStanding;
+	public int maxCapacityPassengers;
+	public int maxCapacityCrew;
 	
 	// Dynamic Values
-	private double curVelocity;
-	private double curAccel;
-	private double receivedPower;
-	private double manualPower;
-	private boolean issetManualPower;
-	private double postedSpeedLimit;
-	private double manualSpeedLimit;
-	private boolean issetManualSpeedLimit;
-	private int numPassengers;
-	private int numCrew;
-	private double totalMass;
-	private Block positionBlock;
-	private Block positionBlockTail;
-	private double positionMeters;
-	private boolean positionDefaultDirection;
-	private boolean issetSignalPickupFailure;
-	private boolean issetEngineFailure;
-	private boolean issetBrakeFailure;
-	private boolean issetServiceBrake;
-	private boolean issetEmerBrake;
-	private boolean issetLightsOn;
-	private boolean issetLightsOnManual;
-	private boolean issetLightsOnUseManual;
-	private boolean issetDoorsOpen;
-	private boolean issetDoorsOpenManual;
-	private boolean issetDoorsOpenUseManual;
-	private double curTemperature;
-	private double targetTemperatureTNC;
-	private double targetTemperatureManual;
-	private boolean issetTargetTemperatureManual;
-	private String announcement;
+	public double curVelocity;
+	public double curAccel;
+	public double receivedPower;
+	public double manualPower;
+	public boolean issetManualPower;
+	public double postedSpeedLimit;
+	public double manualSpeedLimit;
+	public boolean issetManualSpeedLimit;
+	public int numPassengers;
+	public int numCrew;
+	public double totalMass;
+	public Block positionBlock;
+	public Block positionBlockTail;
+	public double positionMeters;
+	public boolean positionDirection;
+	public boolean issetSignalPickupFailure;
+	public boolean issetEngineFailure;
+	public boolean issetBrakeFailure;
+	public boolean issetServiceBrake;
+	public boolean issetEmerBrake;
+	public boolean issetLightsOn;
+	public boolean issetLightsOnManual;
+	public boolean issetLightsOnUseManual;
+	public boolean issetDoorsOpen;
+	public boolean issetDoorsOpenManual;
+	public boolean issetDoorsOpenUseManual;
+	public double curTemperature;
+	public double targetTemperatureTNC;
+	public double targetTemperatureManual;
+	public boolean issetTargetTemperatureManual;
+	public String announcement;
 	
 	// Other Values
-	private GPS gps;
-	private int footPrint;
-	private int nextTrainId;
-	private String line;
-	private double dispatchTime;
-	private ArrayList<Block> route;
-	private int routeIndex;
-	private double fixedSuggestedAuthority;
-	private double fixedSuggestedSpeed;
-	private double mboSuggestedAuthority;
-	private double mboSuggestedSpeed;
-	private double suggestedAuthority;
-	private double suggestedSpeed;
-	private Engineer engineer;
-	private boolean goOnBreak;
+	public GPS gps;
+	public int footPrint;
+	public int nextTrainId;
+	public String line;
+	public double dispatchTime;
+	public ArrayList<Block> route;
+	public int routeIndex;
+	public double fixedSuggestedAuthority;
+	public double fixedSuggestedSpeed;
+	public double mboSuggestedAuthority;
+	public double mboSuggestedSpeed;
+	public double suggestedAuthority;
+	public double suggestedSpeed;
+	public Engineer engineer;
+	public boolean goOnBreak;
 	
 	
 	
@@ -130,7 +130,7 @@ public class Train
 		this.positionBlock = positionBlock;
 		this.positionBlockTail = positionBlock;
 		positionMeters = 0.0;
-		positionDefaultDirection = true;
+		positionDirection = true;
 		postedSpeedLimit = positionBlock.postedSpeedLimit;
 		issetSignalPickupFailure = false;
 		issetEngineFailure = false;
@@ -150,7 +150,7 @@ public class Train
 		announcement = "";
 		
 		// Initialize the following other values.
-		gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDefaultDirection);
+		gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
 		footPrint = 0;
 		nextTrainId = 0;
 		this.line = line;
@@ -167,6 +167,7 @@ public class Train
 		goOnBreak = false;
 	}
 	
+/*
 	public int getId()
 	{
 		return id;
@@ -279,7 +280,7 @@ public class Train
 	
 	public double getPostedSpeedLimit()
 	{
-		return positionBlock.postedSpeedLimit;
+		return positionBlock.speedLimit;
 	}
 	
 	public double getManualSpeedLimit()
@@ -322,9 +323,9 @@ public class Train
 		return positionMeters;
 	}
 	
-	public boolean getPositionDefaultDirection()
+	public boolean getpositionDirection()
 	{
-		return positionDefaultDirection;
+		return positionDirection;
 	}
 	
 	public boolean getIssetSignalPickupFailure()
@@ -596,6 +597,7 @@ public class Train
 	{
 		this.goOnBreak = goOnBreak;
 	}
+*/
 	
 	public void timeTick(double time, double period, boolean isSolo)
 	{
@@ -681,9 +683,9 @@ System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
 			
 			// Gravity
 			double accelGravity;
-			if ((positionBlock.grade > 0.0  &&  positionBlock.defaultDirection == positionDefaultDirection)  ||  (positionBlock.grade < 0.0  &&  positionBlock.defaultDirection != positionDefaultDirection))
+			if ((positionBlock.grade > 0.0  &&  positionDirection)  ||  (positionBlock.grade < 0.0  &&  !positionDirection))
 				accelGravity = (-1.0) * g * Math.sin(angle);	// uphill
-			else if ((positionBlock.grade > 0.0  &&  positionBlock.defaultDirection != positionDefaultDirection)  ||  (positionBlock.grade < 0.0  &&  positionBlock.defaultDirection == positionDefaultDirection))
+			else if ((positionBlock.grade > 0.0  &&  !positionDirection)  ||  (positionBlock.grade < 0.0  &&  positionDirection))
 				accelGravity = g * Math.sin(angle);				// downhill
 			else
 				accelGravity = 0.0;								// flat
@@ -721,10 +723,11 @@ System.out.println("XXX - velFriction\t"+velFriction);
 				curVelocity = newVelocity;
 System.out.println("XXX - curVelocity\t"+curVelocity);
 			
+/*
 			// Position
-			if (positionDefaultDirection)
+			if (positionDirection)
 			{
-//System.out.println("XXX - positionDefaultDirection\t"+positionDefaultDirection);
+//System.out.println("XXX - positionDirection\t"+positionDirection);
 				positionMeters += (curVelocity * period);
 				
 				if (positionMeters >= positionBlock.length)
@@ -734,17 +737,17 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 //System.out.println("XXX - difference\t"+difference);
 					
 					if (positionBlock.id == positionBlock.nextBlock.nextBlock.id)
-						positionDefaultDirection = false;
+						positionDirection = false;
 					else
-						positionDefaultDirection = true;
-//System.out.println("XXX - positionDefaultDirection\t"+positionDefaultDirection);
+						positionDirection = true;
+//System.out.println("XXX - positionDirection\t"+positionDirection);
 					
 					positionBlock.isOccupied = false;
 					positionBlock = positionBlock.nextBlock;
 					positionBlock.isOccupied = true;
 					routeIndex++;
 					
-					if (positionDefaultDirection)
+					if (positionDirection)
 						positionMeters = difference;
 					else
 						positionMeters = positionBlock.length - difference;
@@ -753,7 +756,7 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 			}
 			else
 			{
-//System.out.println("XXX - positionDefaultDirection\t"+positionDefaultDirection);
+//System.out.println("XXX - positionDirection\t"+positionDirection);
 				positionMeters -= (curVelocity * period);
 				
 				if (positionMeters < 0.0)
@@ -763,17 +766,17 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 //System.out.println("XXX - difference\t"+difference);
 					
 					if (positionBlock.id == positionBlock.prevBlock.nextBlock.id)
-						positionDefaultDirection = false;
+						positionDirection = false;
 					else
-						positionDefaultDirection = true;
-//System.out.println("XXX - positionDefaultDirection\t"+positionDefaultDirection);
+						positionDirection = true;
+//System.out.println("XXX - positionDirection\t"+positionDirection);
 					
 					positionBlock.isOccupied = false;
 					positionBlock = positionBlock.prevBlock;
 					positionBlock.isOccupied = true;
 					routeIndex++;
 					
-					if (positionDefaultDirection)
+					if (positionDirection)
 						positionMeters = difference;
 					else
 						positionMeters = positionBlock.length - difference;
@@ -781,12 +784,15 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 				}
 			}
 			positionBlockTail.isOccupied = false;
-			if ((positionDefaultDirection  &&  positionMeters > length)  ||  (!positionDefaultDirection  &&  positionBlock.length - positionMeters > length))
+			if ((positionDirection  &&  positionMeters > length)  ||  (!positionDirection  &&  positionBlock.length - positionMeters > length))
 				positionBlockTail = positionBlock;
 			positionBlockTail.isOccupied = true;
 			positionMeters = round(positionMeters, 3);
-			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDefaultDirection);
+			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
 		}
+*/
+		Block.advanceTrain(this, curVelocity * period);
+		gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
 		
 		// Lights
 		if (issetLightsOnUseManual  ||  isSolo)
@@ -823,7 +829,14 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 		if (!isSolo)
 			announcement = tncResponse.announcement;
 		else
-			announcement = positionBlock.announcement;
+		{
+			if (positionBlock.isStation)
+				announcement = "Welcome to Station " + positionBlock.stationName + "!";
+			else if (positionBlock.isYard)
+				announcement = "Welcome to the Yard!";
+			else
+				announcement = "";
+		}
 		
 		// Passengers
 		if (positionBlock.isStation  &&  (isSolo  ||  (!isSolo/*  &&  XXX trainShouldStopHere XXX*/))  &&  issetDoorsOpen)

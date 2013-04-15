@@ -9,6 +9,7 @@ handle case if train starts rolling backwards while attempting to go uphill
 	train position may needchanged to prevBlock and routeIndex--
 when train moves out of block, don't want to necessarily change isOccupied to false since there may be another train in the block
 handle crashing of trains?...
+when train goes onto switch circuuit to avoid crash and the switched block is not in the route list...
 XXX
 */
 
@@ -381,7 +382,7 @@ public class TrainModelUI
 		{
 			idArray = new String[trainList.size()];
 			for (int i=0; i<trainList.size(); i++)
-				idArray[i] = new String(trainList.get(i).getStringId());
+				idArray[i] = new String(trainList.get(i).stringId);
 		}
 		else
 			idArray = null;
@@ -411,57 +412,57 @@ public class TrainModelUI
 	public static void setSelectedId(int selId)
 	{
 		selectedId = selId;
-		dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   " + trainList.get(selectedId-1).getStringId() + ")");
-		staticWindow.setTitle("Train Model (Chris Paskie)   -   Static Values   (Train ID:   " + trainList.get(selectedId-1).getStringId() + ")");
+		dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   " + trainList.get(selectedId-1).stringId + ")");
+		staticWindow.setTitle("Train Model (Chris Paskie)   -   Static Values   (Train ID:   " + trainList.get(selectedId-1).stringId + ")");
 		int hrs = (int)soloTime / (60 * 60);
 		int min = ((int)soloTime / 60) % 60;
 		int sec = (int)soloTime - (hrs * 60 * 60 + min * 60);
 		jlTime.setText((hrs < 10 ? "0" : "") + hrs + ":" + (min < 10 ? "0" : "") + min + ":" + (sec < 10 ? "0" : "") + sec);
 		
-		jlCurVel.setText("" + trainList.get(selectedId-1).getCurVelocity());
-		jlCurAccel.setText("" + trainList.get(selectedId-1).getCurAccel());
-		jlRecPowerTNC.setText("" + trainList.get(selectedId-1).getReceivedPower());
-		jlManRecPower.setText("" + trainList.get(selectedId-1).getManualPower());
-		jlToggleManRecPower.setText("" + trainList.get(selectedId-1).getIssetManualPower());
-		jlPostedSpdLmt.setText("" + trainList.get(selectedId-1).getPostedSpeedLimit());
-		jlManDesSpdLmt.setText("" + trainList.get(selectedId-1).getManualSpeedLimit());
-		jlToggleManDesSpdLmt.setText("" + trainList.get(selectedId-1).getIssetManualSpeedLimit());
-		jlGrade.setText("" + trainList.get(selectedId-1).getPositionBlock().grade);
-		jlTotalMass.setText("" + trainList.get(selectedId-1).getTotalMass());
-		jlPassengerCount.setText("" + trainList.get(selectedId-1).getNumPassengers());
-		jlCrewCount.setText("" + trainList.get(selectedId-1).getNumCrew());
-		jlPosition.setText("" + ((trainList.get(selectedId-1).getIssetSignalPickupFailure()) ? "???????" : ("[ " + trainList.get(selectedId-1).getPositionBlock().id + " , " + trainList.get(selectedId-1).getPositionMeters() + " ]")));
-		jlToggleSignalPickupFailure.setText("" + trainList.get(selectedId-1).getIssetSignalPickupFailure());
-		jlToggleEngineFailure.setText("" + trainList.get(selectedId-1).getIssetEngineFailure());
-		jlToggleBrakeFailure.setText("" + trainList.get(selectedId-1).getIssetBrakeFailure());
-		jlToggleServiceBrake.setText("" + trainList.get(selectedId-1).getIssetServiceBrake());
-		jlToggleEmergencyBrake.setText("" + trainList.get(selectedId-1).getIssetEmerBrake());
-		jlLights.setText("" + (trainList.get(selectedId-1).getIssetLightsOn() ? "On" : "Off"));
-		jlManLights.setText("" + (trainList.get(selectedId-1).getIssetLightsOnManual() ? "On" : "Off"));
-		jlToggleManLights.setText("" + trainList.get(selectedId-1).getIssetLightsOnUseManual());
-		jlDoors.setText("" + (trainList.get(selectedId-1).getIssetDoorsOpen() ? "Open" : "Closed"));
-		jlManDoors.setText("" + (trainList.get(selectedId-1).getIssetDoorsOpenManual() ? "Open" : "Closed"));
-		jlToggleManDoors.setText("" + trainList.get(selectedId-1).getIssetDoorsOpenUseManual());
-		jlCurTemperature.setText("" + trainList.get(selectedId-1).getCurTemperature());
-		jlTarTemperature.setText("" + trainList.get(selectedId-1).getTargetTemperatureTNC());
-		jlManTarTemperature.setText("" + trainList.get(selectedId-1).getTargetTemperatureManual());
-		jlToggleManTarTemperature.setText("" + trainList.get(selectedId-1).getIssetTargetTemperatureManual());
-		jlAnnouncement.setText("" + trainList.get(selectedId-1).getAnnouncement());
+		jlCurVel.setText("" + trainList.get(selectedId-1).curVelocity);
+		jlCurAccel.setText("" + trainList.get(selectedId-1).curAccel);
+		jlRecPowerTNC.setText("" + trainList.get(selectedId-1).receivedPower);
+		jlManRecPower.setText("" + trainList.get(selectedId-1).manualPower);
+		jlToggleManRecPower.setText("" + trainList.get(selectedId-1).issetManualPower);
+		jlPostedSpdLmt.setText("" + trainList.get(selectedId-1).postedSpeedLimit);
+		jlManDesSpdLmt.setText("" + trainList.get(selectedId-1).manualSpeedLimit);
+		jlToggleManDesSpdLmt.setText("" + trainList.get(selectedId-1).issetManualSpeedLimit);
+		jlGrade.setText("" + trainList.get(selectedId-1).positionBlock.grade);
+		jlTotalMass.setText("" + trainList.get(selectedId-1).totalMass);
+		jlPassengerCount.setText("" + trainList.get(selectedId-1).numPassengers);
+		jlCrewCount.setText("" + trainList.get(selectedId-1).numCrew);
+		jlPosition.setText("" + ((trainList.get(selectedId-1).issetSignalPickupFailure) ? "???????" : ("[ " + trainList.get(selectedId-1).positionBlock.id + " , " + trainList.get(selectedId-1).positionMeters + " ]")));
+		jlToggleSignalPickupFailure.setText("" + trainList.get(selectedId-1).issetSignalPickupFailure);
+		jlToggleEngineFailure.setText("" + trainList.get(selectedId-1).issetEngineFailure);
+		jlToggleBrakeFailure.setText("" + trainList.get(selectedId-1).issetBrakeFailure);
+		jlToggleServiceBrake.setText("" + trainList.get(selectedId-1).issetServiceBrake);
+		jlToggleEmergencyBrake.setText("" + trainList.get(selectedId-1).issetEmerBrake);
+		jlLights.setText("" + (trainList.get(selectedId-1).issetLightsOn ? "On" : "Off"));
+		jlManLights.setText("" + (trainList.get(selectedId-1).issetLightsOnManual ? "On" : "Off"));
+		jlToggleManLights.setText("" + trainList.get(selectedId-1).issetLightsOnUseManual);
+		jlDoors.setText("" + (trainList.get(selectedId-1).issetDoorsOpen ? "Open" : "Closed"));
+		jlManDoors.setText("" + (trainList.get(selectedId-1).issetDoorsOpenManual ? "Open" : "Closed"));
+		jlToggleManDoors.setText("" + trainList.get(selectedId-1).issetDoorsOpenUseManual);
+		jlCurTemperature.setText("" + trainList.get(selectedId-1).curTemperature);
+		jlTarTemperature.setText("" + trainList.get(selectedId-1).targetTemperatureTNC);
+		jlManTarTemperature.setText("" + trainList.get(selectedId-1).targetTemperatureManual);
+		jlToggleManTarTemperature.setText("" + trainList.get(selectedId-1).issetTargetTemperatureManual);
+		jlAnnouncement.setText("" + trainList.get(selectedId-1).announcement);
 		
-		jlLength.setText("" + trainList.get(selectedId-1).getLength());
-		jlWidth.setText("" + trainList.get(selectedId-1).getWidth());
-		jlHeight.setText("" + trainList.get(selectedId-1).getHeight());
-		jlNumCars.setText("" + trainList.get(selectedId-1).getNumCars());
-		jlMotorPower.setText("" + trainList.get(selectedId-1).getMotorPower());
-		jlMaxSpeed.setText("" + trainList.get(selectedId-1).getMaxSpeed());
-		jlServiceBrakeDecel.setText("" + trainList.get(selectedId-1).getServiceBrakeDecel());
-		jlEmergencyBrakeDecel.setText("" + trainList.get(selectedId-1).getEmerBrakeDecel());
-		jlFrictionCoeff.setText("" + trainList.get(selectedId-1).getFrictionCoeff());
-		jlEmptyTrainMass.setText("" + trainList.get(selectedId-1).getEmptyTrainMass());
-		jlPersonMass.setText("" + trainList.get(selectedId-1).getPersonMass());
-		jlMaxSeatedCount.setText("" + trainList.get(selectedId-1).getMaxCapacitySeated());
-		jlMaxStandingCount.setText("" + trainList.get(selectedId-1).getMaxCapacityStanding());
-		jlMaxCrewCount.setText("" + trainList.get(selectedId-1).getMaxCapacityCrew());
+		jlLength.setText("" + trainList.get(selectedId-1).length);
+		jlWidth.setText("" + trainList.get(selectedId-1).width);
+		jlHeight.setText("" + trainList.get(selectedId-1).height);
+		jlNumCars.setText("" + trainList.get(selectedId-1).numCars);
+		jlMotorPower.setText("" + trainList.get(selectedId-1).motorPower);
+		jlMaxSpeed.setText("" + trainList.get(selectedId-1).maxSpeed);
+		jlServiceBrakeDecel.setText("" + trainList.get(selectedId-1).serviceBrakeDecel);
+		jlEmergencyBrakeDecel.setText("" + trainList.get(selectedId-1).emerBrakeDecel);
+		jlFrictionCoeff.setText("" + trainList.get(selectedId-1).frictionCoeff);
+		jlEmptyTrainMass.setText("" + trainList.get(selectedId-1).emptyTrainMass);
+		jlPersonMass.setText("" + trainList.get(selectedId-1).personMass);
+		jlMaxSeatedCount.setText("" + trainList.get(selectedId-1).maxCapacitySeated);
+		jlMaxStandingCount.setText("" + trainList.get(selectedId-1).maxCapacityStanding);
+		jlMaxCrewCount.setText("" + trainList.get(selectedId-1).maxCapacityCrew);
 	}
 	
 	public ArrayList<Train> getTrainsInBlock(int id)
@@ -469,7 +470,7 @@ public class TrainModelUI
 		ArrayList<Train> tempAL = new ArrayList<Train>();
 		for (int i=0; i<trainList.size(); i++)
 		{
-			if (trainList.get(i).getId() == id)
+			if (trainList.get(i).id == id)
 				tempAL.add(trainList.get(i));
 		}
 		return tempAL;
@@ -522,62 +523,43 @@ public class TrainModelUI
 			
 			// Create the test block loop.
 			ArrayList<Block> route = new ArrayList<Block>();
-			Block bYard = new Block(0, 100.0, 0.0, true, 5.0, null, null, null, null, true, false, "Welcome to the Yard!", false, false, false, false, false, 0, 0.0, 0.0, 0.0, true);
-			Block b01 = new Block(1, 500.0, 0.0, true, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b02 = new Block(2, 500.0, -22.2, true, 1.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b03 = new Block(3, 50.0, 0.0, true, 15.0, null, null, null, null, false, false, "", false, false, false, true, false, 0, 0.0, 0.0, 0.0, false);
-			Block b04 = new Block(4, 500.0, 11.1, true, 30.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b05 = new Block(5, 50.0, 0.0, true, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b06 = new Block(6, 100.0, 0.0, true, 5.0, null, null, null, null, false, true, "Welcome to Station Alpha!", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b07 = new Block(7, 500.0, -11.1, false, 30.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b08 = new Block(8, 50.0, 0.0, false, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b09 = new Block(9, 500.0, 22.2, false, 1.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b10 = new Block(10, 50.0, 0.0, false, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b11 = new Block(11, 100.0, 0.0, false, 5.0, null, null, null, null, false, true, "Welcome to Station Beta!", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b12 = new Block(12, 50.0, 11.1, true, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b13 = new Block(13, 50.0, 0.0, false, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b14 = new Block(14, 50.0, -11.1, true, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b15 = new Block(15, 50.0, 0.0, false, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b16 = new Block(16, 100.0, 0.0, true, 5.0, null, null, null, null, false, true, "Welcome to Station Gamma!", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-			Block b17 = new Block(17, 50.0, 0.0, false, 15.0, null, null, null, null, false, false, "", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
+			Block bYard = new Block(0, "A", "I", 100.0, 0.0, 5.0, false, false, true, false, false, "", false, false, false);
+			Block b01 = new Block(1, "B", "II", 500.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b02 = new Block(2, "C", "II", 500.0, -22.2, 1.0, false, false, false, false, false, "", false, false, false);
+			Block b03 = new Block(3, "D", "II", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b04 = new Block(4, "E", "II", 500.0, 11.1, 30.0, false, true, false, false, false, "", false, false, false);
+			Block b05 = new Block(5, "F", "III", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b06 = new Block(6, "G", "III", 100.0, 0.0, 5.0, false, false, false, true, false, "Alpha", false, false, false);
+			Block b07 = new Block(7, "H", "III", 500.0, -11.1, 30.0, false, false, false, false, false, "", false, false, false);
+			Block b08 = new Block(8, "I", "III", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b09 = new Block(9, "J", "IV", 500.0, 22.2, 1.0, false, false, false, false, false, "", false, false, false);
+			Block b10 = new Block(10, "K", "IV", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b11 = new Block(11, "L", "IV", 100.0, 0.0, 5.0, false, false, false, true, false, "Beta", false, false, false);
+			Block b12 = new Block(12, "M", "IV", 50.0, 11.1, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b13 = new Block(13, "N", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b14 = new Block(14, "O", "V", 50.0, -11.1, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b15 = new Block(15, "P", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
+			Block b16 = new Block(16, "Q", "V", 100.0, 0.0, 5.0, false, false, false, true, false, "Gamma", false, false, false);
+			Block b17 = new Block(17, "R", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
 			
-			bYard.nextBlock = b01;
-			b01.nextBlock = b02;
-			b02.nextBlock = b03;
-			b03.nextBlock = b04;
-			b04.nextBlock = b05;
-			b05.nextBlock = b06;
-			b06.nextBlock = b07;
-			b07.nextBlock = b06;
-			b08.nextBlock = b07;
-			b09.nextBlock = b08;
-			b10.nextBlock = b09;
-			b11.nextBlock = b10;
-			b12.nextBlock = b13;
-			b13.nextBlock = b12;
-			b14.nextBlock = b15;
-			b15.nextBlock = b14;
-			b16.nextBlock = b17;
-			b17.nextBlock = b16;
-			
-			bYard.prevBlock = b17;
-			b01.prevBlock = bYard;
-			b02.prevBlock = b01;
-			b03.prevBlock = b02;
-			b04.prevBlock = b03;
-			b05.prevBlock = b04;
-			b06.prevBlock = b05;
-			b07.prevBlock = b08;
-			b08.prevBlock = b09;
-			b09.prevBlock = b10;
-			b10.prevBlock = b11;
-			b11.prevBlock = b12;
-			b12.prevBlock = b11;
-			b13.prevBlock = b14;
-			b14.prevBlock = b13;
-			b15.prevBlock = b16;
-			b16.prevBlock = b15;
-			b17.prevBlock = bYard;
+			bYard.connect(b17, b01);
+			b01.connect(bYard, b02);
+			b02.connect(b01, b03);
+			b03.connect(b02, b04);
+			b04.connect(b03, b05);
+			b05.connect(b04, b06);
+			b06.connect(b05, b07);
+			b07.connect(b08, b06);
+			b08.connect(b09, b07);
+			b09.connect(b10, b08);
+			b10.connect(b11, b09);
+			b11.connect(b12, b10);
+			b12.connect(b11, b13);
+			b13.connect(b14, b12);
+			b14.connect(b13, b15);
+			b15.connect(b16, b14);
+			b16.connect(b15, b17);
+			b17.connect(bYard, b16);
 			
 			route.add(bYard);
 			route.add(b01);
@@ -659,7 +641,7 @@ public class TrainModelUI
 			}
 			YYY */
 			
-			tnmUI.setSelectedId(trainList.get(0).getId());
+			tnmUI.setSelectedId(trainList.get(0).id);
 			tnmUI.setIsPaused(tnmUI.getIsPaused());
 			tnmUI.setIsVisible(true);
 		}
@@ -698,7 +680,7 @@ public class TrainModelUI
 							int i;
 							for (i=0; i<trainList.size(); i++)
 							{
-								if (trainList.get(i).getStringId().equals(tempId))
+								if (trainList.get(i).stringId.equals(tempId))
 									break;
 							}
 							setSelectedId(i+1);
@@ -725,8 +707,8 @@ public class TrainModelUI
 						String tempManRecPower = (String)JOptionPane.showInputDialog(null, "Enter the received power (W) (number only):", "Train Model - Set Received Power", JOptionPane.QUESTION_MESSAGE);
 						if (tempManRecPower != null)
 						{
-							trainList.get(selectedId-1).setManualPower(Double.parseDouble(tempManRecPower));
-							jlManRecPower.setText("" + trainList.get(selectedId-1).getManualPower());
+							trainList.get(selectedId-1).manualPower = Double.parseDouble(tempManRecPower);
+							jlManRecPower.setText("" + trainList.get(selectedId-1).manualPower);
 						}
 					}
 					catch(Exception e)
@@ -739,8 +721,8 @@ public class TrainModelUI
 				// Toggle Manual Received Power
 				else if (aEvent.getActionCommand() == "Toggle Manual Received Power")
 				{
-					trainList.get(selectedId-1).setIssetManualPower(!trainList.get(selectedId-1).getIssetManualPower());
-					jlToggleManRecPower.setText("" + trainList.get(selectedId-1).getIssetManualPower());
+					trainList.get(selectedId-1).issetManualPower = !trainList.get(selectedId-1).issetManualPower;
+					jlToggleManRecPower.setText("" + trainList.get(selectedId-1).issetManualPower);
 				}
 				
 				// Set Manual Desired Speed Limit
@@ -751,8 +733,8 @@ public class TrainModelUI
 						String tempManDesSpdLmt = (String)JOptionPane.showInputDialog(null, "Enter the desired speed limit (km/hr) (number only):", "Train Model - Set Desired Speed Limit", JOptionPane.QUESTION_MESSAGE);
 						if (tempManDesSpdLmt != null)
 						{
-							trainList.get(selectedId-1).setManualSpeedLimit(Double.parseDouble(tempManDesSpdLmt));
-							jlManDesSpdLmt.setText("" + trainList.get(selectedId-1).getManualSpeedLimit());
+							trainList.get(selectedId-1).manualSpeedLimit = Double.parseDouble(tempManDesSpdLmt);
+							jlManDesSpdLmt.setText("" + trainList.get(selectedId-1).manualSpeedLimit);
 						}
 					}
 					catch(Exception e)
@@ -765,44 +747,44 @@ public class TrainModelUI
 				// Toggle Manual Desired Speed Limit
 				else if (aEvent.getActionCommand() == "Toggle Manual Desired Speed Limit")
 				{
-					trainList.get(selectedId-1).setIssetManualSpeedLimit(!trainList.get(selectedId-1).getIssetManualSpeedLimit());
-					jlToggleManDesSpdLmt.setText("" + trainList.get(selectedId-1).getIssetManualSpeedLimit());
+					trainList.get(selectedId-1).issetManualSpeedLimit = !trainList.get(selectedId-1).issetManualSpeedLimit;
+					jlToggleManDesSpdLmt.setText("" + trainList.get(selectedId-1).issetManualSpeedLimit);
 				}
 				
 				// Toggle Signal Pickup Failure
 				else if (aEvent.getActionCommand() == "Toggle Signal Pickup Failure")
 				{
-					trainList.get(selectedId-1).setIssetSignalPickupFailure(!trainList.get(selectedId-1).getIssetSignalPickupFailure());
-					jlToggleSignalPickupFailure.setText("" + trainList.get(selectedId-1).getIssetSignalPickupFailure());
-					jlPosition.setText("" + ((trainList.get(selectedId-1).getIssetSignalPickupFailure()) ? "???????" : ("[ " + trainList.get(selectedId-1).getPositionBlock().id + " , " + trainList.get(selectedId-1).getPositionMeters() + " ]")));
+					trainList.get(selectedId-1).issetSignalPickupFailure = !trainList.get(selectedId-1).issetSignalPickupFailure;
+					jlToggleSignalPickupFailure.setText("" + trainList.get(selectedId-1).issetSignalPickupFailure);
+					jlPosition.setText("" + ((trainList.get(selectedId-1).issetSignalPickupFailure) ? "???????" : ("[ " + trainList.get(selectedId-1).positionBlock.id + " , " + trainList.get(selectedId-1).positionMeters + " ]")));
 				}
 				
 				// Toggle Engine Failure
 				else if (aEvent.getActionCommand() == "Toggle Engine Failure")
 				{
-					trainList.get(selectedId-1).setIssetEngineFailure(!trainList.get(selectedId-1).getIssetEngineFailure());
-					jlToggleEngineFailure.setText("" + trainList.get(selectedId-1).getIssetEngineFailure());
+					trainList.get(selectedId-1).issetEngineFailure = !trainList.get(selectedId-1).issetEngineFailure;
+					jlToggleEngineFailure.setText("" + trainList.get(selectedId-1).issetEngineFailure);
 				}
 				
 				// Toggle Brake Failure
 				else if (aEvent.getActionCommand() == "Toggle Brake Failure")
 				{
-					trainList.get(selectedId-1).setIssetBrakeFailure(!trainList.get(selectedId-1).getIssetBrakeFailure());
-					jlToggleBrakeFailure.setText("" + trainList.get(selectedId-1).getIssetBrakeFailure());
+					trainList.get(selectedId-1).issetBrakeFailure = !trainList.get(selectedId-1).issetBrakeFailure;
+					jlToggleBrakeFailure.setText("" + trainList.get(selectedId-1).issetBrakeFailure);
 				}
 				
 				// Toggle Service Brake
 				else if (aEvent.getActionCommand() == "Toggle Service Brake")
 				{
-					trainList.get(selectedId-1).setIssetServiceBrake(!trainList.get(selectedId-1).getIssetServiceBrake());
-					jlToggleServiceBrake.setText("" + trainList.get(selectedId-1).getIssetServiceBrake());
+					trainList.get(selectedId-1).issetServiceBrake = !trainList.get(selectedId-1).issetServiceBrake;
+					jlToggleServiceBrake.setText("" + trainList.get(selectedId-1).issetServiceBrake);
 				}
 				
 				// Toggle Emergency Brake
 				else if (aEvent.getActionCommand() == "Toggle Emergency Brake")
 				{
-					trainList.get(selectedId-1).setIssetEmerBrake(!trainList.get(selectedId-1).getIssetEmerBrake());
-					jlToggleEmergencyBrake.setText("" + trainList.get(selectedId-1).getIssetEmerBrake());
+					trainList.get(selectedId-1).issetEmerBrake = !trainList.get(selectedId-1).issetEmerBrake;
+					jlToggleEmergencyBrake.setText("" + trainList.get(selectedId-1).issetEmerBrake);
 				}
 				
 				// Set Manual Lights Status
@@ -816,8 +798,8 @@ public class TrainModelUI
 						String tempManLights = (String)JOptionPane.showInputDialog(null, "", "Train Model - Set Lights Status", JOptionPane.QUESTION_MESSAGE, null, optionsManLights, null);
 						if (tempManLights != null)
 						{
-							trainList.get(selectedId-1).setIssetLightsOnManual(tempManLights.equals(optionsManLights[0]));
-							jlManLights.setText("" + (trainList.get(selectedId-1).getIssetLightsOnManual() ? "On" : "Off"));
+							trainList.get(selectedId-1).issetLightsOnManual = tempManLights.equals(optionsManLights[0]);
+							jlManLights.setText("" + (trainList.get(selectedId-1).issetLightsOnManual ? "On" : "Off"));
 						}
 					}
 					catch(Exception e)
@@ -830,8 +812,8 @@ public class TrainModelUI
 				// Toggle Manual Lights Status
 				else if (aEvent.getActionCommand() == "Toggle Manual Lights Status")
 				{
-					trainList.get(selectedId-1).setIssetLightsOnUseManual(!trainList.get(selectedId-1).getIssetLightsOnUseManual());
-					jlToggleManLights.setText("" + trainList.get(selectedId-1).getIssetLightsOnUseManual());
+					trainList.get(selectedId-1).issetLightsOnUseManual = !trainList.get(selectedId-1).issetLightsOnUseManual;
+					jlToggleManLights.setText("" + trainList.get(selectedId-1).issetLightsOnUseManual);
 				}
 				
 				// Set Manual Doors Status
@@ -845,8 +827,8 @@ public class TrainModelUI
 						String tempManDoors = (String)JOptionPane.showInputDialog(null, "", "Train Model - Set Doors Status", JOptionPane.QUESTION_MESSAGE, null, optionsManDoors, null);
 						if (tempManDoors != null)
 						{
-							trainList.get(selectedId-1).setIssetDoorsOpenManual(tempManDoors.equals(optionsManDoors[0]));
-							jlManDoors.setText("" + (trainList.get(selectedId-1).getIssetDoorsOpenManual() ? "Open" : "Closed"));
+							trainList.get(selectedId-1).issetDoorsOpenManual = tempManDoors.equals(optionsManDoors[0]);
+							jlManDoors.setText("" + (trainList.get(selectedId-1).issetDoorsOpenManual ? "Open" : "Closed"));
 						}
 					}
 					catch(Exception e)
@@ -859,8 +841,8 @@ public class TrainModelUI
 				// Toggle Manual Doors Status
 				else if (aEvent.getActionCommand() == "Toggle Manual Doors Status")
 				{
-					trainList.get(selectedId-1).setIssetDoorsOpenUseManual(!trainList.get(selectedId-1).getIssetDoorsOpenUseManual());
-					jlToggleManDoors.setText("" + trainList.get(selectedId-1).getIssetDoorsOpenUseManual());
+					trainList.get(selectedId-1).issetDoorsOpenUseManual = !trainList.get(selectedId-1).issetDoorsOpenUseManual;
+					jlToggleManDoors.setText("" + trainList.get(selectedId-1).issetDoorsOpenUseManual);
 				}
 				
 				// Set Manual Target Temp.
@@ -871,8 +853,8 @@ public class TrainModelUI
 						String tempManTarTemperature = (String)JOptionPane.showInputDialog(null, "Enter the target temperature (degrees Celsius) (number only):", "Train Model - Set Target Temperature", JOptionPane.QUESTION_MESSAGE);
 						if (tempManTarTemperature != null)
 						{
-							trainList.get(selectedId-1).setTargetTemperatureManual(Double.parseDouble(tempManTarTemperature));
-							jlManTarTemperature.setText("" + trainList.get(selectedId-1).getTargetTemperatureManual());
+							trainList.get(selectedId-1).targetTemperatureManual = Double.parseDouble(tempManTarTemperature);
+							jlManTarTemperature.setText("" + trainList.get(selectedId-1).targetTemperatureManual);
 						}
 					}
 					catch(Exception e)
@@ -885,8 +867,8 @@ public class TrainModelUI
 				// Toggle Manual Target Temp.
 				else if (aEvent.getActionCommand() == "Toggle Manual Target Temp.")
 				{
-					trainList.get(selectedId-1).setIssetTargetTemperatureManual(!trainList.get(selectedId-1).getIssetTargetTemperatureManual());
-					jlToggleManTarTemperature.setText("" + trainList.get(selectedId-1).getIssetTargetTemperatureManual());
+					trainList.get(selectedId-1).issetTargetTemperatureManual = !trainList.get(selectedId-1).issetTargetTemperatureManual;
+					jlToggleManTarTemperature.setText("" + trainList.get(selectedId-1).issetTargetTemperatureManual);
 				}
 				
 				else

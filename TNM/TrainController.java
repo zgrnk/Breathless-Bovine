@@ -43,12 +43,9 @@ public class TrainController
     public double prerr;
     
     // initialize fake blocks
-    Block negout = new Block(-4, 100, 3, true, 60, null, null, 
-    null, null, false, false, "You found the secret stop, exit now to collect 100 rupies!", 
-    false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
-    
-    Block negone = new Block(-1, 100, 3, true, 55, negout, negout, 
-    negout, negout, false, true, "Arriving at 0", false, false, false, false, false, 0, 0.0, 0.0, 0.0, false);
+	Block negout = new Block(-4, "A", "I", 100.0, 3.0, 60.0, false, false, true, false, false, "You found the secret stop, exit now to collect 100 rupies!", false, false, false);
+	Block negone = new Block(-1, "B", "II", 100.0, 3.0, 55.0, false, false, false, false, false, "Arriving at 0", false, false, false);
+	
     
     /**
      * Constructor for objects of class TrainController
@@ -92,8 +89,8 @@ public class TrainController
     // Turns lights on and off
     public void setLights()
     {
-        if((!thisBlock.isUnderground)&&(time<68400)&&(time>21600)
-        &&(!oldBlock.isUnderground))
+        if((!thisBlock.isUground)&&(time<68400)&&(time>21600)
+        &&(!oldBlock.isUground))
         {
             lights=false;
         }
@@ -250,7 +247,12 @@ public class TrainController
         //    autspeed=mboSuggestedSpeed;
         }
         speedlimit=positionBlock.postedSpeedLimit;
-        currAnnoun=thisBlock.announcement;
+		if (thisBlock.isStation)
+			currAnnoun="Welcome to Station "+thisBlock.stationName+"!";
+		else if (thisBlock.isYard)
+			currAnnoun="Welcome to the Yard!";
+		else
+			currAnnoun="";
         
        //begin computer actions
         setSafeSpeed();
