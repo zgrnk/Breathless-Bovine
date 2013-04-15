@@ -1,4 +1,5 @@
 package TKM;
+import TNM.*;
 
 public class Block extends TrackElement
 {
@@ -158,12 +159,12 @@ public class Block extends TrackElement
 
             /* Have we become fully inside this block? */
             if ((
-                    direction == DIRECTION_FWD &&
+                    train.positionDirection == DIRECTION_FWD &&
                     train.distance > train.length
                 ) || (
-                    direction == DIRECTION_REV &&
+                    train.positionDirection == DIRECTION_REV &&
                     (train.positionBlock.length - train.distance) > train.length
-                ) {
+                )) {
                     train.positionBlockTail.occupied = false;
                     train.positionBlockTail = train.positionBlock;
                 }
