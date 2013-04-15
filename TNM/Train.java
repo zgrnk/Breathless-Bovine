@@ -789,10 +789,10 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 			positionBlockTail.isOccupied = true;
 			positionMeters = round(positionMeters, 3);
 			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
-		}
 */
-		Block.advanceTrain(this, curVelocity * period);
-		gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
+			Block.advanceTrain(this, curVelocity * period);
+			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
+		}
 		
 		// Lights
 		if (issetLightsOnUseManual  ||  isSolo)
