@@ -35,11 +35,12 @@ public class Wayside {
 	 * @param mainCTCOffice
 	 * @param currInfo
 	 */
-	public Wayside(Hashtable<Integer, Block> table, ArrayList<Integer> endBlks, CTCOffice mainCTCOffice, SafetyInfo currInfo) {
+	public Wayside(Hashtable<Integer, Block> table, ArrayList<Integer> endBlks, CTCOffice mainCTCOffice, SafetyInfo currInfo, Switch cSwitch) {
 		this.blockTable = table;
 		this.endBlocks = endBlks;
 		this.mainCTCOffice = mainCTCOffice;
 		this.currStateInfo = currInfo;
+		this.centralSwitch = cSwitch;
 		
 		trainList = new LinkedList<TrainWrapper>();
 	}
@@ -65,7 +66,7 @@ public class Wayside {
 				activeBlocks.add(temp);
 				
 				//DEBUG
-				System.out.println(temp.id);
+				//System.out.println(temp.id);
 			}
 		}
 	}
@@ -86,43 +87,31 @@ public class Wayside {
 	 */
 	private void updateTrainList() {
 		
-		/*If list empty than search if any end blocks currently */
+		/*If list empty than search if any end blocks currently are active */
 		if (trainList.isEmpty()) {
-			for (Integer blkId : endBlocks) {
-				Integer found = -1;
-				
-				for (Block blk : activeBlocks) {
-					if (blkId == blk.id) {
-						found = blkId;
-					}
-				}
-				
-				if (found != -1) {
-					System.out.println("FOUND\n");
-					trainList.add(new TrainWrapper(mainCTCOffice.getTrainsInBlock(found).get(0), blockTable.get(blkId)));
-				}
-				else {
-					//System.out.println("NOT FOUND\n");
+			for (Block blk : activeBlocks) {
+				if (TrainWrapper.isEndBlk(endBlocks, blk.id)) {
+					Train temp = mainCTCOffice.getTrainsInBlock(blk.id).get(0);
+							trainList.add(new TrainWrapper(temp, blk));
 				}
 			}
-		}
-		else {
+		}else {
 			//updates positions of currently tracked trains
+			LinkedList<TrainWrapper> removals = new LinkedList<TrainWrapper>();
+			
 			for (TrainWrapper sTrain : trainList) {
-				//train has moved to another block
-				if (activeBlocks.contains(sTrain.getFutureBlock())) {
-					sTrain.updateLocation();
-
-				}//Train is on an end block and therefore should be untracked
-				else if (endBlocks.contains(sTrain.getBlockLocation().id)) {
-					trainList.remove(sTrain);
-					
-				}
-						
+				sTrain.updateLocation();
+				if (!blockIsInZone(sTrain.getBlockLocation()))
+					removals.add(sTrain);
 			}
 			
+			for (TrainWrapper rTrain : removals) {
+				trainList.remove(rTrain);
+			}
+			
+			//adds new trains found on endblocks that weren't in the train list
 			for (Integer blkId : endBlocks) {
-				if (activeBlocks.contains(blkId)) {
+				if (isActive(blkId)) {
 					boolean flag = false;
 					for (TrainWrapper sTrain : trainList) {
 						if (sTrain.getBlockLocation().id == blkId) {
@@ -132,7 +121,7 @@ public class Wayside {
 					}
 					if (!flag) {
 						for (Train tR : mainCTCOffice.getTrainsInBlock(blkId)) {
-							if (!trainList.contains(tR))
+							if (!inTrainList(tR))
 								trainList.add(new TrainWrapper(tR, blockTable.get(blkId)));
 						}
 					}
@@ -140,6 +129,73 @@ public class Wayside {
 			}
 		}
 	}
+
+	/**
+	 * checks if specified train is in the current trainlist
+	 * @param tr
+	 * @return
+	 */
+	public boolean inTrainList(Train tr) {
+		for (TrainWrapper sTrain : trainList) {
+			if (sTrain.train.id == tr.id)
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * checks if block id is an active block
+	 * @param id
+	 * @return
+	 */
+	private boolean isActive(int id) {
+		for (Block blk : activeBlocks) {
+			if (blk.id == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * checks if block is in wayside's zone
+	 * @param blk
+	 * @return
+	 */
+	private boolean blockIsInZone(Block blk) {
+		
+		Iterator<Block> itr = blockTable.values().iterator();
+		Block tempBlk;
+		
+		while(itr.hasNext())
+		{
+			tempBlk = itr.next();
+			if (tempBlk.id == blk.id) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * checks for any broken track circuits by comparing active blocks to verified trains' locations.
+	 */
+	private void checkForBrokenCircuits() {
+		for (Block blk : activeBlocks) {
+			boolean flag = false;
+			for (TrainWrapper sTrain : trainList) {
+				if (blk.id == sTrain.train.positionBlock.id) {
+					flag = true;
+					break;
+				}
+			}
+			//block doesn't have a recorded train and therefore contains a malfunction circuit
+			if (!flag) {
+				blk.brokenRailFailure = true;
+			}
+		}
+	}
+	
 	
 	/**
 	 * Activates the wayside for its next cycle
@@ -147,11 +203,12 @@ public class Wayside {
 	public void nextTick() {
 		updateActiveBlocks();
 		updateTrainList();
-		
+		checkForBrokenCircuits();
+
 		//Now stage is set
 		
 		//run PLC redundancy 
-		currStateInfo = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList);
+		runRedundancy();
 		
 		//set safetyInfo
 		if (currStateInfo.safetyState) {
@@ -231,7 +288,7 @@ public class Wayside {
 	 * Run the triple redundancy protocol for the PLCProgram 
 	 */
 	public void runRedundancy() {
-		
+		currStateInfo = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList);
 	}
 	
 	/**

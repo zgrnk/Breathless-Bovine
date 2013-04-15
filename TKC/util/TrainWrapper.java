@@ -19,7 +19,7 @@ public class TrainWrapper {
 	}
 
 	public void updateLocation() {
-		this.blockLocation = this.futureBlock;
+		this.blockLocation = this.train.positionBlock;
 		this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
 	}
 
@@ -74,7 +74,7 @@ public class TrainWrapper {
 	 * is specified block an end block
 	 * @return
 	 */
-	public boolean isEndBlk(ArrayList<Integer> endBlks, Integer id)
+	public static boolean isEndBlk(ArrayList<Integer> endBlks, Integer id)
 	{
 		for (Integer i : endBlks) {
 			if (i.equals(id))
