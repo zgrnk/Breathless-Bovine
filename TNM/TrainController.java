@@ -74,7 +74,7 @@ public class TrainController
         trackFail=thisBlock.trackCircuitFailure;
         powerFail=thisBlock.powerFailure;
         stationState=3;
-        currAnnoun=thisBlock.announcement;
+        currAnnoun="";
         tperiod=1;
         ukprev=0;
         prerr=0;
@@ -246,7 +246,7 @@ public class TrainController
         {
         //    autspeed=mboSuggestedSpeed;
         }
-        speedlimit=positionBlock.postedSpeedLimit;
+        speedlimit=positionBlock.speedLimit;
 		if (thisBlock.isStation)
 			currAnnoun="Welcome to Station "+thisBlock.stationName+"!";
 		else if (thisBlock.isYard)
