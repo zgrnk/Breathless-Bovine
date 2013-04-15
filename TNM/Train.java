@@ -131,7 +131,7 @@ public class Train
 		this.positionBlockTail = positionBlock;
 		positionMeters = 0.0;
 		positionDirection = true;
-		postedSpeedLimit = positionBlock.postedSpeedLimit;
+		postedSpeedLimit = positionBlock.speedLimit;
 		issetSignalPickupFailure = false;
 		issetEngineFailure = false;
 		issetBrakeFailure = false;
