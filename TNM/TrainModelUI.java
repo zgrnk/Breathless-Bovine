@@ -520,6 +520,11 @@ public class TrainModelUI
 				System.exit(1);
 			}
 			
+			TrackLayout tl = new TrackLayout();
+			tl.parseTrackDB("track_db.csv");
+			Block bYard = tl.yard;
+			
+			/*
 			// Create the test block loop.
 			ArrayList<Block> route = new ArrayList<Block>();
 			Block bYard = new Block(0, "A", "I", 100.0, 0.0, 5.0, false, false, true, false, false, "", false, false, false);
@@ -597,6 +602,7 @@ public class TrainModelUI
 			route.add(b16);
 			route.add(b17);
 			route.add(bYard);
+			*/
 			
 			// Create the trains.
 			trainList = new ArrayList<Train>();
