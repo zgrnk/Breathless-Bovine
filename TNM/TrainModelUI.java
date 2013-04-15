@@ -1,6 +1,5 @@
 package TNM;
 import TKM.*;
-import TNC.*;
 
 /*
 XXX
