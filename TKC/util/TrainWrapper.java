@@ -1,8 +1,6 @@
 package TKC.util;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 import TKC.util.Limits;
 import TKM.Block;
@@ -13,16 +11,16 @@ public class TrainWrapper {
 	private Block blockLocation;
 	private Block futureBlock;
 	private Limits currLimits;
-	
+
 	public TrainWrapper(Train paramTrain, Block blockId) {
 		this.train = paramTrain;
 		this.setBlockLocation(blockId);
-		this.setFutureBlock(this.train.getRoute().get(this.train.getRouteIndex()));
+		this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
 	}
-	
+
 	public void updateLocation() {
 		this.blockLocation = this.futureBlock;
-		this.setFutureBlock(this.train.getRoute().get(this.train.getRouteIndex()));
+		this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
 	}
 
 	public Block getFutureBlock() {
@@ -40,75 +38,50 @@ public class TrainWrapper {
 	public void setBlockLocation(Block blockLocation) {
 		this.blockLocation = blockLocation;
 	}
-	
+
 	/**
-	 * distance in meters to the closest occupied block
+	 * distance in meters to the specified train
 	 * @param toTrain
+	 * @return distance to train in meters, if specified train is not in current train's route currently than
+	 * returned distance is to the end of the current zone.
+	 */
+	public double distToTrain(ArrayList<Integer> endBlks, TrainWrapper toTrain) {
+		double dist = 0.0;
+		int index = train.routeIndex;
+		boolean flag = true;
+
+		while (flag) {
+			try {
+				if (train.route.get(index + 1).id == toTrain.blockLocation.id) {
+					flag = false;
+				}else if (isEndBlk(endBlks, train.route.get(index + 1).id)) {
+					dist += train.route.get(index + 1).length;
+					flag = false;
+				}else {
+					dist += train.route.get(index + 1).length;
+					index++;
+				}
+			}catch (IndexOutOfBoundsException e) {
+				flag = false;
+			}
+		}
+
+		return dist;
+
+	}
+
+	/**
+	 * is specified block an end block
 	 * @return
 	 */
-	public double distToTrain(TrainWrapper toTrain) {
-		
-		if (train.getRoute().contains(toTrain.blockLocation)) {
-			Iterator<Block> itr = train.getRoute().iterator();
-			boolean flag = false;
-			double dist = 0.0;
-			Block temp;
-			
-			while(itr.hasNext() && !flag)
-			{
-				temp = itr.next();
-				if(temp.equals(toTrain.blockLocation)) {
-					flag = true;
-				}
-				else {
-					dist += temp.length;
-				}
-					
-			}
-			return dist;
-		}
-		else {
-			return -1.0;
-		}
-		
-	}
-	
-	/**
-	 * distance to the end of the train's current zone
-	 * @return
-	 *//*
-	public double distToEndZone(ArrayList<String> endblks, Hashtable<String,Block> blkTable)
+	public boolean isEndBlk(ArrayList<Integer> endBlks, Integer id)
 	{
-		for (String id : endblks)
-		{
-			if
+		for (Integer i : endBlks) {
+			if (i.equals(id))
+				return true;
 		}
-			
-			
-		if (train.route.contains(future) {
-			Iterator<Block> itr = train.route.iterator();
-			boolean flag = false;
-			double dist = 0.0;
-			Block temp;
-			
-			while(itr.hasNext() && !flag)
-			{
-				temp = itr.next();
-				if(temp.equals(toTrain.blockLocation)) {
-					flag = true;
-				}
-				else {
-					dist += temp.getLength();
-				}
-					
-			}
-			return dist;
-		}
-		else {
-			return -1.0;
-		}
-		return 0;
-	}*/
+		return false;
+	}
 
 	public Limits getCurrLimits() {
 		return currLimits;
