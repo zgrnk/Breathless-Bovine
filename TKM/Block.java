@@ -160,10 +160,10 @@ public class Block extends TrackElement
             /* Have we become fully inside this block? */
             if ((
                     train.positionDirection == DIRECTION_FWD &&
-                    train.distance > train.length
+                    train.positionMeters > train.length
                 ) || (
                     train.positionDirection == DIRECTION_REV &&
-                    (train.positionBlock.length - train.distance) > train.length
+                    (train.positionBlock.length - train.positionMeters) > train.length
                 )) {
                     train.positionBlockTail.occupied = false;
                     train.positionBlockTail = train.positionBlock;
