@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 
 import TKM.Block;
+import TKM.Switch;
 
 
 /**
@@ -14,5 +15,5 @@ import TKM.Block;
  */
 public interface PLCProgram {
 
-	abstract SafetyInfo runPLC(Hashtable<Integer, Block> blkTable, ArrayList<Integer> endBlks, LinkedList<Block> activeBlks, LinkedList<TrainWrapper> trainList);
+	abstract SafetyInfo runPLC(Hashtable<Integer, Block> blkTable, ArrayList<Integer> endBlks, LinkedList<Block> activeBlks, LinkedList<TrainWrapper> trainList, Switch cSwitch);
 }

@@ -226,35 +226,46 @@ public class Wayside {
 				Limits newLimits;
 				double auth;
 				double speedLimit = sTrain.getBlockLocation().speedLimit;
+				double currSpeed = sTrain.train.curVelocity;
 				
 				double distance = Double.MAX_VALUE;
 				for (TrainWrapper tTrain : trainList)
 				{
-					double temp = 0.0;
-					if (tTrain.getBlockLocation().id != sTrain.getBlockLocation().id) {
-						temp = sTrain.distToTrain(tTrain);
-						if (temp != -1.0 && temp < distance) {
-							distance = temp;
-						}
-					}
+					double temp = sTrain.distToTrain(endBlocks, tTrain);
+					if (temp < distance)
+						distance = temp;
 				}
 				
-				//only train on the track or no tracks are ahead
+				//only train on the track or no tracks are ahead or something went wrong somehow
 				if (distance == Double.MAX_VALUE) {
-					distance = sTrain.getFutureBlock().length;
+					distance = 200; //make a safety judgment of
 				}
 				
-				double tempAuth = -Math.pow(speedLimit, 2.0)/(2*-1.2);
-				if (tempAuth < distance)
+				double tempAuth = 0;
+				boolean notGood = true;
+				while (currSpeed > 0 && notGood) {
+					
+					tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
+					if (tempAuth <= distance)
+					{
+						auth = distance - tempAuth;
+						newLimits = new Limits(currSpeed, auth);
+						sTrain.setCurrLimits(newLimits);
+						setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
+						notGood = false;
+					}
+					currSpeed = currSpeed - 1.0;
+				}
+				
+				if (notGood)
 				{
-					auth = distance - tempAuth;
-					newLimits = new Limits(speedLimit, auth);
+					newLimits = new Limits(0.0, 0.0);
 					sTrain.setCurrLimits(newLimits);
 					setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-				}
-				else {
-					//System.out.print("over here");
-					//shutdown();
+					
+					// TO-DO must adjust suggested speed
+					System.out.print("Authority Calculation may be incorrect");
+					
 				}
 				
 			}
@@ -288,7 +299,7 @@ public class Wayside {
 	 * Run the triple redundancy protocol for the PLCProgram 
 	 */
 	public void runRedundancy() {
-		currStateInfo = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList);
+		currStateInfo = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
 	}
 	
 	/**
