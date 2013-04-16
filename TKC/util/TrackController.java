@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import CTCOffice.CTCOffice;
 import TKM.Block;
+import TKM.Switch;
 
 
 
@@ -66,7 +67,7 @@ public class TrackController {
 			public SafetyInfo runPLC(Hashtable<Integer, Block> blkTable,
 					ArrayList<Integer> endBlks, LinkedList<Block> activeBlks,
 					LinkedList<TrainWrapper> trainList) {
-				Component swS = new Component(5,1);
+				boolean swS = Switch.STATE_STRAIGHT;
 				Component litS = new Component(0,0);
 				boolean isSafe = true;
 				

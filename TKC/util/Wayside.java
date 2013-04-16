@@ -167,6 +167,9 @@ public class Wayside {
 		Iterator<Block> itr = blockTable.values().iterator();
 		Block tempBlk;
 		
+		if (blk == null)
+			return false;
+		
 		while(itr.hasNext())
 		{
 			tempBlk = itr.next();
@@ -223,49 +226,53 @@ public class Wayside {
 			//calculate limits
 			for (TrainWrapper sTrain : trainList)
 			{
-				Limits newLimits;
-				double auth;
-				double speedLimit = sTrain.getBlockLocation().speedLimit;
-				double currSpeed = sTrain.train.curVelocity;
-				
-				double distance = Double.MAX_VALUE;
-				for (TrainWrapper tTrain : trainList)
-				{
-					double temp = sTrain.distToTrain(endBlocks, tTrain);
-					if (temp < distance)
-						distance = temp;
-				}
-				
-				//only train on the track or no tracks are ahead or something went wrong somehow
-				if (distance == Double.MAX_VALUE) {
-					distance = 200; //make a safety judgment of
-				}
-				
-				double tempAuth = 0;
-				boolean notGood = true;
-				while (currSpeed > 0 && notGood) {
+				//if train's next block is in the zone then it is receiving the train and should edit the limits
+				//otherwise it shouldn't set the limits
+				if (blockIsInZone(sTrain.getFutureBlock())) {
 					
-					tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
-					if (tempAuth <= distance)
+					Limits newLimits;
+					double auth;
+					double currSpeed = sTrain.train.curVelocity;
+					
+					double distance = Double.MAX_VALUE;
+					for (TrainWrapper tTrain : trainList)
 					{
-						auth = distance - tempAuth;
-						newLimits = new Limits(currSpeed, auth);
+						double temp = sTrain.distToTrain(endBlocks, tTrain);
+						if (temp < distance)
+							distance = temp;
+					}
+					
+					//only train on the track or no tracks are ahead or something went wrong somehow
+					if (distance == Double.MAX_VALUE) {
+						distance = 200; //make a safety judgment of
+					}
+					
+					double tempAuth = 0;
+					boolean notGood = true;
+					while (currSpeed > 0 && notGood) {
+						
+						tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
+						if (tempAuth <= distance)
+						{
+							auth = distance - tempAuth;
+							newLimits = new Limits(currSpeed, auth);
+							sTrain.setCurrLimits(newLimits);
+							setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
+							notGood = false;
+						}
+						currSpeed = currSpeed - 1.0;
+					}
+					
+					if (notGood)
+					{
+						newLimits = new Limits(0.0, 0.0);
 						sTrain.setCurrLimits(newLimits);
 						setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-						notGood = false;
+						
+						// TO-DO must adjust suggested speed
+						System.out.print("Authority Calculation may be incorrect");
+						
 					}
-					currSpeed = currSpeed - 1.0;
-				}
-				
-				if (notGood)
-				{
-					newLimits = new Limits(0.0, 0.0);
-					sTrain.setCurrLimits(newLimits);
-					setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-					
-					// TO-DO must adjust suggested speed
-					System.out.print("Authority Calculation may be incorrect");
-					
 				}
 				
 			}

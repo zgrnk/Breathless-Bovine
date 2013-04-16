@@ -40,7 +40,7 @@ public class TrainWrapper {
 	}
 
 	/**
-	 * distance in meters to the specified train
+	 * distance in meters to the specified train, only to be used if determining trains that aren't leaving zone
 	 * @param toTrain
 	 * @return distance to train in meters, if specified train is not in current train's route currently than
 	 * returned distance is to the end of the current zone.
