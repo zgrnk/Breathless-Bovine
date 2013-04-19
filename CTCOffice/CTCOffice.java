@@ -27,7 +27,7 @@ public class CTCOffice extends PApplet {
 
 	Canvas track_layout;
 	boolean simStarted, init;
-	int simTimeRatio, lastTick, numTrains;
+	int deltaT, lastTick, numTrains;
 	int cnt = 0;
 	// train shit
 	TrainModelUI tnmUI;
@@ -40,24 +40,27 @@ public class CTCOffice extends PApplet {
 
 	public static void main(String args[]) {
 		//PApplet.main(new String[] { "--present", "CTCOffice" });
-		new DisplayFrame().setVisible(true);
+		TrackLayout layout = new TrackLayout();
+		layout.parseTrackDB("track_db.csv");
+		DisplayFrame df = new DisplayFrame(layout);
+		df.setVisible(true);
 	}
 	
 
 
 	// processing functions
 	public void setup() {
-		size(1000, 800);
+		size(750, 800);
 		smooth();
 		frameRate(30);
 		lastTick = 0;
 		numTrains = 2;
-		simTimeRatio = 5;
+		deltaT = 100;
 
 		cp5 = new ControlP5(this);
 		timer = new ControlTimer();
 		showTimer = new Textlabel(cp5, "--", 100, 100);
-		timer.setSpeedOfTime((float)0.1);
+		timer.setSpeedOfTime(10);
 
 		simStarted = false;
 		init = false;
@@ -73,7 +76,7 @@ public class CTCOffice extends PApplet {
 		tnmUI.setIsPaused(true);
 		tnmUI.setTrainList(trainList);
 		tnmUI.setSelectedId(trainList.get(0).id);
-		tnmUI.setIsVisible(false);
+		tnmUI.setIsVisible(true);
 
 		// new SSC_GUI();
 
@@ -86,10 +89,11 @@ public class CTCOffice extends PApplet {
 
 		if (simStarted) {
 			showTimer.draw(this);
+			//gets called 10 times per second, as timer speed is set to 10
 			if (lastTick != timer.second()) {
-				current_clock_sec += simTimeRatio;
-				tnmUI.timeTick(current_clock_sec, simTimeRatio, 100);
+/*				tnmUI.timeTick(current_clock_sec, deltaT);
 				lastTick = timer.second();
+				current_clock_sec += simTimeRatio;*/
 			}
 			trainList = tnmUI.getTrainList();
 		}
