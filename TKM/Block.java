@@ -11,7 +11,6 @@ public class Block extends TrackElement
 
     /* TODO: clean this up */
 
-
     /* Static info */
     public double length;
     public double grade;
@@ -31,8 +30,8 @@ public class Block extends TrackElement
     public boolean trackCircuitFailure;
     public boolean powerFailure;
 
-    public double mbSpeed;
-    public double mbAuthority;
+    //public double mbSpeed;
+    //public double mbAuthority;
     public double fbSpeed;
     public double fbAuthority;
 
@@ -84,8 +83,7 @@ public class Block extends TrackElement
     }
 
 
-    private Block getSwitchDest(Switch sw, boolean dryRun)
-    {
+    private Block getSwitchDest(Switch sw, boolean dryRun) {
         if (!dryRun) System.out.printf("Switch %d from block %d\n", sw.id, this.id);
         /* NYI: Derail if switch is not set properly */
         

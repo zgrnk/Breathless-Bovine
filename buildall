@@ -1,0 +1,8 @@
+#!/bin/bash
+javac CTCOffice/*.java \
+      TNM/*.java \
+      TKM/*.java \
+      TKC/test/*.java \
+      TKC/util/*.java \
+      MBO/*.java \
+      SSC/*.java

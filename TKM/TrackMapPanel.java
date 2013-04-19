@@ -19,9 +19,20 @@ public class TrackMapPanel extends JPanel {
 
     BufferedImage img;
     TrackLayout lyt;
+    AbstractList<Train> trainList;
 
     private int x;
     private int y;
+
+    public TrackMapPanel(TrackLayout lyt) {
+        try {
+            img = ImageIO.read(new File("map.png"));
+        } catch (IOException e) {}
+
+        this.lyt = lyt;
+        x = 0;
+        y = 0;
+    }
 
     private void drawTrackBlock(Block blk, Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
@@ -48,14 +59,8 @@ public class TrackMapPanel extends JPanel {
             
     }
 
-    public TrackMapPanel(TrackLayout lyt) {
-        try {
-            img = ImageIO.read(new File("map.png"));
-        } catch (IOException e) {}
-
-        this.lyt = lyt;
-        x = 0;
-        y = 0;
+    public void setTrainList(AbstractList<Train> trainList) {
+        this.trainList = trainList;
     }
 
     public void setMarker(int x, int y) {
