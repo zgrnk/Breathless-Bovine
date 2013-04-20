@@ -15,6 +15,10 @@ import TKM.Switch;
  *
  */
 public class PLCProgram {
+	
+	public PLCProgram() {
+		
+	}
 
 	public SafetyInfo runPLC(Hashtable<Integer, Block> blkTable, ArrayList<Integer> endBlks, 
 			LinkedList<Block> activeBlks, LinkedList<TrainWrapper> trainList, Switch cSwitch) {

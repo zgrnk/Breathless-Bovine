@@ -7,7 +7,7 @@ import TKC.util.TrackController;
 
 public class TrackControllerTEST {
 	
-	public Train testTrain;
+	/*public Train testTrain;
 	public CTCOffice mainOffice;
 	public ArrayList<Block> track;
 	
@@ -137,5 +137,5 @@ public class TrackControllerTEST {
 			printBlk(blk);
 		}
 		
-	}
+	}*/
 }

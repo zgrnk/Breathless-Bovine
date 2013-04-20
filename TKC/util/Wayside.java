@@ -43,11 +43,12 @@ public class Wayside {
 		this.centralSwitch = cSwitch;
 		
 		trainList = new LinkedList<TrainWrapper>();
+		this.loadedPLC = new PLCProgram();
 	}
 	
-	public void setPLC(PLCProgram plc) {
+	/*public void setPLC(PLCProgram plc) {
 		this.loadedPLC = plc;
-	}
+	}*/
 	
 	/**
 	 * Updates active block list with all currently occupied blocks in wayside's zone.
