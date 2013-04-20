@@ -33,6 +33,7 @@ public class TrainModelUI
 	private static boolean isSolo = false;
 	private static int soloNumTrains = 0;
 	private static double soloTime = 0;
+	private static Date soloDate = new Date();
 	private static int soloDelta = 100;
 	private static int refreshUI = 0;
 	
@@ -475,22 +476,27 @@ public class TrainModelUI
 		return tempAL;
 	}
 	
-	public static void timeTick(double time, int period, int delta)
+	public static void timeTick(Date date, int delta)
 	{
 		if (!isPaused)
 		{
-			refreshUI += soloDelta;
+			refreshUI += delta;
+			double time = date.getHours()*60*60+date.getMinutes()*60+date.getSeconds();
+			
 			for (int i=0; i<trainList.size(); i++)
-				trainList.get(i).timeTick(time, ((double)(period))*delta/1000.0, false);
-				// YYY - trainList.get(i).timeTick(time, ((double)(period))*delta/1000.0, isSolo);
+				trainList.get(i).timeTick(time, ((double)(delta))/1000.0, isSolo);
 			
 			if (refreshUI >= 1000)
 			{
 				if (isSolo)
 				{
-					soloTime += period;
+					soloTime += 1;
 					if (soloTime >= 24*60*60)
 						soloTime = soloTime % (24*60*60);
+					int hrs = (int)soloTime / (60 * 60);
+					int min = ((int)soloTime / 60) % 60;
+					int sec = (int)soloTime - (hrs * 60 * 60 + min * 60);
+					soloDate = new Date(93, 2, 2, hrs, min, sec);
 				}
 				else
 					soloTime = time;
@@ -519,13 +525,6 @@ public class TrainModelUI
 				System.out.println("Invalid argument. The number of trains must be greater than 0 and less than 10.");
 				System.exit(1);
 			}
-			
-			/*
-			TrackLayout tl = new TrackLayout();
-			tl.parseTrackDB("track_db.csv");
-			Block bYard = tl.yard;
-			// route = ...
-			*/
 			
 			// Create the test block loop.
 			ArrayList<Block> route = new ArrayList<Block>();
@@ -620,14 +619,14 @@ public class TrainModelUI
 			
 			// Setup the timer.
 			soloTime = 7*60*60+59*60+30;
+			soloDate = new Date(93, 2, 2, 7, 59, 30);
 			ActionListener taskPerformer = new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					timeTick(soloTime, 5, soloDelta);
+					timeTick(soloDate, soloDelta);
 				}
 			};
 			new javax.swing.Timer(soloDelta, taskPerformer).start();
 			
-			/* YYY
 			// Disable all "Toggle" buttons that are associated with a manual entry.
 			btnToggleManRecPower.setEnabled(false);
 			btnToggleManDesSpdLmt.setEnabled(false);
@@ -639,13 +638,12 @@ public class TrainModelUI
 			for (int i=0; i<soloNumTrains; i++)
 			{
 				Train t = trainList.get(i);
-				t.setIssetManualPower(true);
-				t.setIssetManualSpeedLimit(true);
-				t.setIssetLightsOnUseManual(true);
-				t.setIssetDoorsOpenUseManual(true);
-				t.setIssetTargetTemperatureManual(true);
+				t.issetManualPower = true;
+				t.issetManualSpeedLimit = true;
+				t.issetLightsOnUseManual = true;
+				t.issetDoorsOpenUseManual = true;
+				t.issetTargetTemperatureManual = true;
 			}
-			YYY */
 			
 			tnmUI.setSelectedId(trainList.get(0).id);
 			tnmUI.setIsPaused(tnmUI.getIsPaused());

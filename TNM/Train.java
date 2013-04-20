@@ -609,6 +609,17 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 		
 		if (!issetDoorsOpen  &&  numCrew > 0)
 		{
+			// Slope Direction
+			boolean uphill = false;
+			boolean downhill = false;
+			boolean flat = false;
+			if ((positionBlock.grade > 0.0  &&  positionDirection)  ||  (positionBlock.grade < 0.0  &&  !positionDirection))
+				uphill = true;
+			else if ((positionBlock.grade > 0.0  &&  !positionDirection)  ||  (positionBlock.grade < 0.0  &&  positionDirection))
+				downhill = true;
+			else
+				flat = true;
+			
 			// Angle of Inclination
 			double angle = 0.0;
 			if (positionBlock.grade > 0.0)
@@ -616,10 +627,9 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 			else if (positionBlock.grade < 0.0)
 				angle = Math.atan(((-1.0) * positionBlock.grade) / 100.0);
 			
-			// Received Power Command
+			// Power Command
 			if (!isSolo)
 				receivedPower = tncResponse.powerCommand;
-			
 			if (manualPower > motorPower)
 				manualPower = motorPower;
 			if (receivedPower > motorPower)
@@ -682,13 +692,13 @@ System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
 			double velBrakes = accelBrakes * period;
 			
 			// Gravity
-			double accelGravity;
-			if ((positionBlock.grade > 0.0  &&  positionDirection)  ||  (positionBlock.grade < 0.0  &&  !positionDirection))
-				accelGravity = (-1.0) * g * Math.sin(angle);	// uphill
-			else if ((positionBlock.grade > 0.0  &&  !positionDirection)  ||  (positionBlock.grade < 0.0  &&  positionDirection))
-				accelGravity = g * Math.sin(angle);				// downhill
-			else
-				accelGravity = 0.0;								// flat
+			double accelGravity = 0.0;
+			if (uphill)
+				accelGravity = (-1.0) * g * Math.sin(angle);
+			else if (downhill)
+				accelGravity = g * Math.sin(angle);
+			else if (flat)
+				accelGravity = 0.0;
 			double velGravity = accelGravity * period;
 			
 			// Current w/o Brakes & Friction
@@ -712,15 +722,47 @@ System.out.println("XXX - velBrakes\t\t"+velBrakes);
 System.out.println("XXX - velGravity\t"+velGravity);
 System.out.println("XXX - velFriction\t"+velFriction);
 			
-			// Current
+			// Current (and Limits)
 			curAccel += (accelBrakes + accelFriction);
 			curAccel = round(curAccel, 3);
 			newVelocity += (velBrakes + velFriction);
 			newVelocity = round(newVelocity, 3);
-			if (((curVelocity < 0  &&  newVelocity > 0)  ||  (curVelocity > 0  &&  newVelocity < 0))  &&  ((!issetBrakeFailure  &&  (issetEmerBrake  ||  issetServiceBrake))  ||  positionBlock.grade == 0.0))
+			if (((curVelocity < 0  &&  newVelocity > 0)  ||  (curVelocity > 0  &&  newVelocity < 0))  &&  ((!issetBrakeFailure  &&  (issetEmerBrake  ||  issetServiceBrake))  ||  flat))
+			{
+				// If the train's direction of travel has changed and (the brakes are being applied or the slope is flat), then the train should come to a complete stop.
 				curVelocity = 0.0;
+			}
+			else if (uphill  &&  newVelocity > maxSpeed + velFriction + velGravity)
+			{
+				// If the train is traveling uphill, then the final max speed of the train will actually have friction and gravity factored in.
+				curVelocity = maxSpeed + velFriction + velGravity;
+			}
+			else if (downhill  &&  curVelocity < maxSpeed + velFriction  &&  newVelocity > maxSpeed + velFriction  &&  velEngine > 0.0)
+			{
+				// If the train is traveling downhill, then there is no maximum speed of the train, but the speed from the engine must still be limited
+				// (and have friction factored in as seen in the above if statement).
+				double velEngineDifference = velEngine - (maxSpeed - curVelocity);
+				if (velEngineDifference > 0.0)
+				{
+					// If the engine speed is responsible for causing the train to exceed the max speed, then the difference must be taken away.
+					curVelocity = newVelocity - velEngineDifference;
+				}
+				else
+				{
+					// Else gravity was responsible for causing the train to exceed the max speed.
+					curVelocity = newVelocity;
+				}
+			}
+			else if (flat  &&  newVelocity > maxSpeed + velFriction)
+			{
+				// If the train is travelling on a flat block, then the final max speed of the train will actually have friction factored in.
+				curVelocity = maxSpeed + velFriction;
+			}
 			else
+			{
 				curVelocity = newVelocity;
+			}
+			curVelocity = round(curVelocity, 3);
 System.out.println("XXX - curVelocity\t"+curVelocity);
 			
 /*
