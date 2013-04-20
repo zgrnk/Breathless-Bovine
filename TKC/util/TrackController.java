@@ -1,4 +1,4 @@
-/*package TKC.util;
+package TKC.util;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -10,11 +10,11 @@ import TKM.Switch;
 
 
 
-*//**
+/**
  * 
  * @author Dominic Visco
  *
- *//*
+ */
 public class TrackController {
 
 	private boolean currentLine;
@@ -229,4 +229,4 @@ public class TrackController {
 		
 	}
 }
-*/
+
