@@ -88,7 +88,7 @@ public class CTCOffice extends PApplet {
 			showTimer.draw(this);
 			if (lastTick != timer.second()) {
 				current_clock_sec += simTimeRatio;
-				tnmUI.timeTick(current_clock_sec, simTimeRatio, 100);
+				/*tnmUI.timeTick(current_clock_sec, simTimeRatio, 100);*/
 				lastTick = timer.second();
 			}
 			trainList = tnmUI.getTrainList();

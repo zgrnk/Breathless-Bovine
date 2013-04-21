@@ -1,0 +1,46 @@
+﻿Merge branch 'master' of https://github.com/jlyons871/Breathless-Bovine
+
+Conflicts:
+	CTCOffice/CTCOffice.class
+	SSC/SSC/SSC_GUI.class
+	SSC/SSC/SSC_Listener.class
+	SSC/SSC/SSC_Test.class
+	SSC/SSC/Schedule_Viewer.class
+	SSC/SSC/Scheduler.class
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch and 'origin/master' have diverged,
+# and have 1 and 11 different commits each, respectively.
+#
+# All conflicts fixed but you are still merging.
+#   (use "git commit" to conclude merge)
+#
+# Changes to be committed:
+#
+#	modified:   CTCOffice/CTCOffice.java
+#	deleted:    MBO/.classpath
+#	deleted:    MBO/.gitignore
+#	deleted:    MBO/.project
+#	deleted:    MBO/.settings/org.eclipse.jdt.core.prefs
+#	new file:   SSC/SSC/SSC_GUI.class
+#	new file:   SSC/SSC/SSC_Listener.class
+#	new file:   SSC/SSC/SSC_Test.class
+#	new file:   SSC/SSC/Schedule_Viewer.class
+#	new file:   SSC/SSC/Scheduler.class
+#	modified:   TKC/test/.gitignore
+#	modified:   TKC/test/TrackControllerTEST.java
+#	modified:   TKC/util/ControllerUI.java
+#	modified:   TKM/Block.java
+#	modified:   TKM/TrackMapPanel.java
+#	modified:   TNM/Train.java
+#	modified:   TNM/TrainModelUI.java
+#
+
