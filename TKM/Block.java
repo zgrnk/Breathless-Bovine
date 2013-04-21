@@ -135,7 +135,7 @@ public class Block extends TrackElement
 
     public static void advanceTrain(Train train, double distance) {
         /* TODO: Implement negative distance */
-        if (distance < SMALL_DOUBLE) {
+        if (distance < -SMALL_DOUBLE) {
             distance = 0.0;
             System.out.printf("Train traveling backwards!\n");
         }
