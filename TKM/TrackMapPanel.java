@@ -9,6 +9,7 @@ import javax.imageio.*;
 import javax.swing.*;
 import java.util.AbstractList;
 import java.util.ListIterator;
+import TNM.Train;
 
 
 /* TrackMapPanel will provide a sophisticated track map */

@@ -7,7 +7,7 @@ public class Block extends TrackElement
     public static final boolean DIRECTION_REV = true; 
 
     /* For sane double comparisons */
-    public static final double SMALL_DOUBLE = 0.00001;
+    public static final double SMALL_DOUBLE = 0.000001;
 
     /* TODO: clean this up */
 
@@ -153,7 +153,7 @@ public class Block extends TrackElement
         }
 
         /* Determine the new location of the front of the train */
-        if (0. < train.positionMeters && train.positionMeters < train.positionBlock.length) {
+        if (-SMALL_DOUBLE < train.positionMeters && train.positionMeters < train.positionBlock.length) {
 
             /* Stay within current block */
             train.positionBlock.occupied = true;
