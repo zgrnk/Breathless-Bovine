@@ -45,7 +45,7 @@ public class TrackMapPanel extends JPanel {
         if (blk == lyt.getSelectedElement()) {
             g2.setPaint(Color.WHITE);
         } else if (blk.isOccupied()) {
-            g2.setPaint(Color.YELLOW)
+            g2.setPaint(Color.YELLOW);
         } else {
             g2.setPaint(Color.RED);
         }
