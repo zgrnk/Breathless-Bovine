@@ -64,23 +64,18 @@ public class TrackMapPanel extends JPanel {
         this.trainList = trainList;
     }
 
-    public void setMarker(int x, int y) {
-        this.x = x;
-        this.y = y;
-        repaint();
-    }
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         //g.drawImage(img, 0, 0, null);
 
+        /* Draw track */
         ListIterator<Block> iter = lyt.getBlocks().listIterator();
 
         while (iter.hasNext()) {
             drawTrackBlock(iter.next(), g);
         }
 
-        g.setColor(Color.BLUE);
-        g.fillOval(x-3, y-3, 6, 6);
+        /* Draw trains */
+        ListIterator<Block> iter = 
     }
 }
