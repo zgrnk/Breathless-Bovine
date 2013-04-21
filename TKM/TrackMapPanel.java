@@ -18,7 +18,7 @@ import TNM.Train;
 
 public class TrackMapPanel extends JPanel {
 
-    BufferedImage img;
+    //BufferedImage img;
     TrackLayout lyt;
     AbstractList<Train> trainList;
 
@@ -26,9 +26,9 @@ public class TrackMapPanel extends JPanel {
     private int y;
 
     public TrackMapPanel(TrackLayout lyt) {
-        try {
-            img = ImageIO.read(new File("map.png"));
-        } catch (IOException e) {}
+        //try {
+        //    img = ImageIO.read(new File("map.png"));
+        //} catch (IOException e) {}
 
         this.lyt = lyt;
         x = 0;
@@ -44,9 +44,12 @@ public class TrackMapPanel extends JPanel {
         
         if (blk == lyt.getSelectedElement()) {
             g2.setPaint(Color.WHITE);
+        } else if (blk.isOccupied()) {
+            g2.setPaint(Color.YELLOW)
         } else {
             g2.setPaint(Color.RED);
         }
+
         
         //g.drawLine(blk.mapX1, blk.mapY1, blk.mapX2, blk.mapY2);
         g2.draw(new Line2D.Double(blk.mapX1, blk.mapY1, blk.mapX2, blk.mapY2));
@@ -76,6 +79,6 @@ public class TrackMapPanel extends JPanel {
         }
 
         /* Draw trains */
-        ListIterator<Block> iter = 
+        //ListIterator<Block> iter = 
     }
 }
