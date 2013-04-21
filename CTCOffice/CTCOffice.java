@@ -75,7 +75,7 @@ public class CTCOffice extends PApplet {
 		tnmUI.setSelectedId(trainList.get(0).id);
 		tnmUI.setIsVisible(false);
 
-		// new SSC_GUI();
+		new SSC_GUI();
 
 	}
 
