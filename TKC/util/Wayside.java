@@ -19,14 +19,14 @@ import TNM.Train;
 public class Wayside {
 
 	public PLCProgram loadedPLC;
-	private Hashtable<Integer, Block> blockTable;
+	public Hashtable<Integer, Block> blockTable;
 	private ArrayList<Integer> endBlocks;
 	private	LinkedList<Block> activeBlocks;
-	private LinkedList<TrainWrapper> trainList;
+	public LinkedList<TrainWrapper> trainList;
 	
 	private CTCOffice mainCTCOffice;
 	private SafetyInfo currStateInfo;
-	private Switch	centralSwitch;
+	public Switch	centralSwitch;
 	
 	
 	/**
@@ -320,5 +320,6 @@ public class Wayside {
 	public enum ComponentType {
 		SWITCH_COMP, LIGHT_COMP;
 	}
+	
 	
 }

@@ -17,11 +17,11 @@ import TKM.Switch;
  */
 public class TrackController {
 
-	private boolean currentLine;
-	private ArrayList<Wayside> controllerList;
-	private ArrayList<Switch> switchList;
-	private ArrayList<Block> blockList;
-	private CTCOffice ctc;
+	public boolean currentLine;
+	public ArrayList<Wayside> controllerList;
+	public ArrayList<Switch> switchList;
+	public ArrayList<Block> blockList;
+	public CTCOffice ctc;
 	
 	public TrackController(ArrayList<Block> blockList, ArrayList<Switch> switchList, CTCOffice ctc) {
 		this.blockList = blockList;
