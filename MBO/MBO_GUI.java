@@ -1,5 +1,7 @@
-import java.awt.*;
+package MBO;
 
+
+import java.awt.*;
 import javax.swing.*;
 import java.util.*;
 
