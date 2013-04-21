@@ -1,5 +1,3 @@
-package SSC;
-
 import java.awt.*;
 
 import javax.swing.*;
@@ -284,7 +282,6 @@ public class SSC_GUI extends JFrame {
 		panel_right.add(lbl_export_sch, gbc_lbl_export_sch);
 
 		pack();
-		setVisible(true);
 
 		SSC_Listener sscListener = new SSC_Listener(this);
 		btn_start_time.addActionListener(sscListener);
@@ -315,6 +312,7 @@ public class SSC_GUI extends JFrame {
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-
+		
+		setVisible(true);
 	}
 }

@@ -1,5 +1,3 @@
-package MBO;
-
 
 
 public class MBO_Calculator{

@@ -1,4 +1,3 @@
 TRAIN	LINE	DISPATCH	ROUTE
-G0		green	06:57		test,test,test
-G1		green	06:57		test,test,test
-G2		green	06:57		test,test,test
+G0		green	04:37		test,test,test
+G1		green	04:37		test,test,test

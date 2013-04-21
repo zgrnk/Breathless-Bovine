@@ -1,6 +1,5 @@
-package MBO;
-
 import java.awt.*;
+
 import javax.swing.*;
 import java.util.*;
 
@@ -324,8 +323,6 @@ public class MBO_GUI extends JFrame{
 		panel_right.add(lbl_toggle_speed, gbc_lbl_toggle_speed);
 
 		pack();
-		setLocation(new Point(100, 100));
-		setVisible(true);
 
 		gpsLabels = new ArrayList<JLabel>();
 		gpsLabels.add(lbl_current_block_val);
@@ -343,5 +340,12 @@ public class MBO_GUI extends JFrame{
 		btn_toggle_speed.addActionListener(mboListener);
 		btn_manual_authority.addActionListener(mboListener);
 		btn_manual_speed.addActionListener(mboListener);
+		
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		
+		setVisible(true);
+
 	}
 }

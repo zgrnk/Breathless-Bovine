@@ -1,5 +1,3 @@
-package SSC;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -17,8 +15,6 @@ public class SSC_Listener implements ActionListener{
 	public Scheduler redScheduler = new Scheduler();
 	public Schedule_Viewer schedule_viewer;
 	
-
-	//public SSC_Listener(){};
 
 	public SSC_Listener(SSC_GUI mbo_GUI) {
 		this.ssc_GUI = mbo_GUI;
@@ -269,7 +265,12 @@ public class SSC_Listener implements ActionListener{
 
 
 	public void viewEngineerSch(){
-		viewSchedule("Red Line Train Schedule", ssc_GUI.lbl_engineer_sch, this.greenScheduler.engineerSch);
+		ArrayList<String> combinedEngSch = new ArrayList<String>(this.greenScheduler.engineerSch);
+		for(int i=1; i<this.redScheduler.engineerSch.size(); i++){
+			combinedEngSch.add(redScheduler.engineerSch.get(i));
+		}
+		
+		viewSchedule("Engineer Schedule", ssc_GUI.lbl_engineer_sch, combinedEngSch);
 	}
 	
 	
@@ -322,8 +323,6 @@ public class SSC_Listener implements ActionListener{
 	}
 
 
-	
-	
 	
 	public void exportSchedules(){
 		File greenThroughputSch = new File("GreenThroughputSchedule.txt");

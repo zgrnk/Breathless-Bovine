@@ -1,5 +1,3 @@
-package MBO;
-
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.Timer;
