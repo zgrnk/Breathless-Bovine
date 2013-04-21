@@ -153,7 +153,7 @@ public class Block extends TrackElement
         }
 
         /* Determine the new location of the front of the train */
-        if (-SMALL_DOUBLE < train.positionMeters && train.positionMeters < train.positionBlock.length) {
+        if (-SMALL_DOUBLE < train.positionMeters && train.positionMeters < (train.positionBlock.length + SMALL_DOUBLE)) {
 
             /* Stay within current block */
             train.positionBlock.occupied = true;
