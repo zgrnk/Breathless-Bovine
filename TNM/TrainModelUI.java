@@ -528,7 +528,7 @@ public class TrainModelUI
 			
 			// Create the test block loop.
 			ArrayList<Block> route = new ArrayList<Block>();
-			Block bYard = new Block(0, "A", "I", 100.0, 0.0, 5.0, false, false, true, false, false, "", false, false, false);
+			Block bYard = new Block(0, "A", "I", 0.0, 0.0, 5.0, false, false, true, false, false, "", false, false, false);
 			Block b01 = new Block(1, "B", "II", 500.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
 			Block b02 = new Block(2, "C", "II", 500.0, -22.2, 1.0, false, false, false, false, false, "", false, false, false);
 			Block b03 = new Block(3, "D", "II", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
@@ -618,8 +618,8 @@ public class TrainModelUI
 			tnmUI.setTrainList(trainList);
 			
 			// Setup the timer.
-			soloTime = 7*60*60+59*60+30;
-			soloDate = new Date(93, 2, 2, 7, 59, 30);
+			soloTime = 7*60*60+59*60+55;
+			soloDate = new Date(93, 2, 2, 7, 59, 55);
 			ActionListener taskPerformer = new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					timeTick(soloDate, soloDelta);

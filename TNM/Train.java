@@ -835,6 +835,8 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 			Block.advanceTrain(this, curVelocity * period);
 			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
 		}
+System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
+System.out.println("XXX - positionMeters\t"+positionMeters);
 		
 		// Lights
 		if (issetLightsOnUseManual  ||  isSolo)
