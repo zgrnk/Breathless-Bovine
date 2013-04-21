@@ -111,6 +111,10 @@ public class Block extends TrackElement
         return null;
     }
 
+    public Block getNext(boolean direction) {
+        return getNext(direction, true);
+    }
+
     public Block getNext(boolean direction, boolean dryRun) {
 
         Block dest = null;
@@ -153,12 +157,12 @@ public class Block extends TrackElement
         }
 
         /* Determine the new location of the front of the train */
-        if (-SMALL_DOUBLE < train.positionMeters && train.positionMeters < (train.positionBlock.length + SMALL_DOUBLE)) {
+        if ((-SMALL_DOUBLE < train.positionMeters) && (train.positionMeters < (train.positionBlock.length + SMALL_DOUBLE))) {
 
             /* Stay within current block */
             train.positionBlock.occupied = true;
 
-            /* Have we become fully inside this block? */
+            /* Have the train become fully inside this block? */
             if ((
                     train.positionDirection == DIRECTION_FWD &&
                     train.positionMeters > train.length
