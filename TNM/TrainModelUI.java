@@ -47,6 +47,7 @@ public class TrainModelUI
 	// Main JFrames
 	protected static JFrame dynamicWindow;
 	protected static JFrame staticWindow;
+	protected static JFrame mapWindow;
 	Border borderline = BorderFactory.createLineBorder(Color.black, 2);
 	
 	// dynamicWindow JButtons
@@ -480,6 +481,8 @@ public class TrainModelUI
 	{
 		if (!isPaused)
 		{
+			
+					mapWindow.repaint();
 			refreshUI += delta;
 			double time = date.getHours()*60*60+date.getMinutes()*60+date.getSeconds();
 			
@@ -527,34 +530,34 @@ public class TrainModelUI
 			}
 			
 			// Create the test block loop.
-			ArrayList<Block> route = new ArrayList<Block>();
-			Block bYard = new Block(0, "A", "I", 0.0, 0.0, 5.0, false, false, true, false, false, "", false, false, false);
-			Block b01 = new Block(1, "B", "II", 500.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b02 = new Block(2, "C", "II", 500.0, -22.2, 1.0, false, false, false, false, false, "", false, false, false);
-			Block b03 = new Block(3, "D", "II", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b04 = new Block(4, "E", "II", 500.0, 11.1, 30.0, false, true, false, false, false, "", false, false, false);
-			Block b05 = new Block(5, "F", "III", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b06 = new Block(6, "G", "III", 100.0, 0.0, 5.0, false, false, false, true, false, "Alpha", false, false, false);
-			Block b07 = new Block(7, "H", "III", 500.0, -11.1, 30.0, false, false, false, false, false, "", false, false, false);
-			Block b08 = new Block(8, "I", "III", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b09 = new Block(9, "J", "IV", 500.0, 22.2, 1.0, false, false, false, false, false, "", false, false, false);
-			Block b10 = new Block(10, "K", "IV", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b11 = new Block(11, "L", "IV", 100.0, 0.0, 5.0, false, false, false, true, false, "Beta", false, false, false);
-			Block b12 = new Block(12, "M", "IV", 50.0, 11.1, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b13 = new Block(13, "N", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b14 = new Block(14, "O", "V", 50.0, -11.1, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b15 = new Block(15, "P", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-			Block b16 = new Block(16, "Q", "V", 100.0, 0.0, 5.0, false, false, false, true, false, "Gamma", false, false, false);
-			Block b17 = new Block(17, "R", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
+			/*
+			Block bYard = new Block(0, "A", "I", 0.0, 0.0, 5.0, true, false, true, false, false, "", false, false, false);
+			Block b01 = new Block(1, "B", "II", 500.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b02 = new Block(2, "C", "II", 500.0, -22.2, 1.0, true, false, false, false, false, "", false, false, false);
+			Block b03 = new Block(3, "D", "II", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b04 = new Block(4, "E", "II", 500.0, 11.1, 30.0, true, true, false, false, false, "", false, false, false);
+			Block b05 = new Block(5, "F", "III", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b06 = new Block(6, "G", "III", 100.0, 0.0, 5.0, true, false, false, true, false, "Alpha", false, false, false);
+			Block b07 = new Block(7, "H", "III", 500.0, -11.1, 30.0, true, false, false, false, false, "", false, false, false);
+			Block b08 = new Block(8, "I", "III", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b09 = new Block(9, "J", "IV", 500.0, 22.2, 1.0, true, false, false, false, false, "", false, false, false);
+			Block b10 = new Block(10, "K", "IV", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b11 = new Block(11, "L", "IV", 100.0, 0.0, 5.0, true, false, false, true, false, "Beta", false, false, false);
+			Block b12 = new Block(12, "M", "IV", 50.0, 11.1, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b13 = new Block(13, "N", "V", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b14 = new Block(14, "O", "V", 50.0, -11.1, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b15 = new Block(15, "P", "V", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
+			Block b16 = new Block(16, "Q", "V", 100.0, 0.0, 5.0, true, false, false, true, false, "Gamma", false, false, false);
+			Block b17 = new Block(17, "R", "V", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
 			
 			bYard.connect(b17, b01);
-			b01.connect(bYard, b02);
+			b01.connect(bYard, b07);
 			b02.connect(b01, b03);
 			b03.connect(b02, b04);
 			b04.connect(b03, b05);
 			b05.connect(b04, b06);
 			b06.connect(b05, b07);
-			b07.connect(b08, b06);
+			b07.connect(b08, b01);
 			b08.connect(b09, b07);
 			b09.connect(b10, b08);
 			b10.connect(b11, b09);
@@ -566,6 +569,7 @@ public class TrainModelUI
 			b16.connect(b15, b17);
 			b17.connect(bYard, b16);
 			
+			ArrayList<Block> route = new ArrayList<Block>();
 			route.add(bYard);
 			route.add(b01);
 			route.add(b02);
@@ -603,6 +607,17 @@ public class TrainModelUI
 			route.add(b16);
 			route.add(b17);
 			route.add(bYard);
+			*/
+			TrackLayout lo = new TrackLayout();
+			lo.parseTrackDB("track_db.csv");
+			Block bYard = lo.yard;
+			ArrayList<Block> route = new ArrayList<Block>();
+			mapWindow = new JFrame();
+			mapWindow.setTitle("TKM");
+			mapWindow.setSize(1300, 700);
+			mapWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+			mapWindow.add(new TrackMapPanel(lo));
+			mapWindow.setVisible(true);
 			
 			// Create the trains.
 			trainList = new ArrayList<Train>();

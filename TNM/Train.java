@@ -130,7 +130,7 @@ public class Train
 		this.positionBlock = positionBlock;
 		this.positionBlockTail = positionBlock;
 		positionMeters = 0.0;
-		positionDirection = true;
+		positionDirection = Block.DIRECTION_FWD;
 		postedSpeedLimit = positionBlock.speedLimit;
 		issetSignalPickupFailure = false;
 		issetEngineFailure = false;
@@ -150,7 +150,7 @@ public class Train
 		announcement = "";
 		
 		// Initialize the following other values.
-		gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
+		gps = new GPS(positionBlock, (int)positionMeters, curVelocity, (positionDirection==Block.DIRECTION_FWD));
 		footPrint = 0;
 		nextTrainId = 0;
 		this.line = line;
@@ -613,12 +613,15 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 			boolean uphill = false;
 			boolean downhill = false;
 			boolean flat = false;
-			if ((positionBlock.grade > 0.0  &&  positionDirection)  ||  (positionBlock.grade < 0.0  &&  !positionDirection))
+			if ((positionBlock.grade > 0.0  &&  positionDirection==Block.DIRECTION_FWD)  ||  (positionBlock.grade < 0.0  &&  positionDirection!=Block.DIRECTION_FWD))
 				uphill = true;
-			else if ((positionBlock.grade > 0.0  &&  !positionDirection)  ||  (positionBlock.grade < 0.0  &&  positionDirection))
+			else if ((positionBlock.grade > 0.0  &&  positionDirection!=Block.DIRECTION_FWD)  ||  (positionBlock.grade < 0.0  &&  positionDirection==Block.DIRECTION_FWD))
 				downhill = true;
 			else
 				flat = true;
+System.out.println("XXX - uphill\t\t"+(uphill));
+System.out.println("XXX - downhill\t\t"+(downhill));
+System.out.println("XXX - flat\t\t"+(flat));
 			
 			// Angle of Inclination
 			double angle = 0.0;
@@ -727,7 +730,7 @@ System.out.println("XXX - velFriction\t"+velFriction);
 			curAccel = round(curAccel, 3);
 			newVelocity += (velBrakes + velFriction);
 			newVelocity = round(newVelocity, 3);
-			if (((curVelocity < 0  &&  newVelocity > 0)  ||  (curVelocity > 0  &&  newVelocity < 0))  &&  ((!issetBrakeFailure  &&  (issetEmerBrake  ||  issetServiceBrake))  ||  flat))
+			if (((curVelocity < 0.0  &&  newVelocity > 0.0)  ||  (curVelocity > 0.0  &&  newVelocity < 0.0))  &&  ((!issetBrakeFailure  &&  (issetEmerBrake  ||  issetServiceBrake))  ||  flat))
 			{
 				// If the train's direction of travel has changed and (the brakes are being applied or the slope is flat), then the train should come to a complete stop.
 				curVelocity = 0.0;
@@ -832,8 +835,10 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 			positionMeters = round(positionMeters, 3);
 			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
 */
+System.out.println("XXX - this.positionDirection\t"+this.positionDirection);
+System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
 			Block.advanceTrain(this, curVelocity * period);
-			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
+			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, (positionDirection==Block.DIRECTION_FWD));
 		}
 System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
 System.out.println("XXX - positionMeters\t"+positionMeters);
