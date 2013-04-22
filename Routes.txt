@@ -1,0 +1,2 @@
+TRAIN	LINE	DISPATCH	ROUTE
+G0		green	20:17		[list of blocks]
