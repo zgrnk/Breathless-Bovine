@@ -54,7 +54,6 @@ public class TrainModelUI {
 	// Main JFrames
 	protected static JFrame dynamicWindow;
 	protected static JFrame staticWindow;
-	//protected static JFrame mapWindow;				// XXX
 	Border borderline = BorderFactory.createLineBorder(Color.black, 2);
 	
 	// dynamicWindow JButtons
@@ -512,10 +511,6 @@ public class TrainModelUI {
 	 */
 	public static void timeTick(Date date, int delta) {
 		if (!isPaused) {
-			//if (isSolo){
-			//	mapWindow.repaint();	// XXX
-			//}
-			
 			refreshUI += delta;
 			double time = date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds();
 			
@@ -642,54 +637,59 @@ public class TrainModelUI {
 			route.add(b16);
 			route.add(b17);
 			route.add(bYard);
-			/*
-			TrackLayout lo = new TrackLayout();	// XXX
-			lo.parseTrackDB("track_db.csv");	// XXX
-			Block bYard = lo.yard;	// XXX
-			ArrayList<Block> route = new ArrayList<Block>();	// XXX
-			mapWindow = new JFrame();	// XXX
-			mapWindow.setTitle("TKM");	// XXX
-			mapWindow.setSize(500, 653);	// XXX
-			mapWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	// XXX
-			mapWindow.add(new TrackMapPanel(lo));	// XXX
-			mapWindow.setVisible(true);	// XXX
-			*/
 			
 			/*
-			 * Create the trains.
+ 			 * Create the trains.
+			 * The first will depart at 8:00 AM, the second at 8:30 AM, the third at 9:00 AM, etc.
 			 * The first will depart at 8:00 AM, the second at 8:15 AM, the third at 8:30 AM, etc.
-			 * All will have break time set to 4 hours after their departure times.
-			 */
-			trainList = new ArrayList<Train>();
-			idArray = new String[soloNumTrains];
-			for (int i = 0; i < soloNumTrains; i++) {
+ 			 * All will have break time set to 4 hours after their departure times.
+ 			 */
+ 			trainList = new ArrayList<Train>();
+ 			idArray = new String[soloNumTrains];
+ 			for (int i = 0; i < soloNumTrains; i++) {
 				trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), 
-						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
-				idArray[i] = new String("T" + (i + 1));
+ 						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
+ 				idArray[i] = new String("T" + (i + 1));
+ 			}
+			
+			// Create the UI.
+			TrainModelUI tnmUI = new TrainModelUI();
+			tnmUI.setTrainList(trainList);
+			
+			// Setup the timer.
+			soloTime = 7 * 60 * 60 + 59 * 60 + 55;
+			soloDate = new Date(93, 2, 2, 7, 59, 55);
+			ActionListener taskPerformer = new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					timeTick(soloDate, soloDelta);
+				}
+			};
+			new javax.swing.Timer(20, taskPerformer).start();
+			
+			// Disable all "Toggle" buttons that are associated with a manual entry.
+			btnToggleManRecPower.setEnabled(false);
+			btnToggleManDesSpdLmt.setEnabled(false);
+			btnToggleManLights.setEnabled(false);
+			btnToggleManDoors.setEnabled(false);
+			btnToggleManTarTemperature.setEnabled(false);
+			
+			// Make it so only manual values are used.
+			for (int i = 0; i < soloNumTrains; i++) {
+				Train t = trainList.get(i);
+				t.issetManualPower = true;
+				t.issetManualSpeedLimit = true;
+				t.issetLightsOnUseManual = true;
+				t.issetDoorsOpenUseManual = true;
+				t.issetTargetTemperatureManual = true;
 			}
-		};
-		new javax.swing.Timer(20, taskPerformer).start();
-		
-		// Disable all "Toggle" buttons that are associated with a manual entry.
-		btnToggleManRecPower.setEnabled(false);
-		btnToggleManDesSpdLmt.setEnabled(false);
-		btnToggleManLights.setEnabled(false);
-		btnToggleManDoors.setEnabled(false);
-		btnToggleManTarTemperature.setEnabled(false);
-		
-		// Make it so only manual values are used.
-		for (int i = 0; i < trainList.size(); i++) {
-			Train t = trainList.get(i);
-			t.issetManualPower = true;
-			t.issetManualSpeedLimit = true;
-			t.issetLightsOnUseManual = true;
-			t.issetDoorsOpenUseManual = true;
-			t.issetTargetTemperatureManual = true;
+			
+			tnmUI.setSelectedId(trainList.get(0).id);
+			tnmUI.setIsPaused(tnmUI.getIsPaused());
+			tnmUI.setIsVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+			JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
 		}
-		
-		tnmUI.setSelectedId(trainList.get(0).id);
-		tnmUI.setIsPaused(true);
-		tnmUI.setIsVisible(true);
 	}
 	
 	

@@ -202,7 +202,7 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 					|| ((positionBlock.grade < 0.0) && (positionDirection != Block.DIRECTION_FWD))) {
 				uphill = true;
 			} else if (((positionBlock.grade > 0.0) && (positionDirection != Block.DIRECTION_FWD)) 
-					|| ((positionBlock.grade < 0.0) && positionDirection == Block.DIRECTION_FWD))) {
+					|| ((positionBlock.grade < 0.0) && (positionDirection == Block.DIRECTION_FWD))) {
 				downhill = true;
 			} else {
 				flat = true;
