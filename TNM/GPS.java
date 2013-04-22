@@ -1,17 +1,22 @@
 /**
- * NSECS-TNM & MBO
+ * @class GPS
  * 
- * This file contains the main container class which holds the response from a 
- *   train to the MBO/GPS after each timeTick.
+ * @version 1.0
  * 
- * @author Chris Paskie 
- * @version 04/25/2013
-*/
+ * @date 04/25/2013
+ * 
+ * @author Chris Paskie
+ */
 
 
 package TNM;
+
 import TKM.*;
 
+/**
+ * This file contains the main container class which holds the response from a 
+ * train to the MBO/GPS after each timeTick.
+ */
 public class GPS {
 	public Block block;					// Block currently occupied by the front of the train.
 	public int metersIntoBlock;			// Position meters within block (number line reference).
