@@ -512,15 +512,9 @@ public class TrainModelUI {
 	 */
 	public static void timeTick(Date date, int delta) {
 		if (!isPaused) {
-<<<<<<< HEAD
 			//if (isSolo){
 			//	mapWindow.repaint();	// XXX
 			//}
-=======
-			if (isSolo){
-				mapWindow.repaint();
-			}
->>>>>>> 2a9c6b6c3ee8aed898ebe1a46da872112aac4deb
 			
 			refreshUI += delta;
 			double time = date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds();
@@ -557,7 +551,6 @@ public class TrainModelUI {
 	 * Called when run from the command line.  The train module will run (mostly) individually.
 	 */
 	public static void main(String[] args) {
-<<<<<<< HEAD
 		try {
 			isSolo = true;
 			
@@ -673,74 +666,10 @@ public class TrainModelUI {
 				trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), 
 						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
 				idArray[i] = new String("T" + (i + 1));
-=======
-		isSolo = true;
-		
-		// Get the number of trains.
-		if (args.length != 1) {
-			System.out.println("Invalid number of arguments.");
-			System.exit(1);
-		}
-		soloNumTrains = Integer.parseInt(args[0], 10);
-		if (soloNumTrains < 1  ||  soloNumTrains > 9) {
-			System.out.println("Invalid argument. The number of trains must be greater than 0 and less than 10.");
-			System.exit(1);
-		}
-		
-
-		
-		TrainModelUI tnmUI = new TrainModelUI();
-		tnmUI.setTrainList(trainList);
-		
-		TrackLayout lo = new TrackLayout();	// XXX
-		lo.parseTrackDB("track_db.csv");	// XXX
-		Block bYard = lo.yard;	// XXX
-		ArrayList<Block> route = new ArrayList<Block>();	// XXX
-		mapWindow = new JFrame();	// XXX
-		mapWindow.setTitle("TKM");	// XXX
-		mapWindow.setSize(500, 653);	// XXX
-		mapWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	// XXX
-		mapWindow.add(new TrackMapPanel(lo));	// XXX
-		mapWindow.setVisible(true);	// XXX
-		
-		// Create the trains.
-		// The first will depart at 8:00 AM, the second at 8:30 AM, the third at 9:00 AM, etc.
-		// All will have break time set to 4 hours after their departure times.
-		trainList = new ArrayList<Train>();
-		idArray = new String[soloNumTrains];
-		for (int i = 0; i < soloNumTrains; i++) {
-			trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), 
-					route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
-			idArray[i] = new String("T" + (i + 1));
-		}		
-		
-		lo.setTrainList(trainList);
-		
-		// Create the UI.
-		// Setup the timer.
-		soloTime = 7 * 60 * 60 + 59 * 60 + 55;
-		soloDate = new Date(93, 2, 2, 7, 59, 55);
-		ActionListener taskPerformer = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				timeTick(soloDate, soloDelta);
->>>>>>> 2a9c6b6c3ee8aed898ebe1a46da872112aac4deb
 			}
 		};
 		new javax.swing.Timer(20, taskPerformer).start();
 		
-<<<<<<< HEAD
-=======
-		tnmUI.setSelectedId(trainList.get(0).id);
-		tnmUI.setIsPaused(true);
-		tnmUI.setIsVisible(true);
-		
-		tnmUI.run();
-	}
-	
-	public void run(){
-		isSolo = false;
-
->>>>>>> 2a9c6b6c3ee8aed898ebe1a46da872112aac4deb
 		// Disable all "Toggle" buttons that are associated with a manual entry.
 		btnToggleManRecPower.setEnabled(false);
 		btnToggleManDesSpdLmt.setEnabled(false);
@@ -749,12 +678,6 @@ public class TrainModelUI {
 		btnToggleManTarTemperature.setEnabled(false);
 		
 		// Make it so only manual values are used.
-<<<<<<< HEAD
-=======
-		
-		//chris i changed for loop iteration length from soloNumTrains
-		//sincerely jake 
->>>>>>> 2a9c6b6c3ee8aed898ebe1a46da872112aac4deb
 		for (int i = 0; i < trainList.size(); i++) {
 			Train t = trainList.get(i);
 			t.issetManualPower = true;
@@ -764,14 +687,9 @@ public class TrainModelUI {
 			t.issetTargetTemperatureManual = true;
 		}
 		
-<<<<<<< HEAD
 		tnmUI.setSelectedId(trainList.get(0).id);
 		tnmUI.setIsPaused(true);
 		tnmUI.setIsVisible(true);
-=======
-
-
->>>>>>> 2a9c6b6c3ee8aed898ebe1a46da872112aac4deb
 	}
 	
 	
