@@ -648,7 +648,7 @@ public class TrainModelUI {
  			idArray = new String[soloNumTrains];
  			for (int i = 0; i < soloNumTrains; i++) {
 				trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), 
- 						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
+ 						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 15 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
  				idArray[i] = new String("T" + (i + 1));
  			}
 			

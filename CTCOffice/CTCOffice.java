@@ -380,9 +380,9 @@ public class CTCOffice extends PApplet {
 		// Create the trains.
 		for (i = 0; i < numTrains; i++) {
 			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
-					(8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), redRoute,
+					(8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), redRoute,
 					new Engineer(true, false, 0.0,
-							(8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60)
+							(8 * 60 * 60 + i * 15 * 60 + 4 * 60 * 60)
 									% (24 * 60 * 60)), bYard);
 			trainList.add(tempTrain);
 			Integer tempInt = new Integer(i + 1);
