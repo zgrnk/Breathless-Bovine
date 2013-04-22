@@ -1,5 +1,13 @@
-package TNM;
-import TKM.*;
+/**
+ * NSECS-TNM
+ * 
+ * This file contains the main class(es) used for the train module GUI.
+ * It can created by the CTC in which case it will run with other modules, 
+ *   or it may be run solo from the command line.
+ * 
+ * @author Chris Paskie 
+ * @version 04/25/2013
+*/
 
 /*
 XXX
@@ -13,9 +21,8 @@ XXX
 */
 
 
-
-
-
+package TNM;
+import TKM.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -24,30 +31,25 @@ import javax.swing.*;
 import javax.swing.BorderFactory; 
 import javax.swing.border.Border;
 
-
-
-
-
-public class TrainModelUI
-{
-	private static boolean isSolo = false;
+public class TrainModelUI {
+	private static boolean isSolo = false;			// Is the train module being run individually?
 	private static int soloNumTrains = 0;
 	private static double soloTime = 0;
-	private static Date soloDate = new Date();
-	private static int soloDelta = 100;
-	private static int refreshUI = 0;
+	private static Date soloDate = new Date();		// Used with soloTime when TNM run solo.
+	private static int soloDelta = 100;				// Timestep in milliseconds.
+	private static int refreshUI = 0;				// Used to refresh GUI only once a second.
 	
 	protected static ArrayList<Train> trainList;
-	protected static int selectedId;
-	protected static String[] idArray;
+	protected static int selectedId;				// ID of the currently selected train.
+	protected static String[] idArray;				// Contains string IDs of trains.
 	protected static boolean isPaused;
-	protected static boolean isVisible;
-	protected static boolean isVisibleStatic;
+	protected static boolean isVisible;				// Is the main window visible?
+	protected static boolean isVisibleStatic;		// Is the static values window visible?
 	
 	// Main JFrames
 	protected static JFrame dynamicWindow;
 	protected static JFrame staticWindow;
-	protected static JFrame mapWindow;
+	protected static JFrame mapWindow;				// XXX
 	Border borderline = BorderFactory.createLineBorder(Color.black, 2);
 	
 	// dynamicWindow JButtons
@@ -118,19 +120,13 @@ public class TrainModelUI
 	protected static JLabel jlMaxStandingCount;
 	protected static JLabel jlMaxCrewCount;
 	
-	
-	
-	public TrainModelUI()
-	{
-		try
-		{
+	public TrainModelUI() {
+		try {
 			JPanel emptyJPanel = new JPanel();
-			emptyJPanel.add(new JLabel("                                                                                                                                                                                                                                                                                                                                           "));
+			emptyJPanel.add(new JLabel("                                                                                                                                                                                                                                                                                                                                                          "));
 			isPaused = true;
 			
 			
-			
-			//////////////////////////////////////////////////////////////////////////////////////////////////
 			// Setup the dynamicWindow.
 			
 			btnShowStaticValues = buildJButton("Show Static Values");
@@ -269,8 +265,6 @@ public class TrainModelUI
 			dynamicWindow.setVisible(isVisible);
 			
 			
-			
-			//////////////////////////////////////////////////////////////////////////////////////////////////
 			// Setup the staticWindow.
 			
 			jlLength = new JLabel("", JLabel.CENTER);
@@ -328,24 +322,20 @@ public class TrainModelUI
 			staticWindow.add(staticJSP);
 			isVisibleStatic = false;
 			staticWindow.setVisible(isVisibleStatic);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace(System.err);
 			JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
-	public JButton buildJButton(String text)
-	{
+	public JButton buildJButton(String text) {
 		JButton jb = new JButton(text);
 		jb.addActionListener(new TrainModelButtonListener());
 		jb.setEnabled(true);
 		return jb;
 	}
 	
-	public JPanel buildJPanel(JComponent jc)
-	{
+	public JPanel buildJPanel(JComponent jc) {
 		JPanel jp = new JPanel(new GridLayout(1, 1), false);
 		jp.add(jc);
 		jp.setBorder(borderline);
@@ -356,68 +346,60 @@ public class TrainModelUI
 		return container;
 	}
 	
-	public ArrayList<Train> getTrainList()
-	{
+	public ArrayList<Train> getTrainList() {
 		return trainList;
 	}
 	
-	public boolean getIsPaused()
-	{
+	public boolean getIsPaused() {
 		return isPaused;
 	}
 	
-	public boolean getIsVisible()
-	{
+	public boolean getIsVisible() {
 		return isVisible;
 	}
 	
-	public boolean getIsVisibleStatic()
-	{
+	public boolean getIsVisibleStatic() {
 		return isVisibleStatic;
 	}
 	
-	public void setTrainList(ArrayList<Train> trainList)
-	{
+	public void setTrainList(ArrayList<Train> trainList) {
 		this.trainList = trainList;
-		if (trainList != null  &&  trainList.size() > 0)
-		{
+		if (trainList != null  &&  trainList.size() > 0) {
 			idArray = new String[trainList.size()];
-			for (int i=0; i<trainList.size(); i++)
+			for (int i = 0; i < trainList.size(); i++) {
 				idArray[i] = new String(trainList.get(i).stringId);
-		}
-		else
+			}
+		} else {
 			idArray = null;
+		}
 	}
 	
-	public void setIsPaused(boolean isPaused)
-	{
+	public void setIsPaused(boolean isPaused) {
 		this.isPaused = isPaused;
-		if (isPaused)
+		if (isPaused) {
 			btnPauseResume.setText("Resume");
-		else
+		} else {
 			btnPauseResume.setText("Pause");
+		}
 	}
 	
-	public void setIsVisible(boolean isVisible)
-	{
+	public void setIsVisible(boolean isVisible) {
 		this.isVisible = isVisible;
 		dynamicWindow.setVisible(isVisible);
 	}
 	
-	public void setIsVisibleStatic(boolean isVisibleStatic)
-	{
+	public void setIsVisibleStatic(boolean isVisibleStatic) {
 		this.isVisibleStatic = isVisibleStatic;
 		staticWindow.setVisible(isVisibleStatic);
 	}
 	
-	public static void setSelectedId(int selId)
-	{
+	public static void setSelectedId(int selId) {
 		selectedId = selId;
 		dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   " + trainList.get(selectedId-1).stringId + ")");
 		staticWindow.setTitle("Train Model (Chris Paskie)   -   Static Values   (Train ID:   " + trainList.get(selectedId-1).stringId + ")");
-		int hrs = (int)soloTime / (60 * 60);
-		int min = ((int)soloTime / 60) % 60;
-		int sec = (int)soloTime - (hrs * 60 * 60 + min * 60);
+		int hrs = (int) soloTime / (60 * 60);
+		int min = ((int) soloTime / 60) % 60;
+		int sec = (int) soloTime - (hrs * 60 * 60 + min * 60);
 		jlTime.setText((hrs < 10 ? "0" : "") + hrs + ":" + (min < 10 ? "0" : "") + min + ":" + (sec < 10 ? "0" : "") + sec);
 		
 		jlCurVel.setText("" + trainList.get(selectedId-1).curVelocity);
@@ -432,7 +414,9 @@ public class TrainModelUI
 		jlTotalMass.setText("" + trainList.get(selectedId-1).totalMass);
 		jlPassengerCount.setText("" + trainList.get(selectedId-1).numPassengers);
 		jlCrewCount.setText("" + trainList.get(selectedId-1).numCrew);
-		jlPosition.setText("" + ((trainList.get(selectedId-1).issetSignalPickupFailure) ? "???????" : ("[ " + trainList.get(selectedId-1).positionBlock.id + " , " + trainList.get(selectedId-1).positionMeters + " ]")));
+		jlPosition.setText("" + ((trainList.get(selectedId-1).issetSignalPickupFailure) 
+				? "???????" 
+				: ("[ " + trainList.get(selectedId-1).positionBlock.id + " , " + trainList.get(selectedId-1).positionMeters + " ]")));
 		jlToggleSignalPickupFailure.setText("" + trainList.get(selectedId-1).issetSignalPickupFailure);
 		jlToggleEngineFailure.setText("" + trainList.get(selectedId-1).issetEngineFailure);
 		jlToggleBrakeFailure.setText("" + trainList.get(selectedId-1).issetBrakeFailure);
@@ -466,43 +450,44 @@ public class TrainModelUI
 		jlMaxCrewCount.setText("" + trainList.get(selectedId-1).maxCapacityCrew);
 	}
 	
-	public ArrayList<Train> getTrainsInBlock(int id)
-	{
+	public ArrayList<Train> getTrainsInBlock(int id) {
+		// Return a list containing all trains which are in the Block with given id.
 		ArrayList<Train> tempAL = new ArrayList<Train>();
-		for (int i=0; i<trainList.size(); i++)
-		{
-			if (trainList.get(i).id == id)
+		for (int i = 0; i < trainList.size(); i++) {
+			if (trainList.get(i).id == id) {
 				tempAL.add(trainList.get(i));
+			}
 		}
 		return tempAL;
 	}
 	
-	public static void timeTick(Date date, int delta)
-	{
-		if (!isPaused)
-		{
-			
-					mapWindow.repaint();
+	public static void timeTick(Date date, int delta) {
+		if (!isPaused) {
+			mapWindow.repaint();	// XXX
 			refreshUI += delta;
-			double time = date.getHours()*60*60+date.getMinutes()*60+date.getSeconds();
+			double time = date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds();
 			
-			for (int i=0; i<trainList.size(); i++)
-				trainList.get(i).timeTick(time, ((double)(delta))/1000.0, isSolo);
+			for (int i = 0; i < trainList.size(); i++) {
+				// Update the data for each train.
+				trainList.get(i).timeTick(time, ((double) (delta)) / 1000.0, isSolo);
+			}
 			
-			if (refreshUI >= 1000)
-			{
-				if (isSolo)
-				{
+			if (refreshUI >= 1000) {
+				// Refresh the train module GUI.
+				
+				if (isSolo) {
+					// If TNM is running solo, figure out the new time.
 					soloTime += 1;
-					if (soloTime >= 24*60*60)
-						soloTime = soloTime % (24*60*60);
-					int hrs = (int)soloTime / (60 * 60);
-					int min = ((int)soloTime / 60) % 60;
-					int sec = (int)soloTime - (hrs * 60 * 60 + min * 60);
+					if (soloTime >= 24 * 60 * 60) {
+						soloTime = soloTime % (24 * 60 * 60);
+					}
+					int hrs = (int) soloTime / (60 * 60);
+					int min = ((int) soloTime / 60) % 60;
+					int sec = (int) soloTime - (hrs * 60 * 60 + min * 60);
 					soloDate = new Date(93, 2, 2, hrs, min, sec);
-				}
-				else
+				} else {
 					soloTime = time;
+				}
 				
 				refreshUI = refreshUI % 1000;
 				setSelectedId(selectedId);
@@ -510,21 +495,17 @@ public class TrainModelUI
 		}
 	}
 	
-	public static void main(String[] args)
-	{
-		try
-		{
+	public static void main(String[] args) {
+		try {
 			isSolo = true;
 			
 			// Get the number of trains.
-			if (args.length != 1)
-			{
+			if (args.length != 1) {
 				System.out.println("Invalid number of arguments.");
 				System.exit(1);
 			}
 			soloNumTrains = Integer.parseInt(args[0], 10);
-			if (soloNumTrains < 1  ||  soloNumTrains > 9)
-			{
+			if (soloNumTrains < 1  ||  soloNumTrains > 9) {
 				System.out.println("Invalid argument. The number of trains must be greater than 0 and less than 10.");
 				System.exit(1);
 			}
@@ -608,24 +589,27 @@ public class TrainModelUI
 			route.add(b17);
 			route.add(bYard);
 			*/
-			TrackLayout lo = new TrackLayout();
-			lo.parseTrackDB("track_db.csv");
-			Block bYard = lo.yard;
-			ArrayList<Block> route = new ArrayList<Block>();
-			mapWindow = new JFrame();
-			mapWindow.setTitle("TKM");
-			mapWindow.setSize(500, 653);
-			mapWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-			mapWindow.add(new TrackMapPanel(lo));
-			mapWindow.setVisible(true);
+
+			TrackLayout lo = new TrackLayout();	// XXX
+			lo.parseTrackDB("track_db.csv");	// XXX
+			Block bYard = lo.yard;	// XXX
+			ArrayList<Block> route = new ArrayList<Block>();	// XXX
+			mapWindow = new JFrame();	// XXX
+			mapWindow.setTitle("TKM");	// XXX
+			mapWindow.setSize(500, 653);	// XXX
+			mapWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	// XXX
+			mapWindow.add(new TrackMapPanel(lo));	// XXX
+			mapWindow.setVisible(true);	// XXX
 			
 			// Create the trains.
+			// The first will depart at 8:00 AM, the second at 8:30 AM, the third at 9:00 AM, etc.
+			// All will have break time set to 4 hours after their departure times.
 			trainList = new ArrayList<Train>();
 			idArray = new String[soloNumTrains];
-			for (int i=0; i<soloNumTrains; i++)
-			{
-				trainList.add(new Train(i+1, "T"+(i+1), "Test", (8*60*60+i*3*60)%(24*60*60), route, new Engineer(true, false, 0.0, (8*60*60+i*30*60+4*60*60)%(24*60*60)), bYard));
-				idArray[i] = new String("T"+(i+1));
+			for (int i = 0; i < soloNumTrains; i++) {
+				trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), 
+						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
+				idArray[i] = new String("T" + (i + 1));
 			}
 
 			lo.setTrainList(trainList);
@@ -635,7 +619,7 @@ public class TrainModelUI
 			tnmUI.setTrainList(trainList);
 			
 			// Setup the timer.
-			soloTime = 7*60*60+59*60+55;
+			soloTime = 7 * 60 * 60 + 59 * 60 + 55;
 			soloDate = new Date(93, 2, 2, 7, 59, 55);
 			ActionListener taskPerformer = new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
@@ -652,8 +636,7 @@ public class TrainModelUI
 			btnToggleManTarTemperature.setEnabled(false);
 			
 			// Make it so only manual values are used.
-			for (int i=0; i<soloNumTrains; i++)
-			{
+			for (int i = 0; i < soloNumTrains; i++) {
 				Train t = trainList.get(i);
 				t.issetManualPower = true;
 				t.issetManualSpeedLimit = true;
@@ -665,240 +648,163 @@ public class TrainModelUI
 			tnmUI.setSelectedId(trainList.get(0).id);
 			tnmUI.setIsPaused(tnmUI.getIsPaused());
 			tnmUI.setIsVisible(true);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace(System.err);
 			JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
 	
-	
-	
-	
-	private class TrainModelButtonListener implements ActionListener
-	{
-		public void actionPerformed(ActionEvent aEvent)
-		{
-			try
-			{
-				// Show Static Values
-				if (aEvent.getActionCommand() == "Show Static Values")
-				{
+	private class TrainModelButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent aEvent) {
+			try {
+				if (aEvent.getActionCommand() == "Show Static Values") {
+					// Show Static Values
 					staticWindow.setVisible(true);
-				}
-				
-				// Select Train
-				else if (aEvent.getActionCommand() == "Select Train")
-				{
-					try
-					{
+				} else if (aEvent.getActionCommand() == "Select Train") {
+					// Select Train
+					try {
 						int intId = 1;
-						String tempId = (String)JOptionPane.showInputDialog(null, "", "Train Model - Select Train", JOptionPane.QUESTION_MESSAGE, null, idArray, null);
-						if (tempId != null)
-						{
+						String tempId = (String)JOptionPane.showInputDialog(null, "", "Train Model - Select Train", 
+										JOptionPane.QUESTION_MESSAGE, null, idArray, null);
+						if (tempId != null) {
 							int i;
-							for (i=0; i<trainList.size(); i++)
-							{
-								if (trainList.get(i).stringId.equals(tempId))
+							for (i = 0; i < trainList.size(); i++) {
+								if (trainList.get(i).stringId.equals(tempId)) {
 									break;
+								}
 							}
 							setSelectedId(i+1);
 						}
-					}
-					catch(Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace(System.err);
-						JOptionPane.showMessageDialog(null, "Invalid input.", "Train Model - Warning", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Invalid input.", "Train Model - Warning", 
+								JOptionPane.WARNING_MESSAGE);
 					}
-				}
-				
-				// Pause / Resume
-				else if (aEvent.getActionCommand() == "Pause"  ||  aEvent.getActionCommand() == "Resume")
-				{
+				} else if (aEvent.getActionCommand() == "Pause"  ||  aEvent.getActionCommand() == "Resume") {
+					// Pause / Resume
 					setIsPaused(!isPaused);
-				}
-				
-				// Set Manual Received Power
-				else if (aEvent.getActionCommand() == "Set Manual Received Power")
-				{
-					try
-					{
-						String tempManRecPower = (String)JOptionPane.showInputDialog(null, "Enter the received power (W) (number only):", "Train Model - Set Received Power", JOptionPane.QUESTION_MESSAGE);
-						if (tempManRecPower != null)
-						{
+				} else if (aEvent.getActionCommand() == "Set Manual Received Power") {
+					// Set Manual Received Power
+					try {
+						String tempManRecPower = (String)JOptionPane.showInputDialog(null, 
+													"Enter the received power (W) (number only):", 
+													"Train Model - Set Received Power", JOptionPane.QUESTION_MESSAGE);
+						if (tempManRecPower != null) {
 							trainList.get(selectedId-1).manualPower = Double.parseDouble(tempManRecPower);
 							jlManRecPower.setText("" + trainList.get(selectedId-1).manualPower);
 						}
-					}
-					catch(Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace(System.err);
-						JOptionPane.showMessageDialog(null, "Invalid received power value entered.", "Train Model - Warning", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Invalid received power value entered.", 
+								"Train Model - Warning", JOptionPane.WARNING_MESSAGE);
 					}
-				}
-				
-				// Toggle Manual Received Power
-				else if (aEvent.getActionCommand() == "Toggle Manual Received Power")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Manual Received Power") {
+					// Toggle Manual Received Power
 					trainList.get(selectedId-1).issetManualPower = !trainList.get(selectedId-1).issetManualPower;
 					jlToggleManRecPower.setText("" + trainList.get(selectedId-1).issetManualPower);
-				}
-				
-				// Set Manual Desired Speed Limit
-				else if (aEvent.getActionCommand() == "Set Manual Desired Speed Limit")
-				{
-					try
-					{
-						String tempManDesSpdLmt = (String)JOptionPane.showInputDialog(null, "Enter the desired speed limit (km/hr) (number only):", "Train Model - Set Desired Speed Limit", JOptionPane.QUESTION_MESSAGE);
-						if (tempManDesSpdLmt != null)
-						{
+				} else if (aEvent.getActionCommand() == "Set Manual Desired Speed Limit"){
+					// Set Manual Desired Speed Limit
+					try {
+						String tempManDesSpdLmt = (String)JOptionPane.showInputDialog(null, "Enter the desired speed limit (km/hr) (number only):", 
+													"Train Model - Set Desired Speed Limit", JOptionPane.QUESTION_MESSAGE);
+						if (tempManDesSpdLmt != null) {
 							trainList.get(selectedId-1).manualSpeedLimit = Double.parseDouble(tempManDesSpdLmt);
 							jlManDesSpdLmt.setText("" + trainList.get(selectedId-1).manualSpeedLimit);
 						}
-					}
-					catch(Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace(System.err);
-						JOptionPane.showMessageDialog(null, "Invalid desired speed limit entered.", "Train Model - Warning", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Invalid desired speed limit entered.", "Train Model - Warning", 
+								JOptionPane.WARNING_MESSAGE);
 					}
-				}
-				
-				// Toggle Manual Desired Speed Limit
-				else if (aEvent.getActionCommand() == "Toggle Manual Desired Speed Limit")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Manual Desired Speed Limit") {
+					// Toggle Manual Desired Speed Limit
 					trainList.get(selectedId-1).issetManualSpeedLimit = !trainList.get(selectedId-1).issetManualSpeedLimit;
 					jlToggleManDesSpdLmt.setText("" + trainList.get(selectedId-1).issetManualSpeedLimit);
-				}
-				
-				// Toggle Signal Pickup Failure
-				else if (aEvent.getActionCommand() == "Toggle Signal Pickup Failure")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Signal Pickup Failure") {
+					// Toggle Signal Pickup Failure
 					trainList.get(selectedId-1).issetSignalPickupFailure = !trainList.get(selectedId-1).issetSignalPickupFailure;
 					jlToggleSignalPickupFailure.setText("" + trainList.get(selectedId-1).issetSignalPickupFailure);
-					jlPosition.setText("" + ((trainList.get(selectedId-1).issetSignalPickupFailure) ? "???????" : ("[ " + trainList.get(selectedId-1).positionBlock.id + " , " + trainList.get(selectedId-1).positionMeters + " ]")));
-				}
-				
-				// Toggle Engine Failure
-				else if (aEvent.getActionCommand() == "Toggle Engine Failure")
-				{
+					jlPosition.setText("" + ((trainList.get(selectedId-1).issetSignalPickupFailure) ? "???????" 
+							: ("[ " + trainList.get(selectedId-1).positionBlock.id + " , " + trainList.get(selectedId-1).positionMeters + " ]")));
+				} else if (aEvent.getActionCommand() == "Toggle Engine Failure") {
+					// Toggle Engine Failure
 					trainList.get(selectedId-1).issetEngineFailure = !trainList.get(selectedId-1).issetEngineFailure;
 					jlToggleEngineFailure.setText("" + trainList.get(selectedId-1).issetEngineFailure);
-				}
-				
-				// Toggle Brake Failure
-				else if (aEvent.getActionCommand() == "Toggle Brake Failure")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Brake Failure") {
+					// Toggle Brake Failure
 					trainList.get(selectedId-1).issetBrakeFailure = !trainList.get(selectedId-1).issetBrakeFailure;
 					jlToggleBrakeFailure.setText("" + trainList.get(selectedId-1).issetBrakeFailure);
-				}
-				
-				// Toggle Service Brake
-				else if (aEvent.getActionCommand() == "Toggle Service Brake")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Service Brake") {
+					// Toggle Service Brake
 					trainList.get(selectedId-1).issetServiceBrake = !trainList.get(selectedId-1).issetServiceBrake;
 					jlToggleServiceBrake.setText("" + trainList.get(selectedId-1).issetServiceBrake);
-				}
-				
-				// Toggle Emergency Brake
-				else if (aEvent.getActionCommand() == "Toggle Emergency Brake")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Emergency Brake") {
+					// Toggle Emergency Brake
 					trainList.get(selectedId-1).issetEmerBrake = !trainList.get(selectedId-1).issetEmerBrake;
 					jlToggleEmergencyBrake.setText("" + trainList.get(selectedId-1).issetEmerBrake);
-				}
-				
-				// Set Manual Lights Status
-				else if (aEvent.getActionCommand() == "Set Manual Lights Status")
-				{
-					try
-					{
+				} else if (aEvent.getActionCommand() == "Set Manual Lights Status") {
+					// Set Manual Lights Status
+					try {
 						String[] optionsManLights = new String[2];
 						optionsManLights[0] = "On";
 						optionsManLights[1] = "Off";
-						String tempManLights = (String)JOptionPane.showInputDialog(null, "", "Train Model - Set Lights Status", JOptionPane.QUESTION_MESSAGE, null, optionsManLights, null);
-						if (tempManLights != null)
-						{
+						String tempManLights = (String)JOptionPane.showInputDialog(null, "", "Train Model - Set Lights Status", 
+												JOptionPane.QUESTION_MESSAGE, null, optionsManLights, null);
+						if (tempManLights != null) {
 							trainList.get(selectedId-1).issetLightsOnManual = tempManLights.equals(optionsManLights[0]);
 							jlManLights.setText("" + (trainList.get(selectedId-1).issetLightsOnManual ? "On" : "Off"));
 						}
-					}
-					catch(Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace(System.err);
 						JOptionPane.showMessageDialog(null, "Invalid input.", "Train Model - Warning", JOptionPane.WARNING_MESSAGE);
 					}
-				}
-				
-				// Toggle Manual Lights Status
-				else if (aEvent.getActionCommand() == "Toggle Manual Lights Status")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Manual Lights Status") {
+					// Toggle Manual Lights Status
 					trainList.get(selectedId-1).issetLightsOnUseManual = !trainList.get(selectedId-1).issetLightsOnUseManual;
 					jlToggleManLights.setText("" + trainList.get(selectedId-1).issetLightsOnUseManual);
-				}
-				
-				// Set Manual Doors Status
-				else if (aEvent.getActionCommand() == "Set Manual Doors Status")
-				{
-					try
-					{
+				} else if (aEvent.getActionCommand() == "Set Manual Doors Status") {
+					// Set Manual Doors Status
+					try {
 						String[] optionsManDoors = new String[2];
 						optionsManDoors[0] = "Open";
 						optionsManDoors[1] = "Closed";
-						String tempManDoors = (String)JOptionPane.showInputDialog(null, "", "Train Model - Set Doors Status", JOptionPane.QUESTION_MESSAGE, null, optionsManDoors, null);
-						if (tempManDoors != null)
-						{
+						String tempManDoors = (String)JOptionPane.showInputDialog(null, "", "Train Model - Set Doors Status", 
+												JOptionPane.QUESTION_MESSAGE, null, optionsManDoors, null);
+						if (tempManDoors != null) {
 							trainList.get(selectedId-1).issetDoorsOpenManual = tempManDoors.equals(optionsManDoors[0]);
 							jlManDoors.setText("" + (trainList.get(selectedId-1).issetDoorsOpenManual ? "Open" : "Closed"));
 						}
-					}
-					catch(Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace(System.err);
 						JOptionPane.showMessageDialog(null, "Invalid input.", "Train Model - Warning", JOptionPane.WARNING_MESSAGE);
 					}
-				}
-				
-				// Toggle Manual Doors Status
-				else if (aEvent.getActionCommand() == "Toggle Manual Doors Status")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Manual Doors Status") {
+					// Toggle Manual Doors Status
 					trainList.get(selectedId-1).issetDoorsOpenUseManual = !trainList.get(selectedId-1).issetDoorsOpenUseManual;
 					jlToggleManDoors.setText("" + trainList.get(selectedId-1).issetDoorsOpenUseManual);
-				}
-				
-				// Set Manual Target Temp.
-				else if (aEvent.getActionCommand() == "Set Manual Target Temp.")
-				{
-					try
-					{
-						String tempManTarTemperature = (String)JOptionPane.showInputDialog(null, "Enter the target temperature (degrees Celsius) (number only):", "Train Model - Set Target Temperature", JOptionPane.QUESTION_MESSAGE);
-						if (tempManTarTemperature != null)
-						{
+				} else if (aEvent.getActionCommand() == "Set Manual Target Temp.") {
+					// Set Manual Target Temp.
+					try {
+						String tempManTarTemperature = (String)JOptionPane.showInputDialog(null, "Enter the target temperature (degrees Celsius) (number only):", 
+														"Train Model - Set Target Temperature", JOptionPane.QUESTION_MESSAGE);
+						if (tempManTarTemperature != null) {
 							trainList.get(selectedId-1).targetTemperatureManual = Double.parseDouble(tempManTarTemperature);
 							jlManTarTemperature.setText("" + trainList.get(selectedId-1).targetTemperatureManual);
 						}
-					}
-					catch(Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace(System.err);
-						JOptionPane.showMessageDialog(null, "Invalid target temperature entered.", "Train Model - Warning", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Invalid target temperature entered.", "Train Model - Warning", 
+								JOptionPane.WARNING_MESSAGE);
 					}
-				}
-				
-				// Toggle Manual Target Temp.
-				else if (aEvent.getActionCommand() == "Toggle Manual Target Temp.")
-				{
+				} else if (aEvent.getActionCommand() == "Toggle Manual Target Temp.") {
+					// Toggle Manual Target Temp.
 					trainList.get(selectedId-1).issetTargetTemperatureManual = !trainList.get(selectedId-1).issetTargetTemperatureManual;
 					jlToggleManTarTemperature.setText("" + trainList.get(selectedId-1).issetTargetTemperatureManual);
-				}
-				
-				else
-				{
+				} else {
 					JOptionPane.showMessageDialog(null, "Invalid action event.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				e.printStackTrace(System.err);
 				JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
 			}
