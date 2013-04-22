@@ -76,6 +76,6 @@ public class TrackMapPanel extends JPanel {
         }
 
         /* Draw trains */
-        ListIterator<Block> iter = 
+        //ListIterator<Block> iter = 
     }
 }
