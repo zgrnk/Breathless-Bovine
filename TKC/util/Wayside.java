@@ -307,7 +307,34 @@ public class Wayside {
 	 * Run the triple redundancy protocol for the PLCProgram 
 	 */
 	public void runRedundancy() {
-		currStateInfo = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
+		
+		SafetyInfo runOne = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
+		SafetyInfo runTwo = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
+		SafetyInfo runThree = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
+		
+		boolean isSafe;
+		boolean swState;
+		if (runOne.safetyState == runTwo.safetyState && runOne.safetyState == runThree.safetyState) {
+			isSafe = runOne.safetyState;
+		} else if (runOne.safetyState != runTwo.safetyState && runOne.safetyState == runThree.safetyState) {
+			isSafe = runOne.safetyState;
+		} else if (runOne.safetyState != runTwo.safetyState && runOne.safetyState != runThree.safetyState) {
+			isSafe = runTwo.safetyState;
+		} else {
+			isSafe = runTwo.safetyState;
+		}
+		
+		if (runOne.switchState == runTwo.switchState && runOne.switchState == runThree.switchState) {
+			swState = runOne.switchState;
+		} else if (runOne.switchState != runTwo.switchState && runOne.switchState == runThree.switchState) {
+			swState = runOne.switchState;
+		} else if (runOne.switchState != runTwo.switchState && runOne.switchState != runThree.switchState) {
+			swState = runTwo.switchState;
+		} else {
+			swState = runTwo.switchState;
+		}
+		
+		currStateInfo = new SafetyInfo(swState, runOne.lightState, isSafe);
 	}
 	
 	/**
