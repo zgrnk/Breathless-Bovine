@@ -14,6 +14,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
 
     private TrackLayout lyt;
 
+    JComboBox cbLine;
     JComboBox cbBlock;
     JComboBox cbSwitch;
 
@@ -48,13 +49,17 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         pBlkInfo.setLayout(new GridLayout(0,2));
         pSwInfo.setLayout(new GridLayout(0,2));
 
-        cbBlock = new JComboBox(lyt.getBlocks().toArray());
-        cbSwitch = new JComboBox(lyt.getSwitches().toArray());
+        cbLine = new JComboBox(lyt.getLines().toArray());
+        cbBlock = new JComboBox(lyt.redLine.getBlocks().toArray());
+        cbSwitch = new JComboBox(lyt.redLine.getSwitches().toArray());
+        cbLine.setMaximumSize(new Dimension(200,20));
         cbBlock.setMaximumSize(new Dimension(200,20));
         cbSwitch.setMaximumSize(new Dimension(200,20));
 
         cbBlock.setSelectedIndex(0);
         cbSwitch.setSelectedIndex(0);
+        cbLine.setSelectedIndex(0);
+        cbLine.addActionListener(this);
         cbBlock.addActionListener(this);
         cbSwitch.addActionListener(this);
 
@@ -79,8 +84,8 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         cboxSwDiv = new JCheckBox();
         cboxSwDiv.addActionListener(this);
 
-        pBlkInfo.add(new JLabel("Block Info"));
-        pBlkInfo.add(new JLabel(""));
+        pBlkInfo.add(new JLabel("Select Line"));
+        pBlkInfo.add(cbLine);
         pBlkInfo.add(new JLabel("Select Block"));
         pBlkInfo.add(cbBlock);
         pBlkInfo.add(new JLabel("Section"));
@@ -156,38 +161,42 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         
     }
 
-   public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
 		
-                TrackElement elem;
-                //String name;
+    TrackElement elem;
+    //String name;
 
-		if (e.getSource() == cboxSwDiv) {
-			selectedSwitch.state = ((JCheckBox)e.getSource()).isSelected();
-                }
+        if (e.getSource() == cboxSwDiv) {
+            selectedSwitch.state = ((JCheckBox)e.getSource()).isSelected();
+        }
                 
-                if (e.getSource() == bTest) {
+        if (e.getSource() == bTest) {
 			//startTrainTest();
 		} 
                 
-                if ("comboBoxChanged".equals(e.getActionCommand())) {
-                        if (e.getSource() == cbBlock) {
-                                JComboBox cb = (JComboBox)e.getSource();
-                                Block blk = (Block)cb.getSelectedItem();
-                                lyt.setSelectedElement(blk);
-                                updateBlkInfo(blk);
-                                selectedBlock = blk;
+        if ("comboBoxChanged".equals(e.getActionCommand())) {
+            JComboBox cb = (JComboBox)e.getSource();
+            if (cb == cbLine) {
+                TrackLayout.TrackLine line = (TrackLayout.TrackLine) cb.getSelectedItem();
+                cbBlock.setModel(new DefaultComboBoxModel(line.getBlocks().toArray()));
+                cbSwitch.setModel(new DefaultComboBoxModel(line.getSwitches().toArray()));
+            } else if (cb == cbBlock) {
+                Block blk = (Block)cb.getSelectedItem();
+                lyt.setSelectedElement(blk);
+                updateBlkInfo(blk);
+                selectedBlock = blk;
 
-                        } else if (e.getSource() == cbSwitch) {
-                                JComboBox cb = (JComboBox)e.getSource();
-                                Switch sw = (Switch)cb.getSelectedItem();
-                                updateSwInfo(sw);
-                                selectedSwitch = sw;
-                        }
-                }
+            } else if (cb == cbSwitch) {
+                Switch sw = (Switch)cb.getSelectedItem();
+                lyt.setSelectedElement(sw);
+                updateSwInfo(sw);
+                selectedSwitch = sw;
+            }
+        }
 
-                if (pMap != null) {
-                    pMap.repaint();
-                }
+        if (pMap != null) {
+            pMap.repaint();
+        }
     }
 
 }
