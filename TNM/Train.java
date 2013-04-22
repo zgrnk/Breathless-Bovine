@@ -288,7 +288,7 @@ System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
 			
 			// Friction
 			double accelFriction;
-			accelFriction = frictionCoeff * g * Math.cos(angle);
+			accelFriction = frictionCoeff * GRAVITY_CONSTANT * Math.cos(angle);
 			if (newVelocity > 0) {
 				accelFriction *= (-1.0);
 			} else if (newVelocity == 0.0) {

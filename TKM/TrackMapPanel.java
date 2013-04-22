@@ -114,9 +114,14 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         }
     }
 
-    public void MouseClicked(MouseEvent e) {}
-    public void MouseEntered(MouseEvent e) {}
-    public void MouseExited(MouseEvent e) {}
-    public void MousePressed(MouseEvent e) {}
-    public void MouseReleased(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {
+        }
+    public void mouseEntered(MouseEvent e) {
+        }
+    public void mouseExited(MouseEvent e) {
+        }
+    public void mousePressed(MouseEvent e) {
+        }
+    public void mouseReleased(MouseEvent e) {
+        }
 }
