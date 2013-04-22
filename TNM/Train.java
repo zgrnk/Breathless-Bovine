@@ -167,7 +167,10 @@ public class Train {
 	}
 	
 	public void timeTick(double time, double period, boolean isSolo) {
-System.out.println("XXX - ////////////////////////////////////////////////////");
+		if (isSolo){
+			System.out.println("XXX - ////////////////////////////////////////////////////");
+		}
+
 		
 		// TrainController timeTick and Response
 		ResponseTNC tncResponse = new ResponseTNC(0.0, false, false, false, false, 0.0, "");
@@ -192,9 +195,14 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 			} else {
 				flat = true;
 			}
-System.out.println("XXX - uphill\t\t"+(uphill));
-System.out.println("XXX - downhill\t\t"+(downhill));
-System.out.println("XXX - flat\t\t"+(flat));
+			
+			if (isSolo){
+				System.out.println("XXX - uphill\t\t"+(uphill));
+				System.out.println("XXX - downhill\t\t"+(downhill));
+				System.out.println("XXX - flat\t\t"+(flat));
+			}
+			
+
 			
 			// Angle of Inclination
 			double angle = 0.0;
@@ -240,9 +248,13 @@ System.out.println("XXX - flat\t\t"+(flat));
 					}
 				}
 			}
-System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
-System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
-System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
+			
+			if (!isSolo){
+				System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
+				System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
+				System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
+			}
+
 			if (accelEngine > (motorPower /  (0.0001 * totalMass))) {
 				accelEngine = motorPower / (0.0001 * totalMass);
 			}
@@ -295,14 +307,18 @@ System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
 				accelFriction = 0.0;
 			}
 			double velFriction = accelFriction * period;
-System.out.println("XXX - accelEngine\t"+accelEngine);
-System.out.println("XXX - accelBrakes\t"+accelBrakes);
-System.out.println("XXX - accelGravity\t"+accelGravity);
-System.out.println("XXX - accelFriction\t"+accelFriction);
-System.out.println("XXX - velEngine\t\t"+velEngine);
-System.out.println("XXX - velBrakes\t\t"+velBrakes);
-System.out.println("XXX - velGravity\t"+velGravity);
-System.out.println("XXX - velFriction\t"+velFriction);
+			
+			if (!isSolo){
+				System.out.println("XXX - accelEngine\t"+accelEngine);
+				System.out.println("XXX - accelBrakes\t"+accelBrakes);
+				System.out.println("XXX - accelGravity\t"+accelGravity);
+				System.out.println("XXX - accelFriction\t"+accelFriction);
+				System.out.println("XXX - velEngine\t\t"+velEngine);
+				System.out.println("XXX - velBrakes\t\t"+velBrakes);
+				System.out.println("XXX - velGravity\t"+velGravity);
+				System.out.println("XXX - velFriction\t"+velFriction);
+			}
+
 			
 			// Current Values (and Limits)
 			curAccel += (accelBrakes + accelFriction);
@@ -340,7 +356,10 @@ System.out.println("XXX - velFriction\t"+velFriction);
 				curVelocity = newVelocity;
 			}
 			curVelocity = round(curVelocity, 3);
-System.out.println("XXX - curVelocity\t"+curVelocity);
+			
+			if (!isSolo){
+				System.out.println("XXX - curVelocity\t"+curVelocity);
+			}
 			
 /*
 			// Position
@@ -409,14 +428,19 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 			positionMeters = round(positionMeters, 3);
 			gps = new GPS(positionBlock, (int) positionMeters, curVelocity, positionDirection);
 */
+			if (!isSolo){
 System.out.println("XXX - this.positionDirection\t"+this.positionDirection);
 System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
 			Block.advanceTrain(this, curVelocity * period);
 			gps = new GPS(positionBlock, (int) positionMeters, curVelocity, (positionDirection==Block.DIRECTION_FWD));
 System.out.println("XXX - (int) positionMeters\t"+((int) positionMeters));
-		}
+			}
+		}  
+		
+		if (!isSolo){
 System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
 System.out.println("XXX - positionMeters\t"+positionMeters);
+		}
 		
 		// Lights
 		if (issetLightsOnUseManual  ||  isSolo) {

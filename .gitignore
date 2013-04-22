@@ -1,6 +1,7 @@
 /trackLayout.class
 /CTCOffice.class
 examples/*
+data/*
 
 *.class
 .metadata

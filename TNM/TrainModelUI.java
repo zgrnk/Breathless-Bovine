@@ -463,7 +463,10 @@ public class TrainModelUI {
 	
 	public static void timeTick(Date date, int delta) {
 		if (!isPaused) {
-			mapWindow.repaint();	// XXX
+			if (isSolo){
+				mapWindow.repaint();
+			}
+			
 			refreshUI += delta;
 			double time = date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds();
 			
@@ -496,162 +499,91 @@ public class TrainModelUI {
 	}
 	
 	public static void main(String[] args) {
-		try {
-			isSolo = true;
-			
-			// Get the number of trains.
-			if (args.length != 1) {
-				System.out.println("Invalid number of arguments.");
-				System.exit(1);
-			}
-			soloNumTrains = Integer.parseInt(args[0], 10);
-			if (soloNumTrains < 1  ||  soloNumTrains > 9) {
-				System.out.println("Invalid argument. The number of trains must be greater than 0 and less than 10.");
-				System.exit(1);
-			}
-			
-			// Create the test block loop.
-			/*
-			Block bYard = new Block(0, "A", "I", 0.0, 0.0, 5.0, true, false, true, false, false, "", false, false, false);
-			Block b01 = new Block(1, "B", "II", 500.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b02 = new Block(2, "C", "II", 500.0, -22.2, 1.0, true, false, false, false, false, "", false, false, false);
-			Block b03 = new Block(3, "D", "II", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b04 = new Block(4, "E", "II", 500.0, 11.1, 30.0, true, true, false, false, false, "", false, false, false);
-			Block b05 = new Block(5, "F", "III", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b06 = new Block(6, "G", "III", 100.0, 0.0, 5.0, true, false, false, true, false, "Alpha", false, false, false);
-			Block b07 = new Block(7, "H", "III", 500.0, -11.1, 30.0, true, false, false, false, false, "", false, false, false);
-			Block b08 = new Block(8, "I", "III", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b09 = new Block(9, "J", "IV", 500.0, 22.2, 1.0, true, false, false, false, false, "", false, false, false);
-			Block b10 = new Block(10, "K", "IV", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b11 = new Block(11, "L", "IV", 100.0, 0.0, 5.0, true, false, false, true, false, "Beta", false, false, false);
-			Block b12 = new Block(12, "M", "IV", 50.0, 11.1, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b13 = new Block(13, "N", "V", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b14 = new Block(14, "O", "V", 50.0, -11.1, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b15 = new Block(15, "P", "V", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
-			Block b16 = new Block(16, "Q", "V", 100.0, 0.0, 5.0, true, false, false, true, false, "Gamma", false, false, false);
-			Block b17 = new Block(17, "R", "V", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
-			
-			bYard.connect(b17, b01);
-			b01.connect(bYard, b07);
-			b02.connect(b01, b03);
-			b03.connect(b02, b04);
-			b04.connect(b03, b05);
-			b05.connect(b04, b06);
-			b06.connect(b05, b07);
-			b07.connect(b08, b01);
-			b08.connect(b09, b07);
-			b09.connect(b10, b08);
-			b10.connect(b11, b09);
-			b11.connect(b12, b10);
-			b12.connect(b11, b13);
-			b13.connect(b14, b12);
-			b14.connect(b13, b15);
-			b15.connect(b16, b14);
-			b16.connect(b15, b17);
-			b17.connect(bYard, b16);
-			
-			ArrayList<Block> route = new ArrayList<Block>();
-			route.add(bYard);
-			route.add(b01);
-			route.add(b02);
-			route.add(b03);
-			route.add(b04);
-			route.add(b05);
-			route.add(b06);
-			route.add(b07);
-			route.add(b08);
-			route.add(b09);
-			route.add(b10);
-			route.add(b11);
-			route.add(b12);
-			route.add(b13);
-			route.add(b14);
-			route.add(b15);
-			route.add(b16);
-			route.add(b17);
-			route.add(bYard);
-			route.add(b01);
-			route.add(b02);
-			route.add(b03);
-			route.add(b04);
-			route.add(b05);
-			route.add(b06);
-			route.add(b07);
-			route.add(b08);
-			route.add(b09);
-			route.add(b10);
-			route.add(b11);
-			route.add(b12);
-			route.add(b13);
-			route.add(b14);
-			route.add(b15);
-			route.add(b16);
-			route.add(b17);
-			route.add(bYard);
-			*/
-
-			TrackLayout lo = new TrackLayout();	// XXX
-			lo.parseTrackDB("track_db.csv");	// XXX
-			Block bYard = lo.yard;	// XXX
-			ArrayList<Block> route = new ArrayList<Block>();	// XXX
-			mapWindow = new JFrame();	// XXX
-			mapWindow.setTitle("TKM");	// XXX
-			mapWindow.setSize(500, 653);	// XXX
-			mapWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	// XXX
-			mapWindow.add(new TrackMapPanel(lo));	// XXX
-			mapWindow.setVisible(true);	// XXX
-			
-			// Create the trains.
-			// The first will depart at 8:00 AM, the second at 8:30 AM, the third at 9:00 AM, etc.
-			// All will have break time set to 4 hours after their departure times.
-			trainList = new ArrayList<Train>();
-			idArray = new String[soloNumTrains];
-			for (int i = 0; i < soloNumTrains; i++) {
-				trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), 
-						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
-				idArray[i] = new String("T" + (i + 1));
-			}
-
-			lo.setTrainList(trainList);
-			
-			// Create the UI.
-			TrainModelUI tnmUI = new TrainModelUI();
-			tnmUI.setTrainList(trainList);
-			
-			// Setup the timer.
-			soloTime = 7 * 60 * 60 + 59 * 60 + 55;
-			soloDate = new Date(93, 2, 2, 7, 59, 55);
-			ActionListener taskPerformer = new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					timeTick(soloDate, soloDelta);
-				}
-			};
-			new javax.swing.Timer(20, taskPerformer).start();
-			
-			// Disable all "Toggle" buttons that are associated with a manual entry.
-			btnToggleManRecPower.setEnabled(false);
-			btnToggleManDesSpdLmt.setEnabled(false);
-			btnToggleManLights.setEnabled(false);
-			btnToggleManDoors.setEnabled(false);
-			btnToggleManTarTemperature.setEnabled(false);
-			
-			// Make it so only manual values are used.
-			for (int i = 0; i < soloNumTrains; i++) {
-				Train t = trainList.get(i);
-				t.issetManualPower = true;
-				t.issetManualSpeedLimit = true;
-				t.issetLightsOnUseManual = true;
-				t.issetDoorsOpenUseManual = true;
-				t.issetTargetTemperatureManual = true;
-			}
-			
-			tnmUI.setSelectedId(trainList.get(0).id);
-			tnmUI.setIsPaused(tnmUI.getIsPaused());
-			tnmUI.setIsVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
+		isSolo = true;
+		
+		// Get the number of trains.
+		if (args.length != 1) {
+			System.out.println("Invalid number of arguments.");
+			System.exit(1);
 		}
+		soloNumTrains = Integer.parseInt(args[0], 10);
+		if (soloNumTrains < 1  ||  soloNumTrains > 9) {
+			System.out.println("Invalid argument. The number of trains must be greater than 0 and less than 10.");
+			System.exit(1);
+		}
+		
+
+		
+		TrainModelUI tnmUI = new TrainModelUI();
+		tnmUI.setTrainList(trainList);
+		
+		TrackLayout lo = new TrackLayout();	// XXX
+		lo.parseTrackDB("track_db.csv");	// XXX
+		Block bYard = lo.yard;	// XXX
+		ArrayList<Block> route = new ArrayList<Block>();	// XXX
+		mapWindow = new JFrame();	// XXX
+		mapWindow.setTitle("TKM");	// XXX
+		mapWindow.setSize(500, 653);	// XXX
+		mapWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	// XXX
+		mapWindow.add(new TrackMapPanel(lo));	// XXX
+		mapWindow.setVisible(true);	// XXX
+		
+		// Create the trains.
+		// The first will depart at 8:00 AM, the second at 8:30 AM, the third at 9:00 AM, etc.
+		// All will have break time set to 4 hours after their departure times.
+		trainList = new ArrayList<Train>();
+		idArray = new String[soloNumTrains];
+		for (int i = 0; i < soloNumTrains; i++) {
+			trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), 
+					route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
+			idArray[i] = new String("T" + (i + 1));
+		}		
+		
+		lo.setTrainList(trainList);
+		
+		// Create the UI.
+		// Setup the timer.
+		soloTime = 7 * 60 * 60 + 59 * 60 + 55;
+		soloDate = new Date(93, 2, 2, 7, 59, 55);
+		ActionListener taskPerformer = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				timeTick(soloDate, soloDelta);
+			}
+		};
+		new javax.swing.Timer(20, taskPerformer).start();
+		
+		tnmUI.setSelectedId(trainList.get(0).id);
+		tnmUI.setIsPaused(true);
+		tnmUI.setIsVisible(true);
+		
+		tnmUI.run();
+	}
+	
+	public void run(){
+		isSolo = false;
+
+		// Disable all "Toggle" buttons that are associated with a manual entry.
+		btnToggleManRecPower.setEnabled(false);
+		btnToggleManDesSpdLmt.setEnabled(false);
+		btnToggleManLights.setEnabled(false);
+		btnToggleManDoors.setEnabled(false);
+		btnToggleManTarTemperature.setEnabled(false);
+		
+		// Make it so only manual values are used.
+		
+		//chris i changed for loop iteration length from soloNumTrains
+		//sincerely jake 
+		for (int i = 0; i < trainList.size(); i++) {
+			Train t = trainList.get(i);
+			t.issetManualPower = true;
+			t.issetManualSpeedLimit = true;
+			t.issetLightsOnUseManual = true;
+			t.issetDoorsOpenUseManual = true;
+			t.issetTargetTemperatureManual = true;
+		}
+		
+
+
 	}
 	
 	
