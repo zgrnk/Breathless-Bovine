@@ -113,7 +113,7 @@ public class TrackLayout {
         */
     }
 
-    public void constructTrack() {
+    private void constructTrack() {
         /* Find the yard and make it the root */
         yard = (Block) getElementById(0);
         ListIterator<TrackElement> iter = elements.listIterator();

@@ -65,12 +65,12 @@ public class TrackMapPanel extends JPanel implements MouseListener{
     private void drawTrackBlock(Graphics g, Block blk) {
         Graphics2D g2 = (Graphics2D) g;
 
-        Stroke s = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+        Stroke s = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
 
         g2.setStroke(s);
         
         if (blk == lyt.getSelectedElement()) {
-            g2.setPaint(Color.WHITE);
+            g2.setPaint(Color.CYAN);
         } else if (blk.isOccupied()) {
             g2.setPaint(Color.YELLOW);
         } else {
@@ -81,26 +81,85 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         //g.drawLine(blk.mapX1, blk.mapY1, blk.mapX2, blk.mapY2);
         g2.draw(new Line2D.Double(blk.mapX1, blk.mapY1, blk.mapX2, blk.mapY2));
 
+
+    }
+
+    private void drawTrackOverlay(Graphics g, Block blk) {
+        Graphics2D g2 = (Graphics2D) g;
+
+        if (blk == lyt.getSelectedElement()) {
+            g2.setPaint(Color.CYAN);
+        } else if (blk.isOccupied()) {
+            g2.setPaint(Color.YELLOW);
+        } else {
+            g2.setPaint(Color.RED);
+        }
+
+        int xAvg = (blk.mapX1 + blk.mapX2)/2;
+        int yAvg = (blk.mapY1 + blk.mapY2)/2;
+
         if (blk.isStation) {
-            int xAvg = (blk.mapX1 + blk.mapX2)/2;
-            int yAvg = (blk.mapY1 + blk.mapY2)/2;
             //g.fillOval(xAvg-4, yAvg-4, 8, 8);
             g2.fill(new Ellipse2D.Double(xAvg-5,yAvg-5,10,10));
-            g.setColor(Color.BLACK);
-            g.drawString(blk.stationName, xAvg + 15, yAvg + 15);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
+            g.drawString(blk.stationName, xAvg + 12, yAvg + 12);
+        }
+
+        if (blk.isCrossing) {
+            g.setColor(Color.MAGENTA);
+            g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
+            g.drawString("X", xAvg + 6, yAvg + 6);
         }
             
     }
 
+    private void drawSwitch(Graphics g, Switch sw) {
+        Graphics2D g2 = (Graphics2D) g;
+
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        g2.setPaint(new Color(255,255,255,128));
+        g2.fill(new Rectangle2D.Double(sw.mapX1-8, sw.mapY1-8, 16, 16));
+
+        if (sw == lyt.getSelectedElement()) {
+            g2.setPaint(Color.CYAN);
+        } else {
+            g2.setPaint(Color.WHITE);
+        }
+        
+        String str = (sw.state == Switch.STATE_DIVERGENT) ? "D" : "S";
+        g.drawString(str, sw.mapX1-4, sw.mapY1+4);
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        Graphics2D g2 = (Graphics2D)g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+        
         //g.drawImage(img, 0, 0, null);
+        g.setColor(new Color(20, 20, 30));
+        g.fillRect(0, 0, 520, 670);
 
         /* Draw track */
-        ListIterator<Block> iter = lyt.getBlocks().listIterator();
+        ListIterator<Block> bIter = lyt.getBlocks().listIterator();
 
-        while (iter.hasNext()) {
-            drawTrackBlock(g, iter.next());
+        while (bIter.hasNext()) {
+            drawTrackBlock(g, bIter.next());
+        }
+        
+        bIter = lyt.getBlocks().listIterator();
+
+        while (bIter.hasNext()) {
+            drawTrackOverlay(g, bIter.next());
+        }
+
+        /* Draw switches */
+        ListIterator<Switch> sIter = lyt.getSwitches().listIterator();
+
+        while (sIter.hasNext()) {
+            drawSwitch(g, sIter.next());
         }
 
         /* Draw trains */

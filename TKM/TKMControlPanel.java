@@ -180,6 +180,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
                         } else if (e.getSource() == cbSwitch) {
                                 JComboBox cb = (JComboBox)e.getSource();
                                 Switch sw = (Switch)cb.getSelectedItem();
+                                lyt.setSelectedElement(sw);
                                 updateSwInfo(sw);
                                 selectedSwitch = sw;
                         }
