@@ -51,14 +51,4 @@ public class TKMGui extends JPanel {
         gui.loadGui();
         //lyt.chooChoo();
     }
-    
-    public void startTrainTest() {
-        int delay = 30; //milliseconds
-        ActionListener taskPerformer = new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                lyt.chooChoo(pMap);
-            }
-        };
-        new Timer(delay, taskPerformer).start();
-    }
 }
