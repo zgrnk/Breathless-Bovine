@@ -75,7 +75,7 @@ public class CTCOffice extends PApplet {
 		tnmUI.setSelectedId(trainList.get(0).id);
 		tnmUI.setIsVisible(false);
 
-		// new SSC_GUI();
+		//new SSC_GUI();
 
 	}
 
@@ -88,7 +88,7 @@ public class CTCOffice extends PApplet {
 			showTimer.draw(this);
 			if (lastTick != timer.second()) {
 				current_clock_sec += simTimeRatio;
-				/*tnmUI.timeTick(current_clock_sec, simTimeRatio, 100);*/
+				//tnmUI.timeTick(current_clock_sec, 100);
 				lastTick = timer.second();
 			}
 			trainList = tnmUI.getTrainList();
@@ -290,8 +290,8 @@ public class CTCOffice extends PApplet {
 	}
 	
 	public ArrayList<Train> getTrainsInBlock(int blockNum){
-		return trainList;
 		
+		return tnmUI.getTrainsInBlock(blockNum);
 	}
 
 	public void testInit() {
