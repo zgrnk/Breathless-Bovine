@@ -18,7 +18,7 @@ import TNM.Train;
 
 public class TrackMapPanel extends JPanel implements MouseListener{
 
-    //BufferedImage img;
+    BufferedImage img;
     TrackLayout lyt;
     //AbstractList<Train> trainList;
 
@@ -26,13 +26,15 @@ public class TrackMapPanel extends JPanel implements MouseListener{
     private int y;
 
     public TrackMapPanel(TrackLayout lyt) {
-        //try {
-        //    img = ImageIO.read(new File("map.png"));
-        //} catch (IOException e) {}
+        try {
+            img = ImageIO.read(new File("map.png"));
+        } catch (IOException e) {}
 
         this.lyt = lyt;
         x = 0;
         y = 0;
+
+        addMouseListener(this);
     }
 
     private void drawTrain(Graphics g, Train tn) {
@@ -62,10 +64,16 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         g2.setTransform(saveAt);
     }
 
-    private void drawTrackBlock(Graphics g, Block blk) {
+    private void drawTrackBlock(Graphics g, Block blk, Color tkColor) {
         Graphics2D g2 = (Graphics2D) g;
 
-        Stroke s = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+        float[] dashUground = {4f, 4f};
+        float[] dashAground = {1f, 0f};
+
+        float[] dash = (blk.isUground) ? dashUground : dashAground;
+
+        Stroke s = new BasicStroke(7f, BasicStroke.CAP_ROUND,
+                BasicStroke.JOIN_MITER, 1f, dash, 0f);
 
         g2.setStroke(s);
         
@@ -74,7 +82,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         } else if (blk.isOccupied()) {
             g2.setPaint(Color.YELLOW);
         } else {
-            g2.setPaint(Color.RED);
+            g2.setPaint(tkColor);
         }
 
         
@@ -84,22 +92,25 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
     }
 
-    private void drawTrackOverlay(Graphics g, Block blk) {
+    private void drawTrackOverlay(Graphics g, Block blk, Color tkColor) {
         Graphics2D g2 = (Graphics2D) g;
+
+        Stroke s = new BasicStroke(2f, BasicStroke.CAP_ROUND,
+                BasicStroke.JOIN_MITER);
+        g2.setStroke(s);
 
         if (blk == lyt.getSelectedElement()) {
             g2.setPaint(Color.CYAN);
         } else if (blk.isOccupied()) {
             g2.setPaint(Color.YELLOW);
         } else {
-            g2.setPaint(Color.RED);
+            g2.setPaint(Color.WHITE);
         }
 
         int xAvg = (blk.mapX1 + blk.mapX2)/2;
         int yAvg = (blk.mapY1 + blk.mapY2)/2;
 
         if (blk.isStation) {
-            //g.fillOval(xAvg-4, yAvg-4, 8, 8);
             g2.fill(new Ellipse2D.Double(xAvg-5,yAvg-5,10,10));
             g.setColor(Color.WHITE);
             g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
@@ -142,38 +153,47 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         g.setColor(new Color(20, 20, 30));
         g.fillRect(0, 0, 520, 670);
 
-        /* Draw track */
-        ListIterator<Block> bIter = lyt.getBlocks().listIterator();
+        for (TrackLayout.TrackLine line : lyt.getLines()) {
 
-        while (bIter.hasNext()) {
-            drawTrackBlock(g, bIter.next());
-        }
-        
-        bIter = lyt.getBlocks().listIterator();
+            Color tkColor;
 
-        while (bIter.hasNext()) {
-            drawTrackOverlay(g, bIter.next());
-        }
+            if (line == lyt.redLine) {
+                tkColor = new Color(192,0,0);
+            } else if (line == lyt.greenLine){
+                tkColor = new Color(0,128,0);
+            } else {
+                tkColor = null;
+                System.out.println("Unknown line");
+                System.exit(1);
+            }
 
-        /* Draw switches */
-        ListIterator<Switch> sIter = lyt.getSwitches().listIterator();
+            
+            /* Draw track */
+            for (Block blk : line.getBlocks()) {
+                drawTrackBlock(g, blk, tkColor);
+            }
 
-        while (sIter.hasNext()) {
-            drawSwitch(g, sIter.next());
+            for (Block blk : line.getBlocks()) {
+                drawTrackOverlay(g, blk, tkColor);
+            }
+
+            /* Draw switches */
+            for (Switch sw : line.getSwitches()) {
+                drawSwitch(g, sw);
+            }
         }
 
         /* Draw trains */
         if (lyt.trains != null)
         {
-            ListIterator<Train> tIter = lyt.trains.listIterator();
-
-            while (tIter.hasNext()) {
-                drawTrain(g, tIter.next());
+            for (Train t : lyt.trains) {
+                drawTrain(g, t);
             }
         }
     }
 
     public void mouseClicked(MouseEvent e) {
+        //System.out.printf("%d %d\n", e.getX(), e.getY());
         }
     public void mouseEntered(MouseEvent e) {
         }
