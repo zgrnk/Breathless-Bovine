@@ -18,7 +18,7 @@ import TNM.Train;
 
 public class TrackMapPanel extends JPanel implements MouseListener{
 
-    BufferedImage img;
+    BufferedImage xingIcon;
     TrackLayout lyt;
     //AbstractList<Train> trainList;
 
@@ -27,7 +27,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
     public TrackMapPanel(TrackLayout lyt) {
         try {
-            img = ImageIO.read(new File("map.png"));
+            xingIcon = ImageIO.read(new File("xing_icon.png"));
         } catch (IOException e) {}
 
         this.lyt = lyt;
@@ -67,7 +67,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
     private void drawTrackBlock(Graphics g, Block blk, Color tkColor) {
         Graphics2D g2 = (Graphics2D) g;
 
-        float[] dashUground = {4f, 4f};
+        float[] dashUground = {1f, 0f};
         float[] dashAground = {1f, 0f};
 
         float[] dash = (blk.isUground) ? dashUground : dashAground;
@@ -120,7 +120,8 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         if (blk.isCrossing) {
             g.setColor(Color.MAGENTA);
             g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
-            g.drawString("X", xAvg + 6, yAvg + 6);
+            //g.drawString("X", xAvg + 6, yAvg + 6);
+            g.drawImage(xingIcon, xAvg - 10, yAvg - 10, null);
         }
             
     }
