@@ -589,13 +589,14 @@ public class TrainModelUI {
 			route.add(b17);
 			route.add(bYard);
 			*/
+
 			TrackLayout lo = new TrackLayout();	// XXX
 			lo.parseTrackDB("track_db.csv");	// XXX
 			Block bYard = lo.yard;	// XXX
 			ArrayList<Block> route = new ArrayList<Block>();	// XXX
 			mapWindow = new JFrame();	// XXX
 			mapWindow.setTitle("TKM");	// XXX
-			mapWindow.setSize(1300, 700);	// XXX
+			mapWindow.setSize(500, 653);	// XXX
 			mapWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	// XXX
 			mapWindow.add(new TrackMapPanel(lo));	// XXX
 			mapWindow.setVisible(true);	// XXX
@@ -610,6 +611,8 @@ public class TrainModelUI {
 						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
 				idArray[i] = new String("T" + (i + 1));
 			}
+
+			lo.setTrainList(trainList);
 			
 			// Create the UI.
 			TrainModelUI tnmUI = new TrainModelUI();
@@ -623,7 +626,7 @@ public class TrainModelUI {
 					timeTick(soloDate, soloDelta);
 				}
 			};
-			new javax.swing.Timer(soloDelta, taskPerformer).start();
+			new javax.swing.Timer(20, taskPerformer).start();
 			
 			// Disable all "Toggle" buttons that are associated with a manual entry.
 			btnToggleManRecPower.setEnabled(false);

@@ -31,6 +31,13 @@ public class TrackLayout {
     public Block yard;
     private TrackElement selected;
 
+    public AbstractList<Train> trains;
+
+    public void setTrainList(AbstractList<Train> tl)
+    {
+        trains = tl;
+    }
+
     public void setSelectedElement(TrackElement t) {
         selected = t;
     }
