@@ -118,8 +118,8 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         }
 
         if (blk.isCrossing) {
-            g.setColor(Color.MAGENTA);
-            g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
+            //g.setColor(Color.MAGENTA);
+            //g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
             //g.drawString("X", xAvg + 6, yAvg + 6);
             g.drawImage(xingIcon, xAvg - 10, yAvg - 10, null);
         }
@@ -195,6 +195,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
     public void mouseClicked(MouseEvent e) {
         //System.out.printf("%d %d\n", e.getX(), e.getY());
+        /* Check if we clicked a track block */
         }
     public void mouseEntered(MouseEvent e) {
         }
