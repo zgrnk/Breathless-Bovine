@@ -16,11 +16,11 @@ import TNM.Train;
 /* A comment */
 
 
-public class TrackMapPanel extends JPanel {
+public class TrackMapPanel extends JPanel implements MouseListener{
 
     //BufferedImage img;
     TrackLayout lyt;
-    AbstractList<Train> trainList;
+    //AbstractList<Train> trainList;
 
     private int x;
     private int y;
@@ -35,7 +35,34 @@ public class TrackMapPanel extends JPanel {
         y = 0;
     }
 
-    private void drawTrackBlock(Block blk, Graphics g) {
+    private void drawTrain(Graphics g, Train tn) {
+        /* Draw the train front */
+        Block blk = tn.positionBlock;
+        double dist_fact = tn.positionMeters/blk.length;
+        int xFr = (int)((blk.mapX2 - blk.mapX1)*dist_fact + blk.mapX1);
+        int yFr = (int)((blk.mapY2 - blk.mapY1)*dist_fact + blk.mapY1);
+        double thetaFr = Math.atan2((blk.mapY2 - blk.mapY1),(blk.mapX2 - blk.mapX1));
+        if (tn.positionDirection == Block.DIRECTION_REV) {
+            thetaFr += Math.PI;
+        }
+        Graphics2D g2 = (Graphics2D) g;
+
+        AffineTransform saveAt = g2.getTransform();
+        AffineTransform dirAt = new AffineTransform();
+        dirAt.rotate(thetaFr, xFr, yFr);
+        g2.transform(dirAt);
+
+        g2.setPaint(Color.BLUE);
+        //g2.fill(new Ellipse2D.Double(xFr-8,yFr-4,16,8));
+        g2.draw(new Line2D.Double(xFr,yFr,xFr-12,yFr-8));
+        g2.draw(new Line2D.Double(xFr,yFr,xFr-12,yFr+8));
+        g2.draw(new Line2D.Double(xFr-12,yFr-8,xFr-12,yFr+8));
+
+        /* Restore saved transform */
+        g2.setTransform(saveAt);
+    }
+
+    private void drawTrackBlock(Graphics g, Block blk) {
         Graphics2D g2 = (Graphics2D) g;
 
         Stroke s = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
@@ -58,13 +85,11 @@ public class TrackMapPanel extends JPanel {
             int xAvg = (blk.mapX1 + blk.mapX2)/2;
             int yAvg = (blk.mapY1 + blk.mapY2)/2;
             //g.fillOval(xAvg-4, yAvg-4, 8, 8);
-            g2.fill(new Ellipse2D.Double(xAvg-6,yAvg-6,12,12));
+            g2.fill(new Ellipse2D.Double(xAvg-5,yAvg-5,10,10));
+            g.setColor(Color.BLACK);
+            g.drawString(blk.stationName, xAvg + 15, yAvg + 15);
         }
             
-    }
-
-    public void setTrainList(AbstractList<Train> trainList) {
-        this.trainList = trainList;
     }
 
     public void paintComponent(Graphics g) {
@@ -75,10 +100,28 @@ public class TrackMapPanel extends JPanel {
         ListIterator<Block> iter = lyt.getBlocks().listIterator();
 
         while (iter.hasNext()) {
-            drawTrackBlock(iter.next(), g);
+            drawTrackBlock(g, iter.next());
         }
 
         /* Draw trains */
-        //ListIterator<Block> iter = 
+        if (lyt.trains != null)
+        {
+            ListIterator<Train> tIter = lyt.trains.listIterator();
+
+            while (tIter.hasNext()) {
+                drawTrain(g, tIter.next());
+            }
+        }
     }
+
+    public void mouseClicked(MouseEvent e) {
+        }
+    public void mouseEntered(MouseEvent e) {
+        }
+    public void mouseExited(MouseEvent e) {
+        }
+    public void mousePressed(MouseEvent e) {
+        }
+    public void mouseReleased(MouseEvent e) {
+        }
 }

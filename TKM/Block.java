@@ -163,13 +163,15 @@ public class Block extends TrackElement
             train.positionBlock.occupied = true;
 
             /* Have the train become fully inside this block? */
-            if ((
+            if (
+                train.positionBlock != train.positionBlockTail // Not already contained within a block
+                && ((
                     train.positionDirection == DIRECTION_FWD &&
                     train.positionMeters > train.length
                 ) || (
                     train.positionDirection == DIRECTION_REV &&
                     (train.positionBlock.length - train.positionMeters) > train.length
-                )) {
+                ))) {
                     train.positionBlockTail.occupied = false;
                     train.positionBlockTail = train.positionBlock;
                 }
