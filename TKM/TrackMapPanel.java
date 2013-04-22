@@ -35,7 +35,11 @@ public class TrackMapPanel extends JPanel {
         y = 0;
     }
 
-    private void drawTrackBlock(Block blk, Graphics g) {
+    private void drawTrain(Graphics g, Train tn) {
+
+    }
+
+    private void drawTrackBlock(Graphics g, Block blk) {
         Graphics2D g2 = (Graphics2D) g;
 
         Stroke s = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
@@ -75,10 +79,14 @@ public class TrackMapPanel extends JPanel {
         ListIterator<Block> iter = lyt.getBlocks().listIterator();
 
         while (iter.hasNext()) {
-            drawTrackBlock(iter.next(), g);
+            drawTrackBlock(g, iter.next());
         }
 
         /* Draw trains */
-        //ListIterator<Block> iter = 
+        ListIterator<Block> iter = trainList.listIterator();
+
+        while (iter.hasNext()) {
+            drawTrain(g, iter.next());
+        }
     }
 }

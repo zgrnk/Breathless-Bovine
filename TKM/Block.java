@@ -170,7 +170,7 @@ public class Block extends TrackElement
                     train.positionDirection == DIRECTION_REV &&
                     (train.positionBlock.length - train.positionMeters) > train.length
                 )) {
-                    train.positionBlockTail.occupied = false;
+                    //train.positionBlockTail.occupied = false;
                     train.positionBlockTail = train.positionBlock;
                 }
             return;
