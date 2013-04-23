@@ -326,11 +326,6 @@ public class CTCOffice extends PApplet {
 		currentTime = tempTime.getTime();
 		
 		//current_clock_sec = 7 * 60 * 60 + 59 * 60 + 30;
-		
-/*<<<<<<< HEAD
-		TrackLayout track = new TrackLayout();	
-		track.parseTrackDB("track_db.csv");	
-		bYard = track.redLine.yard;*/
 
 		trainList = new ArrayList<Train>();
 		idArray = new String[numTrains];
@@ -387,6 +382,8 @@ public class CTCOffice extends PApplet {
 		idArray = new String[numTrains];
 		// Create the trains.
 		for (i = 0; i < numTrains; i++) {
+			//Train(int id, String stringId, String line, double dispatchTime, ArrayList<Block> route, 
+			//Engineer engineer, Block positionBlock)
 			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
 					(8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), redRoute,
 					new Engineer(true, false, 0.0,
