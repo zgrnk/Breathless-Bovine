@@ -96,6 +96,33 @@ public class TrackLayout {
                 }
             }
 
+            /* Add transponders */
+            for (Block curBlk : blocks) {
+                if (curBlk.isStation) {
+                    curBlk.transponderMessage = curBlk.stationName;
+                    /* If my next block is pointing towards me or if it's bidir,
+                     * put a transponder there */
+                    if (curBlk.next instanceof Block
+                        && (curBlk.next.next == curBlk || curBlk.next.isBidir)) {
+                        curBlk.next.transponderMessageRev = curBlk.stationName;
+                    }
+                    /* If my prev block is pointing towards me or if it's bidir,
+                     * put a transponder there */
+                    if (curBlk.prev instanceof Block
+                        && (curBlk.prev.next == curBlk || curBlk.prev.isBidir)) {
+                        curBlk.prev.transponderMessageFwd = curBlk.stationName;
+                    }
+
+                    /* Put a direct transponderMessage on the station */
+                    curBlk.transponderMessage = curBlk.stationName;
+
+                    if (curBlk.prev instanceof Switch
+                     || curBlk.next instanceof Switch) {
+                        System.out.println("Station next to switch!");
+                    }
+                }
+            }
+
             for (Switch curSw : switches) {
                 if (curSw.blkMain == null) {
                     curSw.blkMain = (Block) getElementById(curSw.mainId);

@@ -22,6 +22,8 @@ public class Block extends TrackElement
     public boolean isCrossing;
     public String stationName;
     public String transponderMessage;
+    public String transponderMessageFwd;
+    public String transponderMessageRev;
     public TrackElement prev;
     public TrackElement next;
 
@@ -47,7 +49,9 @@ public class Block extends TrackElement
         prev = null;
         next = null;
         id = -1;
-        transponderMessage = null;
+        transponderMessage = "";
+        transponderMessageFwd = "";
+        transponderMessageRev = "";
     }
 
     public Block(int id, String lineId, String sectionId, double length, double grade,
