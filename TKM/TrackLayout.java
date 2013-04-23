@@ -5,8 +5,7 @@ package TKM;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.List;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
@@ -190,7 +189,6 @@ public class TrackLayout {
         redLine = new TrackLine("Red Line");
         greenLine = new TrackLine("Green Line");
 
-
         TrackLine tLine = redLine;
         
         /* open csv */
@@ -199,16 +197,14 @@ public class TrackLayout {
         Scanner scanner;
         try {
 
-            scanner = new Scanner(path, StandardCharsets.UTF_8.name());
-            
-            
+            scanner = new Scanner(path); //StandardCharsets.UTF_8.name());
+
             /* parse csv */
             int mode = -1;
             boolean skip = false;
 
-            System.out.println("Begin parsing");
+            System.out.println("Parsing track database");
             while (scanner.hasNextLine()){
-
                 
                 String line = scanner.nextLine();
                 //System.out.println(line);
