@@ -252,6 +252,7 @@ public class TrackLayout {
                         blk.id = Integer.parseInt(tokens[2]);
                         blk.length = Double.parseDouble(tokens[3]);
                         blk.grade = Double.parseDouble(tokens[4]);
+                        /* Speed limit is given in km/h but we need m/s */
                         blk.speedLimit = Double.parseDouble(tokens[5]) * 0.27777;
                         blk.isUground = tokens[6].equals("y");
                         //blk.hasSwitch [7]
