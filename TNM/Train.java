@@ -184,8 +184,7 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 		if (!isSolo) {
 			tncResponse = tnc.timeTick(time, curVelocity, period, positionBlock, positionBlockTail, 
 										issetSignalPickupFailure, issetEngineFailure, issetBrakeFailure, 
-										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0),
-										positionBlock.getNext(positionDirection == Block.DIRECTION_FWD).stationName);
+										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0));
 		}
 		
 		if ((!issetDoorsOpen) && (numCrew > 0)) {

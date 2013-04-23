@@ -234,7 +234,7 @@ public class TrainController
     public ResponseTNC timeTick(double ntime, double curVelocity, double period, Block positionBlock, 
     Block positionBlockTail, boolean issetSignalPickupFailure, boolean issetEngineFailure, 
     boolean issetBrakeFailure, double fixedSuggestedSpeed, double mboSuggestedSpeed, 
-    boolean issetEmerBrake, boolean operator, String nextStationName)
+    boolean issetEmerBrake, boolean operator)
     {
         time=ntime;
         tperiod=period;
@@ -252,7 +252,7 @@ public class TrainController
         //    autspeed=mboSuggestedSpeed;
         }
         speedlimit=positionBlock.speedLimit;
-        nextName=nextStationName;
+        nextName=positionBlock.transponderMessage;
         currAnnoun=setAnnouncement();
         
        //begin computer actions

@@ -6,4 +6,4 @@
 #      TKC/util/*.java \
 #      MBO/*.java \
 #      SSC/*.java
-javac -cp .:controlP5.jar:core.jar TNM/*.java TKM/*.java CTCOffice/*.java
+javac -cp .:controlP5.jar:core.jar TNM/*.java TKM/*.java CTCOffice/*.java TKC/util/*.java

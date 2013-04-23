@@ -31,8 +31,8 @@ public class TKMControlPanel extends JPanel implements ActionListener {
     JCheckBox cboxBlkCrossing;
     
     JCheckBox cboxSwDiv;
-    JLabel lblTest;
-    JButton bTest;
+    //JLabel lblTest;
+    //JButton bTest;
 
     public TKMControlPanel(TrackLayout tl) {
 
@@ -112,10 +112,10 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         pSwInfo.add(new JLabel("Switched to divergent"));
         pSwInfo.add(cboxSwDiv);
 
-        bTest = new JButton("Test train");
-        bTest.addActionListener(this);
+        //bTest = new JButton("Test train");
+        //bTest.addActionListener(this);
         
-        lblTest = new JLabel("Test area");
+        //lblTest = new JLabel("Test area");
 
         pInfo.add(pBlkInfo);
         pInfo.add(new JSeparator(JSeparator.HORIZONTAL));
@@ -123,12 +123,12 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         pInfo.add(Box.createVerticalGlue());
 
         this.add(pInfo);
-        this.add(bTest);
-        this.add(lblTest);
+        //this.add(bTest);
+        //this.add(lblTest);
         
         this.add(Box.createVerticalGlue());
         this.setMaximumSize(new Dimension(400, 65535));
-        this.setPreferredSize(new Dimension(400, 65535));
+       // this.setPreferredSize(new Dimension(400, 65535));
 
     }
 
@@ -164,15 +164,10 @@ public class TKMControlPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 		
     TrackElement elem;
-    //String name;
 
         if (e.getSource() == cboxSwDiv) {
             selectedSwitch.state = ((JCheckBox)e.getSource()).isSelected();
         }
-                
-        if (e.getSource() == bTest) {
-			//startTrainTest();
-		} 
                 
         if ("comboBoxChanged".equals(e.getActionCommand())) {
             JComboBox cb = (JComboBox)e.getSource();

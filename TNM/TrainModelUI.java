@@ -131,10 +131,9 @@ public class TrainModelUI {
 	 */
 	public TrainModelUI() {
 		try {
-			JPanel emptyJPanel = new JPanel();
-			emptyJPanel.add(new JLabel("                                                                                                                                                                                                                                                                                                                                                          "));
+			//JPanel emptyJPanel = new JPanel();
+			//emptyJPanel.add(new JLabel("                                                                                                                                                                                                                                                                                                                                                          "));
 			isPaused = true;
-			
 			
 			// Setup the dynamicWindow.
 			
@@ -209,13 +208,13 @@ public class TrainModelUI {
 			dwPanel1.add(buildJPanel(jlToggleManDesSpdLmt));
 			dwPanel1.add(buildJPanel(new JLabel("Relative Grade from TKM (%)", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlGrade));
-			dwPanel1.add(buildJPanel(new JLabel("Total Mass (including passengers/crew) (kg)", JLabel.CENTER)));
+			dwPanel1.add(buildJPanel(new JLabel("Total Mass (inc. humans) (kg)", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlTotalMass));
 			dwPanel1.add(buildJPanel(new JLabel("Passenger Count", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlPassengerCount));
 			dwPanel1.add(buildJPanel(new JLabel("Crew Count", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlCrewCount));
-			dwPanel1.add(buildJPanel(new JLabel("Position from Onboard GPS ([current_block], m)", JLabel.CENTER)));
+			dwPanel1.add(buildJPanel(new JLabel("Position from GPS ([block], m)", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlPosition));
 			dwPanel1.add(buildJPanel(btnToggleSignalPickupFailure));
 			dwPanel1.add(buildJPanel(jlToggleSignalPickupFailure));
@@ -241,9 +240,9 @@ public class TrainModelUI {
 			dwPanel2.add(buildJPanel(jlManDoors));
 			dwPanel2.add(buildJPanel(btnToggleManDoors));
 			dwPanel2.add(buildJPanel(jlToggleManDoors));
-			dwPanel2.add(buildJPanel(new JLabel("Current Temperature (degrees Celsius)", JLabel.CENTER)));
+			dwPanel2.add(buildJPanel(new JLabel("Current Temp. (degrees C)", JLabel.CENTER)));
 			dwPanel2.add(buildJPanel(jlCurTemperature));
-			dwPanel2.add(buildJPanel(new JLabel("Target Temperature from TNC (degrees Celsius)", JLabel.CENTER)));
+			dwPanel2.add(buildJPanel(new JLabel("Target Temp. from TNC (degrees C)", JLabel.CENTER)));
 			dwPanel2.add(buildJPanel(jlTarTemperature));
 			dwPanel2.add(buildJPanel(btnSetManTarTemperature));
 			dwPanel2.add(buildJPanel(jlManTarTemperature));
@@ -260,20 +259,26 @@ public class TrainModelUI {
 			primaryButtons.add(buildJPanel(jlTime));
 			
 			JPanel jp = new JPanel();
+			jp.setLayout(new BoxLayout(jp, BoxLayout.Y_AXIS));
 			jp.add(primaryButtons);
-			jp.add(emptyJPanel);
+			jp.add(new JSeparator(JSeparator.HORIZONTAL));
 			jp.add(dwPanel1);
-			jp.add(new JLabel("        "));
+			jp.add(new JSeparator(JSeparator.HORIZONTAL));
 			jp.add(dwPanel2);
+
+			jp.setMaximumSize(new Dimension(400, 1000));
+
+			JScrollPane dScroll = new JScrollPane(jp);
+			dScroll.setViewportView(jp);
+			//scroll.getVerticalScrollBar().setUnitIncrement(50);
 			
 			dynamicWindow = new JFrame();
 			dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   --)");
-			dynamicWindow.setSize(1300, 700);
+			dynamicWindow.setSize(600, 400);
 			dynamicWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-			dynamicWindow.add(jp);
+			dynamicWindow.add(dScroll);
 			isVisible = false;
 			dynamicWindow.setVisible(isVisible);
-			
 			
 			// Setup the staticWindow.
 			
@@ -312,9 +317,9 @@ public class TrainModelUI {
 			swPanel.add(buildJPanel(jlEmergencyBrakeDecel));
 			swPanel.add(buildJPanel(new JLabel("Coefficient of Friction", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlFrictionCoeff));
-			swPanel.add(buildJPanel(new JLabel("Train Mass (not including passengers/crew) (kg)", JLabel.CENTER)));
+			swPanel.add(buildJPanel(new JLabel("Train Mass (not inc. humans) (kg)", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlEmptyTrainMass));
-			swPanel.add(buildJPanel(new JLabel("Mass Per Passenger/Crew (kg)", JLabel.CENTER)));
+			swPanel.add(buildJPanel(new JLabel("Mass Per Human (kg)", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlPersonMass));
 			swPanel.add(buildJPanel(new JLabel("Maximum Seated Passenger Count", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlMaxSeatedCount));
@@ -323,13 +328,15 @@ public class TrainModelUI {
 			swPanel.add(buildJPanel(new JLabel("Maximum Crew Count", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlMaxCrewCount));
 			
-			JScrollPane staticJSP = new JScrollPane(swPanel);
+			//JScrollPane staticJSP = new JScrollPane(swPanel);
+			//staticJSP.setViewportView(swPanel);
+		  //scroll.getVerticalScrollBar().setUnitIncrement(50);
 			
 			staticWindow = new JFrame();
 			staticWindow.setTitle("Train Model (Chris Paskie)   -   Static Values   (Train ID:   --)");
 			staticWindow.setSize(700, 600);
 			staticWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-			staticWindow.add(staticJSP);
+			staticWindow.add(swPanel);
 			isVisibleStatic = false;
 			staticWindow.setVisible(isVisibleStatic);
 		} catch (Exception e) {
@@ -500,8 +507,8 @@ public class TrainModelUI {
 	public ArrayList<Train> getTrainsInBlock(int id) {
 		ArrayList<Train> tempAL = new ArrayList<Train>();
 		for (int i = 0; i < trainList.size(); i++) {
-			if (trainList.get(i).positionBlock.id == id) {
 System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i).positionBlock.id));
+			if (trainList.get(i).positionBlock.id == id) {
 				tempAL.add(trainList.get(i));
 			}
 		}
