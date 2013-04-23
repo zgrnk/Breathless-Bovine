@@ -56,6 +56,7 @@ public class CTCGui extends JPanel implements ActionListener {
     
     this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
+    /* Global simulation stuff */
     pSim = new JPanel();
     pSim.setLayout(new BoxLayout(pSim, BoxLayout.Y_AXIS));
     pSim.setMaximumSize(new Dimension(200, 1000));
@@ -68,6 +69,7 @@ public class CTCGui extends JPanel implements ActionListener {
     pSim.add(btnStartPause);
     pSim.add(Box.createVerticalGlue());
 
+    /* CTC UI - not global simulation stuff */
     pCtc = new JPanel();
     pCtc.add(new JLabel("CTC panel"));
     pCtc.add(new JLabel("- Add/remove track"));
