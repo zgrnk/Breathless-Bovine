@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 
 import TNM.*;
 import SSC.*;
+import TKC.util.ControllerUI;
 import TKC.util.TrackController;
 import TKM.*;
 
@@ -43,6 +44,7 @@ public class CTCOffice extends PApplet {
 	Calendar targetTime; 
 	Calendar tempTime; 
 	TKMGui tkmgui;
+	ControllerUI tkcgui;
 	TrackController tkc;
 
 	public static void main(String args[]) {
@@ -398,6 +400,7 @@ public class CTCOffice extends PApplet {
 		tkmgui = new TKMGui(track);
 		
 		tkc = new TrackController(track, this);
+		tkcgui = new ControllerUI(tkc);
 	}
 
 }
