@@ -1,4 +1,4 @@
-package MBO;
+
 
 
 import java.util.*;
@@ -19,21 +19,21 @@ public class MBO_Test{
 
 
 	public static void main(String[] args){
+		
+		//System.out.println(System.getProperty("java.runtime.version"));
 
-
-		for(int i=0; i<26; i++){
-			char blockID = 'A';
-			blockID += i;
-			greenTrackLayout.add(new Block(Character.toString(blockID)));
+		TrackLayout tl = new TrackLayout();
+		tl.parseTrackDB("track_db.csv");
+		tl.constructTrack();
+		greenTrackLayout = tl.getBlocks();
+		
+		
+		for(int i=1; i<=76; i++){
+			redTrackLayout.add(new Block(i));
 		}
 		
-		for(int i=0; i<20; i++){
-			char blockID = 'A';
-			blockID += i;
-			redTrackLayout.add(new Block(Character.toString(blockID)));
-		}
 		
-		
+		/*
 		greenTrackLayout.get(0).prev = greenTrackLayout.get(greenTrackLayout.size()-1);
 		greenTrackLayout.get(0).next = greenTrackLayout.get(1);
 		for(int i=1; i<greenTrackLayout.size()-1; i++){
@@ -53,28 +53,20 @@ public class MBO_Test{
 		}
 		redTrackLayout.get(redTrackLayout.size()-1).next = redTrackLayout.get(0);
 		redTrackLayout.get(redTrackLayout.size()-1).prev = redTrackLayout.get(redTrackLayout.size()-2);
+		*/
 
 
-
-		testTrain = new Train("G1", "Green", true);
-		testTrain2 = new Train("G2", "Green", true);
-		testTrain3 = new Train("R1", "Red", false);
+		
+		testTrain = new Train(1, "G1", "Green", 0, greenTrackLayout, null, greenTrackLayout.get(0));
+		testTrain2 = new Train(2, "G2", "Green", 0, greenTrackLayout, null, greenTrackLayout.get(70));
+		testTrain3 = new Train(3, "R1", "Red", 0, redTrackLayout, null, redTrackLayout.get(0));
 		trainList.add(testTrain);
 		trainList.add(testTrain2);
 		trainList.add(testTrain3);
-		
-		
-		testTrain.gps.block = greenTrackLayout.get(0);
-		testTrain.gps.block.trainOnBlock = testTrain;
-		testTrain2.gps.block = greenTrackLayout.get(20);
-		testTrain2.gps.block.trainOnBlock = testTrain2;
-		testTrain3.gps.block = redTrackLayout.get(10);
-		testTrain3.gps.block.trainOnBlock = testTrain3;
 
-		
 
 		for (Train t : trainList){
-			trainTable.put(t.id, t);
+			trainTable.put(t.stringId, t);
 		}
 
 		
@@ -92,12 +84,14 @@ public class MBO_Test{
 		    		
 		    		double distance = t.gps.speed*0.01*60*60/1000;
 		    		t.gps.metersIntoBlock += distance;
-		    		if(t.gps.metersIntoBlock >= t.gps.block.length){
-		    			t.gps.metersIntoBlock = 0;
-		    			t.gps.block = t.gps.block.next;
+		    		
+		    		if(t.gps.metersIntoBlock >= t.gps.block.length){		///////////////ERROR HERE
+		    			//t.gps.metersIntoBlock = 0;
+		    			t.gps.block = t.gps.block.getNext(false);
 		    		}
-		    		t.gps.block.trainOnBlock = t;
-		    		t.gps.block.prev.trainOnBlock = null;
+		    		
+		    		//t.gps.block.trainOnBlock = t;
+		    		//t.gps.block.getNext(true).trainOnBlock = null;
 		    	}
 		 
 		    }
