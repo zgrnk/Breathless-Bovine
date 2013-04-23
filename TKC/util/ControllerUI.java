@@ -288,8 +288,13 @@ public class ControllerUI extends JFrame {
   					blockPanelContent.removeAll();
 					
 					try {
-						currentController = tkc.controllerList.get(val);
-						
+						String str = (String) spinnerTrack.getValue();
+						if (str.equals("Red Line")) {
+							currentController = tkc.redControllerList.get(val);
+						}
+						else {
+							currentController = tkc.greenControllerList.get(val);
+						}
 						trainTotalLabel.setText("" + currentController.trainList.size());
 						blockTotalLabel.setText("" + currentController.blockTable.size());
 						
