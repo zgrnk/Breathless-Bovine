@@ -100,7 +100,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
     }
 
-    private void drawTrackOverlay(Graphics g, TrackLayout.TrackLine line, Block blk, Color tkColor) {
+    private void drawTrackOverlay(Graphics g, Block blk, Color tkColor) {
         Graphics2D g2 = (Graphics2D) g;
 
         Stroke s = new BasicStroke(2f, BasicStroke.CAP_ROUND,
@@ -122,7 +122,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             /* Check if this station is repeated somewhere else */
             //boolean foundPartner = false;
 
-            for (Block b: line.getBlocks())
+            for (Block b: lyt.getBlocks())
             {
                 if (b != blk && b.stationName.equals(blk.stationName))
                 {
@@ -181,12 +181,13 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         
         //g.drawImage(img, 0, 0, null);
         g.setColor(new Color(20, 20, 30));
-        g.fillRect(0, 0, 520, 670);
+        g.fillRect(0, 0, 540, 670);
+
+        foundStations = new ArrayList<Block>();
 
         for (TrackLayout.TrackLine line : lyt.getLines()) {
 
             Color tkColor;
-            foundStations = new ArrayList<Block>();
 
             if (line == lyt.redLine) {
                 tkColor = new Color(192,0,0);
@@ -205,7 +206,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             }
 
             for (Block blk : line.getBlocks()) {
-                drawTrackOverlay(g, line, blk, tkColor);
+                drawTrackOverlay(g, blk, tkColor);
             }
 
             /* Draw switches */
@@ -247,7 +248,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             if (dx*dx + dy*dy < rad*rad) {
                 lyt.setSelectedElement(b);
                 if (cPanel != null) {
-                    cPanel.updateBlkInfo(b);
+                    cPanel.updateBlkInfo(b, true);
                 }
                 repaint();
                 return;

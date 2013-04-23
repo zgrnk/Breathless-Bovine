@@ -278,6 +278,7 @@ public class TrackLayout {
                         //System.out.printf("Block:  id=%d, length=%f station=%s\n",
                         //    blk.id, blk.length, blk.stationName);
 
+                        blk.line = tLine;
                         tLine.blocks.add(blk);
                             
                     } else if (mode == 1) {
@@ -303,6 +304,7 @@ public class TrackLayout {
                         
                         //System.out.printf("Switch: id=%d\n", sw.id);
 
+                        sw.line = tLine;
                         tLine.switches.add(sw);
                     } else {
                         System.out.println("Error: stray line");

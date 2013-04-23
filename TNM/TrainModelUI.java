@@ -266,7 +266,7 @@ public class TrainModelUI {
 			jp.add(new JSeparator(JSeparator.HORIZONTAL));
 			jp.add(dwPanel2);
 
-			jp.setMaximumSize(new Dimension(400, 1000));
+			jp.setMaximumSize(new Dimension(400, 700));
 
 			JScrollPane dScroll = new JScrollPane(jp);
 			dScroll.setViewportView(jp);
