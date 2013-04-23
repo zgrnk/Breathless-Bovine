@@ -391,9 +391,7 @@ public class CTCOffice extends PApplet {
 			idArray[i] = new String("T"+(i+1));
 		}
 		track.setTrainList(trainList);
-		tkmgui = new TKMGui();
-		tkmgui.loadGui();
-		tkmgui.setSize(1000, 1000);
+		tkmgui = new TKMGui(track);
 	}
 
 }
