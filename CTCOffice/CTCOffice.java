@@ -26,7 +26,7 @@ public class CTCOffice extends PApplet {
 	Button startBtn, setTrainSpd, SimRatioBtn;
 	Knob kn_trainSpeed;
 
-	Canvas track_layout;
+
 	boolean simStarted, init;
 	int simTimeRatio, lastTick, numTrains;
 	int cnt = 0;
@@ -41,9 +41,14 @@ public class CTCOffice extends PApplet {
 	Date currentTime; 
 	Calendar targetTime; 
 	Calendar tempTime; 
+
 	TKMGui tkmgui;
 	ControllerUI tkcgui;
 	TrackController tkc;
+
+	JFrame mapwindow;
+	TrackLayout track_layout;
+
 
 	public static void main(String args[]) {
 		//PApplet.main(new String[] { "--present", "CTCOffice" });
@@ -73,6 +78,7 @@ public class CTCOffice extends PApplet {
 		simStarted = false;
 		init = false;
 
+		createTKMGUI();
 		testInit();
 		//track_layout = new trackLayout();
 		addTrackGroup();
@@ -94,6 +100,7 @@ public class CTCOffice extends PApplet {
 		background(193, 205, 193);
 
 		if (simStarted) {
+			mapwindow.repaint();
 			targetTime.setTime(currentTime);
 			targetTime.add(Calendar.MILLISECOND,1000);
 			
@@ -278,6 +285,7 @@ public class CTCOffice extends PApplet {
 				sched.show();
 				TLgroup.hide();
 				trainInfo.hide();
+				mapwindow.setVisible(false);
 
 			} else {
 				simStarted = true;
@@ -288,6 +296,7 @@ public class CTCOffice extends PApplet {
 				sched.hide();
 				TLgroup.show();
 				trainInfo.show();
+				mapwindow.setVisible(true);
 
 			}
 		} else if (theEvent.isGroup()) {
@@ -318,9 +327,36 @@ public class CTCOffice extends PApplet {
 		
 		//current_clock_sec = 7 * 60 * 60 + 59 * 60 + 30;
 		
+/*<<<<<<< HEAD
 		TrackLayout track = new TrackLayout();	
 		track.parseTrackDB("track_db.csv");	
-		bYard = track.redLine.yard;
+		bYard = track.redLine.yard;*/
+
+		trainList = new ArrayList<Train>();
+		idArray = new String[numTrains];
+		// Create the trains.
+		for (int i = 0; i < numTrains; i++) {
+			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
+					(8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), redRoute,
+					new Engineer(true, false, 0.0,
+							(8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60)
+									% (24 * 60 * 60)), bYard);
+			trainList.add(tempTrain);
+			Integer tempInt = new Integer(i + 1);
+			idArray[i] = new String("T"+(i+1));
+		}
+		track_layout.setTrainList(trainList);
+	}
+	
+	public void createTKMGUI(){
+		track_layout = new TrackLayout();	
+		track_layout.parseTrackDB("track_db.csv");	
+		mapwindow = new JFrame();
+		mapwindow.setContentPane(new TrackMapPanel(track_layout));
+		mapwindow.setSize(550, 653);
+	
+		bYard = track_layout.redLine.yard;	
+
 		redRoute = new ArrayList<Block>();
 		
 		//create red line route
@@ -328,22 +364,22 @@ public class CTCOffice extends PApplet {
 		int i;
 		//route.add((Block)track.getElementById(0));
 		for (i=9; i>0; i--){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		for (i=16; i<67; i++){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		for (i=52; i>15; i--){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		for (i=52; i>15; i--){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		for (i=1; i<10; i++){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		//yard
-		redRoute.add((Block)track.getElementById(0));
+		redRoute.add((Block)track_layout.getElementById(0));
 		
 
 
@@ -361,12 +397,14 @@ public class CTCOffice extends PApplet {
 			idArray[i] = new String("T"+(i+1));
 		}
 		
-		track.setTrainList(trainList);
-		tkmgui = new TKMGui(track);
+		track_layout.setTrainList(trainList);
+		tkmgui = new TKMGui(track_layout);
 		
-		tkc = new TrackController(track, this);
+		tkc = new TrackController(track_layout, this);
 		tkcgui = new ControllerUI(tkc);
+
 	}
+	
 
 }
 
