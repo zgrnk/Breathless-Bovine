@@ -5,12 +5,15 @@ import controlP5.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.swing.JFrame;
 
 import TNM.*;
 import SSC.*;
+import TKC.util.ControllerUI;
+import TKC.util.TrackController;
 import TKM.*;
 
 public class CTCOffice extends PApplet {
@@ -33,10 +36,16 @@ public class CTCOffice extends PApplet {
 	TrainModelUI tnmUI;
 	ArrayList<Train> trainList;
 	String[] idArray;
-	ArrayList<Block> route;
+	ArrayList<Block> redRoute;
 	Block bYard, b01, b02, b03, b04, b05, b06, b07, b08, b09, b10, b11, b12,
 			b13, b14, b15, b16, b17;
 	double current_clock_sec;
+	Date currentTime; 
+	Calendar targetTime; 
+	Calendar tempTime; 
+	TKMGui tkmgui;
+	ControllerUI tkcgui;
+	TrackController tkc;
 
 	public static void main(String args[]) {
 		//PApplet.main(new String[] { "--present", "CTCOffice" });
@@ -49,15 +58,22 @@ public class CTCOffice extends PApplet {
 	public void setup() {
 		size(1000, 800);
 		smooth();
-		frameRate(30);
+		frameRate(10);
 		lastTick = 0;
 		numTrains = 2;
-		simTimeRatio = 5;
+		//in GUI set simToRealtime = 10
+		//simTimeRatio = above * FrameRate
+		//milliSecPerFrame = 1000
+		
+		
+		simTimeRatio = 100;
 
 		cp5 = new ControlP5(this);
 		timer = new ControlTimer();
 		showTimer = new Textlabel(cp5, "--", 100, 100);
-		timer.setSpeedOfTime((float)0.1);
+		timer.setSpeedOfTime((float)simTimeRatio);
+		targetTime = Calendar.getInstance();
+		tempTime = Calendar.getInstance();
 
 		simStarted = false;
 		init = false;
@@ -73,9 +89,9 @@ public class CTCOffice extends PApplet {
 		tnmUI.setIsPaused(true);
 		tnmUI.setTrainList(trainList);
 		tnmUI.setSelectedId(trainList.get(0).id);
-		tnmUI.setIsVisible(false);
+		tnmUI.setIsVisible(true);
 
-		// new SSC_GUI();
+		//new SSC_GUI();
 
 	}
 
@@ -85,13 +101,43 @@ public class CTCOffice extends PApplet {
 		showTimer.setPosition(1, 1);
 
 		if (simStarted) {
-			showTimer.draw(this);
-			if (lastTick != timer.second()) {
-				current_clock_sec += simTimeRatio;
-				/*tnmUI.timeTick(current_clock_sec, simTimeRatio, 100);*/
-				lastTick = timer.second();
+			targetTime.setTime(currentTime);
+			targetTime.add(Calendar.MILLISECOND,1000);
+			
+			while(currentTime.getTime() < targetTime.getTime().getTime()){
+				tnmUI.timeTick(currentTime, 100);
+				tkc.nextTick();
+				tempTime.setTime(currentTime);
+				tempTime.add(Calendar.MILLISECOND,100);
+				currentTime = tempTime.getTime();
 			}
+			tkmgui.repaint();
+			
+/*			if (lastTick != timer.millis()) {
+				Calendar tempTime = Calendar.getInstance();
+				tempTime.setTime(currentTime);
+				tempTime.add(Calendar.MILLISECOND,simTimeRatio);
+				currentTime = tempTime.getTime();
+				tnmUI.timeTick(currentTime, 100);
+				lastTick = timer.millis();
+			}*/
 			trainList = tnmUI.getTrainList();
+			
+			
+			
+			
+			
+/*			showTimer.draw(this);
+			//second in relation to simRatio speed
+			if (lastTick != timer.millis()) {
+				Calendar tempTime = Calendar.getInstance();
+				tempTime.setTime(currentTime);
+				tempTime.add(Calendar.MILLISECOND,simTimeRatio);
+				currentTime = tempTime.getTime();
+				tnmUI.timeTick(currentTime, 100);
+				lastTick = timer.millis();
+			}
+			trainList = tnmUI.getTrainList();*/
 		}
 
 		try {
@@ -128,8 +174,8 @@ public class CTCOffice extends PApplet {
 		removeTrack = cp5.addDropdownList("Select Track to Remove...")
 				.setPosition(50, 125).setSize(200, 200).setGroup(track);
 
-		customizeDropDownBlock(closeTrack, route);
-		customizeDropDownBlock(removeTrack, route);
+		customizeDropDownBlock(closeTrack, redRoute);
+		customizeDropDownBlock(removeTrack, redRoute);
 		closeTrack.hide();
 		removeTrack.hide();
 	}
@@ -219,7 +265,7 @@ public class CTCOffice extends PApplet {
 		list.getCaptionLabel().setPaddingX(3);
 		list.getValueLabel().setPaddingX(3);
 		for (int i = 0; i < aList.size(); i++) {
-			list.addItem("" + aList.get(i).id, i);
+			//list.addItem("" + aList.get(i).id, i);
 		}
 		// list.scroll(0);
 		list.setColorBackground(color(60));
@@ -280,115 +326,81 @@ public class CTCOffice extends PApplet {
 
 			}
 		} else if (theEvent.isGroup()) {
-			println("got an event from group " + theEvent.getGroup().getName()
-					+ ", isOpen? " + theEvent.getGroup().isOpen());
+			/*println("got an event from group " + theEvent.getGroup().getName()
+					+ ", isOpen? " + theEvent.getGroup().isOpen());*/
 
 		} else if (theEvent.isController()) {
-			println("got something from a controller "
-					+ theEvent.getController().getName());
+		/*	println("got something from a controller "
+					+ theEvent.getController().getName());*/
 		}
 	}
 	
 	public ArrayList<Train> getTrainsInBlock(int blockNum){
-		return trainList;
 		
+		return tnmUI.getTrainsInBlock(blockNum);
 	}
 
 	public void testInit() {
 		tnmUI = new TrainModelUI();
 
-		current_clock_sec = 7 * 60 * 60 + 59 * 60 + 30;
+		//SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");	
+		tempTime.set(Calendar.HOUR_OF_DAY,7);
+		tempTime.set(Calendar.MINUTE,59);
+		tempTime.set(Calendar.SECOND,0);
+		tempTime.set(Calendar.MILLISECOND,0);
+		
+		currentTime = tempTime.getTime();
+		
+		//current_clock_sec = 7 * 60 * 60 + 59 * 60 + 30;
+		
+		TrackLayout track = new TrackLayout();	
+		track.parseTrackDB("track_db.csv");	
+		bYard = track.redLine.yard;
+		redRoute = new ArrayList<Block>();
+		
+		//create red line route
+		//9-1, 16-66, 52-16, 1-9, yard(0) 
+		int i;
+		//route.add((Block)track.getElementById(0));
+		for (i=9; i>0; i--){
+			redRoute.add((Block)track.getElementById(i));
+		}
+		for (i=16; i<67; i++){
+			redRoute.add((Block)track.getElementById(i));
+		}
+		for (i=52; i>15; i--){
+			redRoute.add((Block)track.getElementById(i));
+		}
+		for (i=52; i>15; i--){
+			redRoute.add((Block)track.getElementById(i));
+		}
+		for (i=1; i<10; i++){
+			redRoute.add((Block)track.getElementById(i));
+		}
+		//yard
+		redRoute.add((Block)track.getElementById(0));
+		
 
-		route = new ArrayList<Block>();
-		bYard = new Block(0, "A", "I", 100.0, 0.0, 5.0, false, false, true, false, false, "", false, false, false);
-		b01 = new Block(1, "B", "II", 500.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-		b02 = new Block(2, "C", "II", 500.0, -22.2, 1.0, false, false, false, false, false, "", false, false, false);
-		b03 = new Block(3, "D", "II", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-		b04 = new Block(4, "E", "II", 500.0, 11.1, 30.0, false, true, false, false, false, "", false, false, false);
-		b05 = new Block(5, "F", "III", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-		b06 = new Block(6, "G", "III", 100.0, 0.0, 5.0, false, false, false, true, false, "Alpha", false, false, false);
-		b07 = new Block(7, "H", "III", 500.0, -11.1, 30.0, false, false, false, false, false, "", false, false, false);
-		b08 = new Block(8, "I", "III", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-		b09 = new Block(9, "J", "IV", 500.0, 22.2, 1.0, false, false, false, false, false, "", false, false, false);
-		b10 = new Block(10, "K", "IV", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-		b11 = new Block(11, "L", "IV", 100.0, 0.0, 5.0, false, false, false, true, false, "Beta", false, false, false);
-		b12 = new Block(12, "M", "IV", 50.0, 11.1, 15.0, false, false, false, false, false, "", false, false, false);
-		b13 = new Block(13, "N", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-		b14 = new Block(14, "O", "V", 50.0, -11.1, 15.0, false, false, false, false, false, "", false, false, false);
-		b15 = new Block(15, "P", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-		b16 = new Block(16, "Q", "V", 100.0, 0.0, 5.0, false, false, false, true, false, "Gamma", false, false, false);
-		b17 = new Block(17, "R", "V", 50.0, 0.0, 15.0, false, false, false, false, false, "", false, false, false);
-
-		bYard.connect(b17, b01);
-		b01.connect(bYard, b02);
-		b02.connect(b01, b03);
-		b03.connect(b02, b04);
-		b04.connect(b03, b05);
-		b05.connect(b04, b06);
-		b06.connect(b05, b07);
-		b07.connect(b08, b06);
-		b08.connect(b09, b07);
-		b09.connect(b10, b08);
-		b10.connect(b11, b09);
-		b11.connect(b12, b10);
-		b12.connect(b11, b13);
-		b13.connect(b14, b12);
-		b14.connect(b13, b15);
-		b15.connect(b16, b14);
-		b16.connect(b15, b17);
-		b17.connect(bYard, b16);
-
-		route.add(bYard);
-		route.add(b01);
-		route.add(b02);
-		route.add(b03);
-		route.add(b04);
-		route.add(b05);
-		route.add(b06);
-		route.add(b07);
-		route.add(b08);
-		route.add(b09);
-		route.add(b10);
-		route.add(b11);
-		route.add(b12);
-		route.add(b13);
-		route.add(b14);
-		route.add(b15);
-		route.add(b16);
-		route.add(b17);
-		route.add(bYard);
-		route.add(b01);
-		route.add(b02);
-		route.add(b03);
-		route.add(b04);
-		route.add(b05);
-		route.add(b06);
-		route.add(b07);
-		route.add(b08);
-		route.add(b09);
-		route.add(b10);
-		route.add(b11);
-		route.add(b12);
-		route.add(b13);
-		route.add(b14);
-		route.add(b15);
-		route.add(b16);
-		route.add(b17);
-		route.add(bYard);
 
 		trainList = new ArrayList<Train>();
 		idArray = new String[numTrains];
 		// Create the trains.
-		for (int i = 0; i < numTrains; i++) {
+		for (i = 0; i < numTrains; i++) {
 			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
-					(8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), route,
+					(8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), redRoute,
 					new Engineer(true, false, 0.0,
-							(8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60)
+							(8 * 60 * 60 + i * 15 * 60 + 4 * 60 * 60)
 									% (24 * 60 * 60)), bYard);
 			trainList.add(tempTrain);
 			Integer tempInt = new Integer(i + 1);
 			idArray[i] = new String("T"+(i+1));
 		}
+		
+		track.setTrainList(trainList);
+		tkmgui = new TKMGui(track);
+		
+		tkc = new TrackController(track, this);
+		tkcgui = new ControllerUI(tkc);
 	}
 
 }

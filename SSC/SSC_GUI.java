@@ -1,3 +1,5 @@
+package SSC;
+
 import java.awt.*;
 
 import javax.swing.*;

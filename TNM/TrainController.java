@@ -7,7 +7,7 @@ import TKM.*;
  * EITHER TNM or TNC-UI
  * 
  * @author Ben Tomasulo 
- * @version 4/9/2013
+ * @version 4/22/2013
  */
 public class TrainController
 {
@@ -23,7 +23,7 @@ public class TrainController
     public double time;
     public double setpoint;
     public double autspeed;
-    public double speedlimit;
+    public double slimit;
     public double safespeed;
     public double currspeed;
     public final double maxpower=120000;
@@ -37,15 +37,24 @@ public class TrainController
     public double dtime;
     public String currAnnoun;
     public double tperiod;
-    public final double Kp=1000;
-    public final double Ki=500;
+    public final double Kp=800;
+    public final double Ki=200;
     public double ukprev;
     public double prerr;
+    public boolean opstate;
+    public String nextName;
+    public double powone;
+    public double powtwo;
+    public double powthree;
+    public double spone;
+    public double sptwo;
+    public double spthree;
+    public int checkid;
     
-    // initialize fake blocks
-	Block negout = new Block(-4, "A", "I", 100.0, 3.0, 60.0, false, false, true, false, false, "You found the secret stop, exit now to collect 100 rupies!", false, false, false);
+    // create test blocks
+    Block negout = new Block(-4, "A", "I", 100.0, 3.0, 60.0, false, false, true, false, false, "You found the secret stop, exit now to collect 100 rupies!", false, false, false);
 	Block negone = new Block(-1, "B", "II", 100.0, 3.0, 55.0, false, false, false, false, false, "Arriving at 0", false, false, false);
-	
+    
     
     /**
      * Constructor for objects of class TrainController
@@ -63,7 +72,7 @@ public class TrainController
         time=-1;
         setpoint=100;
         autspeed=100;
-        speedlimit=-1;
+        slimit=-1;
         setLights();
         safespeed=0;
         currspeed=0;
@@ -73,11 +82,14 @@ public class TrainController
         railFail=thisBlock.brokenRailFailure;
         trackFail=thisBlock.trackCircuitFailure;
         powerFail=thisBlock.powerFailure;
-        stationState=3;
+        stationState=0;
         currAnnoun="";
         tperiod=1;
         ukprev=0;
         prerr=0;
+        opstate=false;
+        nextName=null;
+        checkid=-1;
     }
 
     // Sets target temperature
@@ -133,56 +145,46 @@ public class TrainController
     }
     
     // set safe power, set brakes if needed
-    public void setPower()
+    public double setPower()
     {
+        // coast if negative power request
+        double thispower=0;
+        if(currspeed==0)
+        {
+            ukprev=0;
+        }
         if(railFail||trackFail)
         {
             // cuts engine power, activates the eBrake, and releases passengers after a stop
             // has been reached for more serious problems.
-            power=0;
             eBrake=true;
-            if (currspeed==0)
-            {
-                doors=true;
-            }
         }
         else if(engineFail||brakeFail)
         {
             // cuts engine power if a moderate problem is detected
             // releases passengers when stopped
-            power=0;
-            if (currspeed==0)
-            {
-                doors=true;
-            }
-            
         }
         else if(signalFail||powerFail)
         {
             // cuts engine power if a minor problem is detected
             // train will resume operation if the problem is fixed.
-            power=0;
+            thispower=0;
         }
         else
         {
-            if((currspeed<safespeed)&&(!eBrake))
+            if((currspeed < safespeed)&&(!eBrake))
             {
                 //disengage service brake and close doors if needed
                 sBrake=false;
                 doors=false;
                 
                 // increase power
-                power=(safespeed-currspeed)*Kp+Ki*(ukprev+tperiod*(safespeed-currspeed+prerr)/2);
+                thispower=(safespeed-currspeed)*Kp+Ki*(ukprev+tperiod*(safespeed-currspeed+prerr)/2);
                 prerr=safespeed-currspeed;
                 // engine can't deliver more power than max
                 if(power>maxpower)
                 {
-                    power=maxpower;
-                }
-                // coast if negative power request
-                else if(power<0)
-                {
-                    power=0;
+                    thispower=maxpower;
                 }
                 // update Uk otherwise
                 else
@@ -190,11 +192,10 @@ public class TrainController
                     ukprev=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
                 }
             }
-            else if(currspeed+5>safespeed)
+            else if(currspeed+1>safespeed)
             {
                 // engage service brake if going 5km/h or more over safe speed
                 sBrake=true;
-                power=0;
                 prerr=safespeed-currspeed;
                 ukprev=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
             }
@@ -202,105 +203,144 @@ public class TrainController
             {
                 // coast if going over safe speed but less than 5km/h over
                 sBrake=false;
-                power=0;
                 prerr=safespeed-currspeed;
                 ukprev=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
             }
         }
+        return thispower;
     }
     
     // sets safe speed
-    public void setSafeSpeed()
+    public double setSafeSpeed()
     {
-        if((autspeed<speedlimit)&&(autspeed<setpoint))
+        double thisspeed=0;
+        
+        if((nextName!=null)&&(nextName.length()!=0))
         {
-            safespeed=autspeed;
+            slimit=5;
         }
-        else if((speedlimit<autspeed)&&(speedlimit<setpoint))
+        if((autspeed<slimit)&&(autspeed<setpoint))
         {
-            safespeed=speedlimit;
+            thisspeed=autspeed;
+        }
+        else if((slimit<autspeed)&&(slimit<setpoint))
+        {
+            thisspeed=slimit;
         }
         else
         {
-            safespeed=setpoint;
+            thisspeed=setpoint;
         }
+        return thisspeed;
     }
     
     // timeTick method that updates Train Controller from Train Model
     public ResponseTNC timeTick(double ntime, double curVelocity, double period, Block positionBlock, 
     Block positionBlockTail, boolean issetSignalPickupFailure, boolean issetEngineFailure, 
     boolean issetBrakeFailure, double fixedSuggestedSpeed, double mboSuggestedSpeed, 
-    boolean issetEmerBrake, double curTemperature)
+    boolean issetEmerBrake, boolean operator, String nextStationName)
     {
-        time=ntime;
-        tperiod=period;
-        currspeed=curVelocity;
-        thisBlock=positionBlock;
-        oldBlock=positionBlockTail;
-        signalFail=issetSignalPickupFailure;
-        engineFail=issetEngineFailure;
-        // note that brake commands may still be sent even if brake failure is detected
-        brakeFail=issetBrakeFailure;
-        //autspeed=fixedSuggestedSpeed;
-        if(mboSuggestedSpeed<autspeed)
-        {
-        //    autspeed=mboSuggestedSpeed;
-        }
-        speedlimit=positionBlock.speedLimit;
-		if (thisBlock.isStation)
-			currAnnoun="Welcome to Station "+thisBlock.stationName+"!";
-		else if (thisBlock.isYard)
-			currAnnoun="Welcome to the Yard!";
-		else
-			currAnnoun="";
+       time=ntime;
+       tperiod=period;
+       currspeed=curVelocity;
+       thisBlock=positionBlock;
+       oldBlock=positionBlockTail;
+       signalFail=issetSignalPickupFailure;
+       engineFail=issetEngineFailure;
+       opstate=operator;
+       // note that brake commands may still be sent even if brake failure is detected
+       brakeFail=issetBrakeFailure;
+       //autspeed=fixedSuggestedSpeed;
+       if(mboSuggestedSpeed<autspeed)
+       {
+           autspeed=mboSuggestedSpeed;
+       }
+       slimit=positionBlock.speedLimit;
+       nextName=nextStationName;
+       currAnnoun=setAnnouncement();
         
        //begin computer actions
-        setSafeSpeed();
-        setPower();
-        setLights();
-        checkStation();
-        ResponseTNC tnmSignal=new ResponseTNC(power, sBrake, eBrake, lights, doors, tTemp, currAnnoun);
-        return tnmSignal;
+       //spone
+       safespeed=setSafeSpeed();
+       power=setPower();
+       setLights();
+       checkStation();
+       setDoors();
+       ResponseTNC tnmSignal=new ResponseTNC(power, sBrake, eBrake, lights, doors, tTemp, currAnnoun);
+        
+       return tnmSignal; 
+    }
+    
+    // sets the doors open when the train is not moving
+    public void setDoors()
+    {
+        if(currspeed!=0||stationState==2)
+        {
+            doors=false;
+        }
+        else
+        {
+            doors=true;
+        }
+    }
+        
+    // sets the current announcements
+    public String setAnnouncement()
+    {
+        String thisAnnounce="Announcement Error";
+        if((thisBlock.stationName==null)||(thisBlock.stationName.length()==0))
+        {
+            if((nextName==null)||(nextName.length()==0))
+            {
+                thisAnnounce="";
+            }
+            else
+            {
+                thisAnnounce="Next Station: "+nextName;
+            }
+        }
+        else
+        {
+            thisAnnounce="Now arriving at "+thisBlock.stationName+" Station";
+        }
+        return thisAnnounce;
     }
     
     // takes action if approaching station
     public void checkStation()
     {
-        if((stationState==3)&&(time>28805))
+        if(thisBlock.isStation||thisBlock.isYard)
         {
-            stationState=0;
-        }
-        else if(stationState==3)
-        {
-            doors=true;
-        }
-        else if(thisBlock.isStation)
-        {
-            if(stationState==0)
+            if(!opstate)
+            {
+                power=0;
+                sBrake=true;
+            }
+            else if(stationState==0)
             {
                 power=0;
                 sBrake=true;
                 if(currspeed==0)
                 {
-                    doors=true;
                     dtime=time;
                     stationState++;
                 }
             }
-            else if(stationState==1)
+        }
+        if(stationState==1)
+        {
+            power=0;
+            sBrake=true;
+            if(time>=dtime+35)
             {
-                power=0;
-                sBrake=true;
-                if(time>=dtime+35)
-                {
-                    doors=false;
-                    stationState++;
-                }
+                doors=false;
+                stationState++;
             }
-            else
-            {
-                stationState=0;
-            }
+        }
+        else if(checkid!=thisBlock.id)
+        {
+            stationState=0;
+            checkid=thisBlock.id;
         }
     }
 }

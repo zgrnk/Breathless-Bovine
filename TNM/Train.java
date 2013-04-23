@@ -1,24 +1,28 @@
+/**
+ * @class Train
+ * 
+ * @version 1.0
+ * 
+ * @date 04/25/2013
+ * 
+ * @author Chris Paskie
+ */
+
+
 package TNM;
+
 import TKM.*;
-
-/*
-XXX
-*/
-
-
-
-
-
 import java.util.*;
 import java.io.*;
 
-
-
-
-
-public class Train
-{
-	public double g = 9.80665;
+/**
+ * This file contains the main class which represents a single train.
+ * It is responsible for performing all of the physics calculations of each 
+ * train as they move along the track.
+ */
+public class Train {
+	
+	public static final double GRAVITY_CONSTANT = 9.80665;
 	
 	public TrainController tnc;
 	
@@ -86,18 +90,22 @@ public class Train
 	public double fixedSuggestedSpeed;
 	public double mboSuggestedAuthority;
 	public double mboSuggestedSpeed;
-	public double suggestedAuthority;
-	public double suggestedSpeed;
 	public Engineer engineer;
 	public boolean goOnBreak;
 	
 	
-	
-	public Train(int id, String stringId, String line, double dispatchTime, ArrayList<Block> route, Engineer engineer, Block positionBlock)
-	{
+	/**
+	 * Constructor of the train.  Each train will have its own train controller.
+	 */
+	public Train(int id, String stringId, String line, double dispatchTime, ArrayList<Block> route, 
+			Engineer engineer, Block positionBlock) {
+		
 		tnc = new TrainController();
 		
-		// Initialize the following static values from the .csv data file.
+		/*
+		 * Initialize the following static values as defined in the given Excel file 
+		 * containing train data, the track layout, etc.
+		 */
 		this.id = id;
 		this.stringId = stringId;
 		length = 32.2;
@@ -130,7 +138,7 @@ public class Train
 		this.positionBlock = positionBlock;
 		this.positionBlockTail = positionBlock;
 		positionMeters = 0.0;
-		positionDirection = true;
+		positionDirection = Block.DIRECTION_FWD;
 		postedSpeedLimit = positionBlock.speedLimit;
 		issetSignalPickupFailure = false;
 		issetEngineFailure = false;
@@ -143,14 +151,14 @@ public class Train
 		issetDoorsOpen = true;
 		issetDoorsOpenManual = true;
 		issetDoorsOpenUseManual = false;
-		curTemperature = 72.0;
-		targetTemperatureTNC = 72.0;
-		targetTemperatureManual = 72.0;
+		curTemperature = 22.0;
+		targetTemperatureTNC = 22.0;
+		targetTemperatureManual = 22.0;
 		issetTargetTemperatureManual = false;
 		announcement = "";
 		
 		// Initialize the following other values.
-		gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
+		gps = new GPS(positionBlock, (int) positionMeters, curVelocity, (positionDirection == Block.DIRECTION_FWD));
 		footPrint = 0;
 		nextTrainId = 0;
 		this.line = line;
@@ -161,819 +169,367 @@ public class Train
 		fixedSuggestedSpeed = 0.0;
 		mboSuggestedAuthority = 0.0;
 		mboSuggestedSpeed = 0.0;
-		suggestedAuthority = 0.0;
-		suggestedSpeed = 0.0;
 		this.engineer = engineer;
 		goOnBreak = false;
 	}
 	
-/*
-	public int getId()
-	{
-		return id;
-	}
-	
-	public String getStringId()
-	{
-		return stringId;
-	}
-	
-	public TrainController getTNC()
-	{
-		return tnc;
-	}
-	
-	public double getLength()
-	{
-		return length;
-	}
-	
-	public double getWidth()
-	{
-		return width;
-	}
-	
-	public double getHeight()
-	{
-		return height;
-	}
-	
-	public int getNumCars()
-	{
-		return numCars;
-	}
-	
-	public double getMotorPower()
-	{
-		return motorPower;
-	}
-	
-	public double getMaxSpeed()
-	{
-		return maxSpeed;
-	}
-	
-	public double getServiceBrakeDecel()
-	{
-		return serviceBrakeDecel;
-	}
-	
-	public double getEmerBrakeDecel()
-	{
-		return emerBrakeDecel;
-	}
-	
-	public double getFrictionCoeff()
-	{
-		return frictionCoeff;
-	}
-	
-	public double getEmptyTrainMass()
-	{
-		return emptyTrainMass;
-	}
-	
-	public double getPersonMass()
-	{
-		return personMass;
-	}
-	
-	public int getMaxCapacitySeated()
-	{
-		return maxCapacitySeated;
-	}
-	
-	public int getMaxCapacityStanding()
-	{
-		return maxCapacityStanding;
-	}
-	
-	public int getMaxCapacityCrew()
-	{
-		return maxCapacityCrew;
-	}
-	
-	public double getCurVelocity()
-	{
-		return curVelocity;
-	}
-	
-	public double getCurAccel()
-	{
-		return curAccel;
-	}
-	
-	public double getReceivedPower()
-	{
-		return receivedPower;
-	}
-	
-	public double getManualPower()
-	{
-		return manualPower;
-	}
-	
-	public boolean getIssetManualPower()
-	{
-		return issetManualPower;
-	}
-	
-	public double getPostedSpeedLimit()
-	{
-		return positionBlock.speedLimit;
-	}
-	
-	public double getManualSpeedLimit()
-	{
-		return manualSpeedLimit;
-	}
-	
-	public boolean getIssetManualSpeedLimit()
-	{
-		return issetManualSpeedLimit;
-	}
-	
-	public int getNumPassengers()
-	{
-		return numPassengers;
-	}
-	
-	public int getNumCrew()
-	{
-		return numCrew;
-	}
-	
-	public double getTotalMass()
-	{
-		return totalMass;
-	}
-	
-	public Block getPositionBlock()
-	{
-		return positionBlock;
-	}
-	
-	public Block getPositionBlockTail()
-	{
-		return positionBlockTail;
-	}
-	
-	public double getPositionMeters()
-	{
-		return positionMeters;
-	}
-	
-	public boolean getpositionDirection()
-	{
-		return positionDirection;
-	}
-	
-	public boolean getIssetSignalPickupFailure()
-	{
-		return issetSignalPickupFailure;
-	}
-	
-	public boolean getIssetEngineFailure()
-	{
-		return issetEngineFailure;
-	}
-	
-	public boolean getIssetBrakeFailure()
-	{
-		return issetBrakeFailure;
-	}
-	
-	public boolean getIssetServiceBrake()
-	{
-		return issetServiceBrake;
-	}
-	
-	public boolean getIssetEmerBrake()
-	{
-		return issetEmerBrake;
-	}
-	
-	public boolean getIssetLightsOn()
-	{
-		return issetLightsOn;
-	}
-	
-	public boolean getIssetLightsOnManual()
-	{
-		return issetLightsOnManual;
-	}
-	
-	public boolean getIssetLightsOnUseManual()
-	{
-		return issetLightsOnUseManual;
-	}
-	
-	public boolean getIssetDoorsOpen()
-	{
-		return issetDoorsOpen;
-	}
-	
-	public boolean getIssetDoorsOpenManual()
-	{
-		return issetDoorsOpenManual;
-	}
-	
-	public boolean getIssetDoorsOpenUseManual()
-	{
-		return issetDoorsOpenUseManual;
-	}
-	
-	public double getCurTemperature()
-	{
-		return curTemperature;
-	}
-	
-	public double getTargetTemperatureTNC()
-	{
-		return targetTemperatureTNC;
-	}
-	
-	public double getTargetTemperatureManual()
-	{
-		return targetTemperatureManual;
-	}
-	
-	public boolean getIssetTargetTemperatureManual()
-	{
-		return issetTargetTemperatureManual;
-	}
-	
-	public String getAnnouncement()
-	{
-		return announcement;
-	}
-	
-	public GPS getGPS()
-	{
-		return gps;
-	}
-	
-	public int getFootPrint()
-	{
-		return footPrint;
-	}
-	
-	public int getNextTrainId()
-	{
-		return nextTrainId;
-	}
-	
-	public String getLine()
-	{
-		return line;
-	}
-	
-	public double getDispatchTime()
-	{
-		return dispatchTime;
-	}
-	
-	public ArrayList<Block> getRoute()
-	{
-		return route;
-	}
-	
-	public int getRouteIndex()
-	{
-		return routeIndex;
-	}
-	
-	public double getFixedSuggestedAuthority()
-	{
-		return fixedSuggestedAuthority;
-	}
-	
-	public double getFixedSuggestedSpeed()
-	{
-		return fixedSuggestedSpeed;
-	}
-	
-	public double getMBOSuggestedAuthority()
-	{
-		return mboSuggestedAuthority;
-	}
-	
-	public double getMBOSuggestedSpeed()
-	{
-		return mboSuggestedSpeed;
-	}
-	
-	public double getSuggestedAuthority()
-	{
-		return suggestedAuthority;
-	}
-	
-	public double getSuggestedSpeed()
-	{
-		return suggestedSpeed;
-	}
-	
-	public Engineer getEngineer()
-	{
-		return engineer;
-	}
-	
-	public boolean getGoOnBreak()
-	{
-		return goOnBreak;
-	}
-	
-	public void setManualPower(double manualPower)
-	{
-		this.manualPower = manualPower;
-	}
-	
-	public void setIssetManualPower(boolean issetManualPower)
-	{
-		this.issetManualPower = issetManualPower;
-	}
-	
-	public void setManualSpeedLimit(double manualSpeedLimit)
-	{
-		this.manualSpeedLimit = manualSpeedLimit;
-	}
-	
-	public void setIssetManualSpeedLimit(boolean issetManualSpeedLimit)
-	{
-		this.issetManualSpeedLimit = issetManualSpeedLimit;
-	}
-	
-	public void setIssetSignalPickupFailure(boolean issetSignalPickupFailure)
-	{
-		this.issetSignalPickupFailure = issetSignalPickupFailure;
-	}
-	
-	public void setIssetEngineFailure(boolean issetEngineFailure)
-	{
-		this.issetEngineFailure = issetEngineFailure;
-	}
-	
-	public void setIssetBrakeFailure(boolean issetBrakeFailure)
-	{
-		this.issetBrakeFailure = issetBrakeFailure;
-	}
-	
-	public void setIssetServiceBrake(boolean issetServiceBrake)
-	{
-		this.issetServiceBrake = issetServiceBrake;
-	}
-	
-	public void setIssetEmerBrake(boolean issetEmerBrake)
-	{
-		this.issetEmerBrake = issetEmerBrake;
-	}
-	
-	public void setIssetLightsOnManual(boolean issetLightsOnManual)
-	{
-		this.issetLightsOnManual = issetLightsOnManual;
-	}
-	
-	public void setIssetLightsOnUseManual(boolean issetLightsOnUseManual)
-	{
-		this.issetLightsOnUseManual = issetLightsOnUseManual;
-	}
-	
-	public void setIssetDoorsOpenManual(boolean issetDoorsOpenManual)
-	{
-		this.issetDoorsOpenManual = issetDoorsOpenManual;
-	}
-	
-	public void setIssetDoorsOpenUseManual(boolean issetDoorsOpenUseManual)
-	{
-		this.issetDoorsOpenUseManual = issetDoorsOpenUseManual;
-	}
-	
-	public void setTargetTemperatureManual(double targetTemperatureManual)
-	{
-		this.targetTemperatureManual = targetTemperatureManual;
-	}
-	
-	public void setIssetTargetTemperatureManual(boolean issetTargetTemperatureManual)
-	{
-		this.issetTargetTemperatureManual = issetTargetTemperatureManual;
-	}
-	
-	public void setFixedSuggestedAuthority(double fixedSuggestedAuthority)
-	{
-		this.fixedSuggestedAuthority = fixedSuggestedAuthority;
-	}
-	
-	public void setFixedSuggestedSpeed(double fixedSuggestedSpeed)
-	{
-		this.fixedSuggestedSpeed = fixedSuggestedSpeed;
-	}
-	
-	public void setMBOSuggestedAuthority(double mboSuggestedAuthority)
-	{
-		this.mboSuggestedAuthority = mboSuggestedAuthority;
-	}
-	
-	public void setMBOSuggestedSpeed(double mboSuggestedSpeed)
-	{
-		this.mboSuggestedSpeed = mboSuggestedSpeed;
-	}
-	
-	public void setSuggestedAuthority(double suggestedAuthority)
-	{
-		this.suggestedAuthority = suggestedAuthority;
-	}
-	
-	public void setSuggestedSpeed(double suggestedSpeed)
-	{
-		this.suggestedSpeed = suggestedSpeed;
-	}
-	
-	public void setEngineer(Engineer engineer)
-	{
-		this.engineer = engineer;
-	}
-	
-	public void setGoOnBreak(boolean goOnBreak)
-	{
-		this.goOnBreak = goOnBreak;
-	}
-*/
-	
-	public void timeTick(double time, double period, boolean isSolo)
-	{
+	/**
+	 * Get the grade of the current block based on the direction in which the train is travelling.
+	 */
+	public double getRelativeGrade() {
+		if ((positionBlock.grade == 0.0) || (positionDirection == Block.DIRECTION_FWD)) {
+			return positionBlock.grade;
+		} else {
+			return (-1.0) * positionBlock.grade;
+		}
+	}
+	
+	/**
+	 * Performs calculations and updates counts relating to the train.
+	 */
+	public void timeTick(double time, double period, boolean isSolo) {
 System.out.println("XXX - ////////////////////////////////////////////////////");
+		
 		// TrainController timeTick and Response
 		ResponseTNC tncResponse = new ResponseTNC(0.0, false, false, false, false, 0.0, "");
-		if (!isSolo)
-			tncResponse = tnc.timeTick(time, curVelocity, period, positionBlock, positionBlockTail, issetSignalPickupFailure, issetEngineFailure, issetBrakeFailure, fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, curTemperature);
+		if (!isSolo) {
+			tncResponse = tnc.timeTick(time, curVelocity, period, positionBlock, positionBlockTail, 
+										issetSignalPickupFailure, issetEngineFailure, issetBrakeFailure, 
+										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0), 
+										positionBlock.readTransponder(positionDirection));
+		}
 		
-		if (!issetDoorsOpen  &&  numCrew > 0)
-		{
+		if ((!issetDoorsOpen) && (numCrew > 0)) {
+			// The train can only move while the doors are closed and there is a crew member onboard.
+			
 			// Slope Direction
 			boolean uphill = false;
 			boolean downhill = false;
 			boolean flat = false;
-			if ((positionBlock.grade > 0.0  &&  positionDirection)  ||  (positionBlock.grade < 0.0  &&  !positionDirection))
+			if (((positionBlock.grade > 0.0) && (positionDirection == Block.DIRECTION_FWD)) 
+					|| ((positionBlock.grade < 0.0) && (positionDirection != Block.DIRECTION_FWD))) {
 				uphill = true;
-			else if ((positionBlock.grade > 0.0  &&  !positionDirection)  ||  (positionBlock.grade < 0.0  &&  positionDirection))
+			} else if (((positionBlock.grade > 0.0) && (positionDirection != Block.DIRECTION_FWD)) 
+					|| ((positionBlock.grade < 0.0) && (positionDirection == Block.DIRECTION_FWD))) {
 				downhill = true;
-			else
+			} else {
 				flat = true;
+			}
+//System.out.println("XXX - uphill\t\t"+(uphill));
+//System.out.println("XXX - downhill\t\t"+(downhill));
+//System.out.println("XXX - flat\t\t"+(flat));
 			
-			// Angle of Inclination
+			// Angle of Inclination (used for the later Gravity calculations)
 			double angle = 0.0;
-			if (positionBlock.grade > 0.0)
+			if (positionBlock.grade > 0.0) {
 				angle = Math.atan(positionBlock.grade / 100.0);
-			else if (positionBlock.grade < 0.0)
+			} else if (positionBlock.grade < 0.0) {
 				angle = Math.atan(((-1.0) * positionBlock.grade) / 100.0);
+			}
 			
-			// Power Command
-			if (!isSolo)
+			// Power - Command(s)
+			if (!isSolo) {
 				receivedPower = tncResponse.powerCommand;
-			if (manualPower > motorPower)
-				manualPower = motorPower;
-			if (receivedPower > motorPower)
-				receivedPower = motorPower;
+			}
+			if (manualPower > motorPower) {
+				manualPower = motorPower;		// Limit the manual power if necessary.
+			}
+			if (receivedPower > motorPower) {
+				receivedPower = motorPower;		// Limit the received power if necessary.
+			}
 			
-			// Brake Commands
-			if (!isSolo)
-			{
+			// Brakes - Commands
+			if (!isSolo){
 				issetServiceBrake = tncResponse.issetServiceBrake;
 				issetEmerBrake = tncResponse.issetEmerBrake;
 			}
 			
-			// Engine
+			// Engine - Acceleration & Velocity
 			double accelEngine;
-			if (issetEngineFailure)
+			if (issetEngineFailure) {
+				// Engine is incapable of accelerating while it is failing.
 				accelEngine = 0.0;
-			else
-			{
-				if (!isSolo  &&  !issetManualPower)
-				{
-					if (curVelocity <= 0.0)
+			} else {
+				if ((!isSolo) && (!issetManualPower)) {
+					if (curVelocity <= 0.0) {
+						// Special case when train is currently stopped (or rolling backwards).
 						accelEngine = receivedPower / (0.0001 * totalMass);
-					else
+					} else {
 						accelEngine = receivedPower / (curVelocity * totalMass);
-				}
-				else
-				{
-					if (curVelocity <= 0.0)
+					}
+				} else {
+					if (curVelocity <= 0.0) {
+						// Special case when train is currently stopped (or rolling backwards).
 						accelEngine = manualPower / (0.0001 * totalMass);
-					else
+					} else {
 						accelEngine = manualPower / (curVelocity * totalMass);
+					}
 				}
 			}
-System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
-System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
-System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
-			if (accelEngine > (motorPower /  (0.0001 * totalMass)))
-				accelEngine = motorPower / (0.0001 * totalMass);
-			double velEngine = accelEngine * period;
-			if (velEngine > maxSpeed)
-				velEngine = maxSpeed;
+//System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
+//System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
+//System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
 			
-			// Brakes
+			if (accelEngine > (motorPower /  (0.0001 * totalMass))) {
+				// Limit the engine acceleration if necessary.
+				accelEngine = motorPower / (0.0001 * totalMass);
+			}
+			double velEngine = accelEngine * period;
+			if (velEngine > maxSpeed) {
+				// Limit the engine velocity if necessary.
+				velEngine = maxSpeed;
+			}
+			
+			// Brakes - Acceleration & Velocity
 			double accelBrakes = 0.0;
-			if (!issetBrakeFailure  &&  (issetEmerBrake  ||  issetServiceBrake))
-			{
+			if ((!issetBrakeFailure) && (issetEmerBrake || issetServiceBrake)) {
+				// Make it so the engine is not factored in while a brake is applied.
 				accelEngine = 0.0;
 				velEngine = 0.0;
 				
-				if (issetEmerBrake)
+				if (issetEmerBrake) {
 					accelBrakes = emerBrakeDecel;
-				else if (issetServiceBrake)
+				} else if (issetServiceBrake) {
 					accelBrakes = serviceBrakeDecel;
+				}
 				
-				if (curVelocity > 0.0)
+				// Make it so the brake is applied relative to the current direction of travel.
+				if (curVelocity > 0.0) {
 					accelBrakes *= (-1.0);
-				else if (curVelocity == 0.0)
+				} else if (curVelocity == 0.0) {
 					accelBrakes = 0.0;
+				}
 			}
 			double velBrakes = accelBrakes * period;
 			
-			// Gravity
+			// Gravity - Acceleration & Velocity
 			double accelGravity = 0.0;
-			if (uphill)
-				accelGravity = (-1.0) * g * Math.sin(angle);
-			else if (downhill)
-				accelGravity = g * Math.sin(angle);
-			else if (flat)
+			if (uphill) {
+				accelGravity = (-1.0) * GRAVITY_CONSTANT * Math.sin(angle);
+			} else if (downhill) {
+				accelGravity = GRAVITY_CONSTANT * Math.sin(angle);
+			} else if (flat) {
 				accelGravity = 0.0;
+			}
 			double velGravity = accelGravity * period;
 			
-			// Current w/o Brakes & Friction
+			// Current - Acceleration & Velocity (w/o Brakes & Friction)
 			curAccel = accelEngine + accelGravity;
 			double newVelocity = curVelocity + velEngine + velGravity;
 			
-			// Friction
+			// Friction - Acceleration & Velocity
 			double accelFriction;
-			accelFriction = frictionCoeff * g * Math.cos(angle);
-			if (newVelocity > 0)
+			accelFriction = frictionCoeff * GRAVITY_CONSTANT * Math.cos(angle);
+			/*
+			 * Make it so the friction is applied relative to the *new* direction of travel
+			 * (not including the friction itself or the effect of the brakes).
+			 */
+			if (newVelocity > 0) {
 				accelFriction *= (-1.0);
-			else if (newVelocity == 0.0)
+			} else if (newVelocity == 0.0) {
 				accelFriction = 0.0;
+			}
 			double velFriction = accelFriction * period;
-System.out.println("XXX - accelEngine\t"+accelEngine);
-System.out.println("XXX - accelBrakes\t"+accelBrakes);
-System.out.println("XXX - accelGravity\t"+accelGravity);
-System.out.println("XXX - accelFriction\t"+accelFriction);
-System.out.println("XXX - velEngine\t\t"+velEngine);
-System.out.println("XXX - velBrakes\t\t"+velBrakes);
-System.out.println("XXX - velGravity\t"+velGravity);
-System.out.println("XXX - velFriction\t"+velFriction);
+//System.out.println("XXX - accelEngine\t"+accelEngine);
+//System.out.println("XXX - accelBrakes\t"+accelBrakes);
+//System.out.println("XXX - accelGravity\t"+accelGravity);
+//System.out.println("XXX - accelFriction\t"+accelFriction);
+//System.out.println("XXX - velEngine\t\t"+velEngine);
+//System.out.println("XXX - velBrakes\t\t"+velBrakes);
+//System.out.println("XXX - velGravity\t"+velGravity);
+//System.out.println("XXX - velFriction\t"+velFriction);
 			
-			// Current (and Limits)
+			// Current - Acceleration & Velocity (w/ Brakes & Friction)
 			curAccel += (accelBrakes + accelFriction);
 			curAccel = round(curAccel, 3);
 			newVelocity += (velBrakes + velFriction);
 			newVelocity = round(newVelocity, 3);
-			if (((curVelocity < 0  &&  newVelocity > 0)  ||  (curVelocity > 0  &&  newVelocity < 0))  &&  ((!issetBrakeFailure  &&  (issetEmerBrake  ||  issetServiceBrake))  ||  flat))
-			{
-				// If the train's direction of travel has changed and (the brakes are being applied or the slope is flat), then the train should come to a complete stop.
+			
+			// Handle special cases and limit to max speed depending on slope direction.
+			if ((((curVelocity < 0.0) && (newVelocity > 0.0)) || ((curVelocity > 0.0) && (newVelocity < 0.0))) 
+					&& (((!issetBrakeFailure) && ((issetEmerBrake) || (issetServiceBrake))) || flat)) {
+				/*
+				 * If the train's direction of travel has changed and (the brakes are being applied or 
+				 * the slope is flat), then the train should come to a complete stop.
+				 */
 				curVelocity = 0.0;
-			}
-			else if (uphill  &&  newVelocity > maxSpeed + velFriction + velGravity)
-			{
-				// If the train is traveling uphill, then the final max speed of the train will actually have friction and gravity factored in.
+			} else if ((uphill) && (newVelocity > maxSpeed + velFriction + velGravity)) {
+				/*
+				 * If the train is traveling uphill, then the final max speed of the train will actually 
+				 * have friction and gravity factored in.
+				 */
 				curVelocity = maxSpeed + velFriction + velGravity;
-			}
-			else if (downhill  &&  curVelocity < maxSpeed + velFriction  &&  newVelocity > maxSpeed + velFriction  &&  velEngine > 0.0)
-			{
-				// If the train is traveling downhill, then there is no maximum speed of the train, but the speed from the engine must still be limited
-				// (and have friction factored in as seen in the above if statement).
+			} else if ((downhill) && (curVelocity < maxSpeed + velFriction) && (newVelocity > maxSpeed + velFriction) 
+					&& (velEngine > 0.0)) {
+				/*	
+				 * If the train is traveling downhill, then there is no maximum speed of the train, 
+				 * but the speed from the engine must still be limited (and have friction factored 
+				 * in as seen in the above if statement).
+				 */
 				double velEngineDifference = velEngine - (maxSpeed - curVelocity);
-				if (velEngineDifference > 0.0)
-				{
-					// If the engine speed is responsible for causing the train to exceed the max speed, then the difference must be taken away.
+				if (velEngineDifference > 0.0) {
+					/*
+					 * If the engine speed is responsible for causing the train to exceed the max speed, 
+					 * then the difference must be taken away.
+					 */
 					curVelocity = newVelocity - velEngineDifference;
-				}
-				else
-				{
-					// Else gravity was responsible for causing the train to exceed the max speed.
+				} else {
+					/*
+					 * Else gravity was responsible for causing the train to exceed the max speed.
+					 */
 					curVelocity = newVelocity;
 				}
-			}
-			else if (flat  &&  newVelocity > maxSpeed + velFriction)
-			{
-				// If the train is travelling on a flat block, then the final max speed of the train will actually have friction factored in.
+			} else if ((flat) && (newVelocity > maxSpeed + velFriction)) {
+				/*
+				 * If the train is travelling on a flat block, then the final max speed of the train will 
+				 * actually have friction factored in.
+				 */
 				curVelocity = maxSpeed + velFriction;
-			}
-			else
-			{
+			} else {
 				curVelocity = newVelocity;
 			}
 			curVelocity = round(curVelocity, 3);
-System.out.println("XXX - curVelocity\t"+curVelocity);
-			
-/*
-			// Position
-			if (positionDirection)
-			{
-//System.out.println("XXX - positionDirection\t"+positionDirection);
-				positionMeters += (curVelocity * period);
-				
-				if (positionMeters >= positionBlock.length)
-				{
-//System.out.println("XXX - positionMeters >= positionBlock.length");
-					double difference = positionMeters - positionBlock.length;
-//System.out.println("XXX - difference\t"+difference);
-					
-					if (positionBlock.id == positionBlock.nextBlock.nextBlock.id)
-						positionDirection = false;
-					else
-						positionDirection = true;
-//System.out.println("XXX - positionDirection\t"+positionDirection);
-					
-					positionBlock.isOccupied = false;
-					positionBlock = positionBlock.nextBlock;
-					positionBlock.isOccupied = true;
-					routeIndex++;
-					
-					if (positionDirection)
-						positionMeters = difference;
-					else
-						positionMeters = positionBlock.length - difference;
-//System.out.println("XXX - positionMeters\t"+positionMeters);
-				}
-			}
-			else
-			{
-//System.out.println("XXX - positionDirection\t"+positionDirection);
-				positionMeters -= (curVelocity * period);
-				
-				if (positionMeters < 0.0)
-				{
-//System.out.println("XXX - positionMeters < 0.0");
-					double difference = positionMeters * (-1.0);
-//System.out.println("XXX - difference\t"+difference);
-					
-					if (positionBlock.id == positionBlock.prevBlock.nextBlock.id)
-						positionDirection = false;
-					else
-						positionDirection = true;
-//System.out.println("XXX - positionDirection\t"+positionDirection);
-					
-					positionBlock.isOccupied = false;
-					positionBlock = positionBlock.prevBlock;
-					positionBlock.isOccupied = true;
-					routeIndex++;
-					
-					if (positionDirection)
-						positionMeters = difference;
-					else
-						positionMeters = positionBlock.length - difference;
-//System.out.println("XXX - positionMeters\t"+positionMeters);
-				}
-			}
-			positionBlockTail.isOccupied = false;
-			if ((positionDirection  &&  positionMeters > length)  ||  (!positionDirection  &&  positionBlock.length - positionMeters > length))
-				positionBlockTail = positionBlock;
-			positionBlockTail.isOccupied = true;
-			positionMeters = round(positionMeters, 3);
-			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
-*/
+//System.out.println("XXX - curVelocity\t"+curVelocity);
+//System.out.println("XXX - this.positionDirection\t"+this.positionDirection);
+//System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
+			// Actually update the position of the train on the track.
 			Block.advanceTrain(this, curVelocity * period);
-			gps = new GPS(positionBlock, (int)positionMeters, curVelocity, positionDirection);
+			gps = new GPS(positionBlock, (int) (positionMeters + 0.5), curVelocity, (positionDirection == Block.DIRECTION_FWD));
+			if (!isSolo) {
+				postedSpeedLimit = positionBlock.speedLimit;
+				fixedSuggestedAuthority = positionBlock.fbAuthority;
+				fixedSuggestedSpeed = positionBlock.fbSpeed;
+				// mboSuggestedAuthority = XXXXXXX;
+				// mboSuggestedSpeed = XXXXXXX;
+			}
+//System.out.println("XXX - (int) (positionMeters + 0.5)\t"+((int) (positionMeters + 0.5)));
 		}
-System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
-System.out.println("XXX - positionMeters\t"+positionMeters);
+//System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
+//System.out.println("XXX - positionMeters\t"+positionMeters);
 		
 		// Lights
-		if (issetLightsOnUseManual  ||  isSolo)
+		if ((issetLightsOnUseManual) || (isSolo)) {
 			issetLightsOn = issetLightsOnManual;
-		else
+		} else {
 			issetLightsOn = tncResponse.issetLightsOn;
+		}
 		
 		// Doors
-		if (issetDoorsOpenUseManual  ||  isSolo)
+		if ((issetDoorsOpenUseManual) || (isSolo)) {
 			issetDoorsOpen = issetDoorsOpenManual;
-		else
+		} else {
 			issetDoorsOpen = tncResponse.issetDoorsOpen;
+		}
 		
 		// Temperature
-		if (!isSolo)
+		if (!isSolo) {
 			targetTemperatureTNC = tncResponse.targetTemperatureTNC;
-		if (issetTargetTemperatureManual  ||  isSolo)
-		{
-			if (curTemperature > targetTemperatureManual)
-				curTemperature -= 0.1;
-			else if (curTemperature < targetTemperatureManual)
-				curTemperature += 0.1;
 		}
-		else
-		{
-			if (curTemperature > targetTemperatureTNC)
-				curTemperature -= 0.1;
-			else if (curTemperature < targetTemperatureTNC)
-				curTemperature += 0.1;
+		/*
+		 * Simple method for moving the current towards the target temperature 
+		 * (either +/- 0.1 once each timeTick call until the target is reached).
+		 */
+		if ((issetTargetTemperatureManual) || (isSolo)) {
+			if (curTemperature > targetTemperatureManual) {
+				curTemperature -= 0.01;
+			} else if (curTemperature < targetTemperatureManual) {
+				curTemperature += 0.01;
+			}
+		} else {
+			if (curTemperature > targetTemperatureTNC) {
+				curTemperature -= 0.01;
+			} else if (curTemperature < targetTemperatureTNC) {
+				curTemperature += 0.01;
+			}
 		}
 		curTemperature = round(curTemperature, 1);
 		
 		// Announcement
-		if (!isSolo)
+		if (!isSolo) {
 			announcement = tncResponse.announcement;
-		else
-		{
-			if (positionBlock.isStation)
+		} else {
+			if (positionBlock.isStation) {
 				announcement = "Welcome to Station " + positionBlock.stationName + "!";
-			else if (positionBlock.isYard)
+			} else if (positionBlock.isYard) {
 				announcement = "Welcome to the Yard!";
-			else
+			} else {
 				announcement = "";
+			}
 		}
 		
 		// Passengers
-		if (positionBlock.isStation  &&  (isSolo  ||  (!isSolo/*  &&  XXX trainShouldStopHere XXX*/))  &&  issetDoorsOpen)
-		{
+		if ((positionBlock.isStation) && (issetDoorsOpen) && (curVelocity == 0.0)) {
+			// Passengers can only enter/exit the train while the doors are open at a station.
+			
 			Random r = new Random(System.currentTimeMillis());
-			if (numPassengers > 0)
+			
+			// Some passengers first exit the train.
+			if (numPassengers > 0) {
 				numPassengers -= r.nextInt(numPassengers);
-			if (isSolo)
+			}
+			
+			// Some passengers then board the train.
+			if (isSolo) {
 				numPassengers += r.nextInt(maxCapacityPassengers);
-			else
-				{ /* numPassengers += r.nextInt(XXX throughput XXX); */ }
-			if (numPassengers > maxCapacityPassengers)
+			} else {
+				/* numPassengers += r.nextInt(XXX throughput XXX); */
+			}
+			
+			// Limit the total number of passengers.
+			if (numPassengers > maxCapacityPassengers) {
 				numPassengers = maxCapacityPassengers;
+			}
 		}
 		
 		// Crew
-/*
-System.out.println("XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
-System.out.println("XXX - "+issetDoorsOpen+"\tissetDoorsOpen");
-System.out.println("XXX - "+engineer.getGoOnBreak()+"\tengineer.getGoOnBreak()");
-System.out.println("XXX - "+(routeIndex > 0)+"\trouteIndex > 0");
-System.out.println("XXX - "+(routeIndex < route.size() - 1)+"\trouteIndex < route.size() - 1");
-System.out.println("XXX - "+(engineer.timeOnBreakStarts >= time)+"\tengineer.timeOnBreakStarts >= time");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
-System.out.println("XXX - "+engineer.getOnBreak()+"\tengineer.getOnBreak()");
-System.out.println("XXX - "+(routeIndex > 0)+"\trouteIndex > 0");
-System.out.println("XXX - "+(routeIndex < route.size() - 1)+"\trouteIndex < route.size() - 1");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
-System.out.println("XXX - "+issetDoorsOpen+"\tissetDoorsOpen");
-System.out.println("XXX - "+(routeIndex == 0)+"\trouteIndex == 0");
-System.out.println("XXX - "+(time - period < dispatchTime)+"\ttime - period < dispatchTime");
-System.out.println("XXX - "+(time >= dispatchTime)+"\ttime >= dispatchTime");
-System.out.println("XXX - "+(time - period < 0)+"\ttime - period < 0");
-System.out.println("XXX - "+(24*60*60 + time - period < dispatchTime)+"\t24*60*60 + time - period < dispatchTime");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
-System.out.println("XXX - "+issetDoorsOpen+"\tissetDoorsOpen");
-System.out.println("XXX - "+(routeIndex == route.size() - 1)+"\trouteIndex == route.size() - 1");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+time+"\ttime");
-System.out.println("XXX - "+period+"\tperiod");
-System.out.println("XXX - "+dispatchTime+"\tdispatchTime");
-*/
-		if (positionBlock.isYard  &&  issetDoorsOpen  &&  engineer.getGoOnBreak()  &&  routeIndex > 0  &&  routeIndex < route.size() - 1  &&  engineer.timeOnBreakStarts >= time  &&  numCrew > 0)
-		{
-			// Break Starts
-			numCrew -= 1;
-			engineer.goOnBreak = false;
-			engineer.onBreak = true;
-		}
-		else if (positionBlock.isYard  &&  engineer.getOnBreak()  &&  routeIndex > 0  &&  routeIndex < route.size() - 1)
-		{
-			// On Break
-			engineer.timeOnBreak += period;
-			
-			if (issetDoorsOpen  &&  engineer.timeOnBreak >= 30*60  &&  numCrew <= 0)
-			{
-				// Break Ends
+		if (curVelocity == 0.0) {
+			if ((positionBlock.isYard) && (issetDoorsOpen) && (engineer.goOnBreak) && (routeIndex > 0) 
+					&& (routeIndex < route.size() - 1) && (engineer.timeOnBreakStarts >= time) && (numCrew > 0)) {
+				// Break Starts
+				numCrew -= 1;
+				engineer.goOnBreak = false;
+				engineer.onBreak = true;
+			} else if ((positionBlock.isYard) && (engineer.onBreak) && (routeIndex > 0) && (routeIndex < route.size() - 1)) {
+				// On Break
+				engineer.timeOnBreak += period;
+				
+				if ((issetDoorsOpen) && (engineer.timeOnBreak >= 30 * 60) && (numCrew <= 0)) {
+					// Break Ends
+					numCrew += 1;
+					engineer.onBreak = false;
+				}
+			} else if ((positionBlock.isYard) && (issetDoorsOpen) && (routeIndex == 0) 
+					&& (((time - period < dispatchTime) && (time >= dispatchTime)) 
+							|| ((time - period < 0) && (24 * 60 * 60 + time - period < dispatchTime))) 
+					&& (numCrew <= 0)) {
+				// Shift Starts
 				numCrew += 1;
+			} else if ((positionBlock.isYard) && (issetDoorsOpen) && (routeIndex == route.size() - 1) && (numCrew > 0)) {
+				// Shift Ends
+				numCrew -= 1;
+				engineer.goOnBreak = true;
 				engineer.onBreak = false;
+				engineer.timeOnBreak = 0.0;
+				routeIndex = 0;
 			}
 		}
-		else if (positionBlock.isYard  &&  issetDoorsOpen  &&  routeIndex == 0  &&  ((time - period < dispatchTime  &&  time >= dispatchTime)  ||  (time - period < 0  &&  24*60*60 + time - period < dispatchTime))  &&  numCrew <= 0)
-		{
-			// Shift Starts
-			numCrew += 1;
-		}
-		else if (positionBlock.isYard  &&  issetDoorsOpen  &&  routeIndex == route.size() - 1  &&  numCrew > 0)
-		{
-			// Shift Ends
-			numCrew -= 1;
-			engineer.goOnBreak = true;
-			engineer.onBreak = false;
-			engineer.timeOnBreak = 0.0;
-			routeIndex = 0;
-		}
 		
-		// Mass
+		// Update the total mass based on the current crew and passengers counts.
 		totalMass = emptyTrainMass + personMass * (numPassengers + numCrew);
 	}
 	
-	private double round(double x, int places)
-	{
-		if (places == 1)
-			return ((double)((int)(x*10)))/10.0;
-		else if (places == 2)
-			return ((double)((int)(x*100)))/100.0;
-		else if (places == 3)
-			return ((double)((int)(x*1000)))/1000.0;
-		else
+	/**
+	 * Round values for better format when displayed and/or to avoid floating point round errors.
+	 */
+	private double round(double x, int places) {
+		if (places == 1) {
+			return ((double) ((int) (x * 10))) / 10.0;
+		} else if (places == 2) {
+			return ((double) ((int) (x * 100))) / 100.0;
+		} else if (places == 3) {
+			return ((double) ((int) (x * 1000))) / 1000.0;
+		} else {
 			return 0.0;
+		}
 	}
 }

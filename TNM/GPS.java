@@ -1,38 +1,32 @@
+/**
+ * @class GPS
+ * 
+ * @version 1.0
+ * 
+ * @date 04/25/2013
+ * 
+ * @author Chris Paskie
+ */
+
+
 package TNM;
+
 import TKM.*;
 
-public class GPS
-{
-	public Block block;
-	public int metersIntoBlock;
-	public double speed;
-	public boolean travelDirection;
+/**
+ * This file contains the main container class which holds the response from a 
+ * train to the MBO/GPS after each timeTick.
+ */
+public class GPS {
+	public Block block;					// Block currently occupied by the front of the train.
+	public int metersIntoBlock;			// Position meters within block (number line reference).
+	public double speed;				// Current velocity of train rounded to nearest meter.
+	public boolean travelDirection;		// Is the train travelling in the default direction of the block?
 	
-	public GPS(Block block, int metersIntoBlock, double speed, boolean travelDirection)
-	{
+	public GPS(Block block, int metersIntoBlock, double speed, boolean travelDirection) {
 		this.block = block;
 		this.metersIntoBlock = metersIntoBlock;
 		this.speed = speed;
 		this.travelDirection = travelDirection;
-	}
-	
-	public Block getBlock()
-	{
-		return block;
-	}
-	
-	public int getMetersIntoBlock()
-	{
-		return metersIntoBlock;
-	}
-	
-	public double getSpeed()
-	{
-		return speed;
-	}
-	
-	public boolean getTravelDirection()
-	{
-		return travelDirection;
 	}
 }

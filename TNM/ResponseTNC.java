@@ -1,7 +1,21 @@
+/**
+ * @class ResponseTNC
+ * 
+ * @version 1.0
+ * 
+ * @date 04/25/2013
+ * 
+ * @author Chris Paskie
+ */
+
+
 package TNM;
 
-public class ResponseTNC
-{
+/**
+ * This file contains the main container class which holds the response from a 
+ * given train's controller after each timeTick.
+ */
+public class ResponseTNC {
 	public double powerCommand;
 	public boolean issetServiceBrake;
 	public boolean issetEmerBrake;
@@ -10,8 +24,9 @@ public class ResponseTNC
 	public double targetTemperatureTNC;
 	public String announcement;
 	
-	public ResponseTNC(double powerCommand, boolean issetServiceBrake, boolean issetEmerBrake, boolean issetLightsOn, boolean issetDoorsOpen, double targetTemperatureTNC, String announcement)
-	{
+	public ResponseTNC(double powerCommand, boolean issetServiceBrake, boolean issetEmerBrake, 
+			boolean issetLightsOn, boolean issetDoorsOpen, double targetTemperatureTNC, 
+			String announcement) {
 		this.powerCommand = powerCommand;
 		this.issetServiceBrake = issetServiceBrake;
 		this.issetEmerBrake = issetEmerBrake;

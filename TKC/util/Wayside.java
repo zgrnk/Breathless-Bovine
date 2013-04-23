@@ -23,12 +23,12 @@ public class Wayside {
 	private ArrayList<Integer> endBlocks;
 	private	LinkedList<Block> activeBlocks;
 	public LinkedList<TrainWrapper> trainList;
-	
+
 	private CTCOffice mainCTCOffice;
 	private SafetyInfo currStateInfo;
 	public Switch	centralSwitch;
-	
-	
+
+
 	/**
 	 * Wayside Constructor
 	 * @param table
@@ -41,15 +41,15 @@ public class Wayside {
 		this.mainCTCOffice = mainCTCOffice;
 		this.currStateInfo = currInfo;
 		this.centralSwitch = cSwitch;
-		
+
 		trainList = new LinkedList<TrainWrapper>();
 		this.loadedPLC = new PLCProgram();
 	}
-	
+
 	/*public void setPLC(PLCProgram plc) {
 		this.loadedPLC = plc;
 	}*/
-	
+
 	/**
 	 * Updates active block list with all currently occupied blocks in wayside's zone.
 	 * Accomplishes the task by retrieving all values in the block table and iterating
@@ -58,20 +58,21 @@ public class Wayside {
 	private void updateActiveBlocks() {
 		Iterator<Block> itr = blockTable.values().iterator();
 		Block temp;
-		
+
 		activeBlocks = new LinkedList<Block>();
+		System.out.println("ACTIVE BLOCKS: ");
 		while (itr.hasNext())
 		{
 			temp = itr.next();
 			if(temp.occupied) {
 				activeBlocks.add(temp);
-				
+
 				//DEBUG
-				//System.out.println(temp.id);
+				System.out.println("\t" + temp.id);
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets the current limits to the specified block
 	 * @param blockID
@@ -82,34 +83,59 @@ public class Wayside {
 		temp.fbAuthority = current.getAuthority();
 		temp.fbSpeed = current.getSpeedLimit();
 	}
-	
+
 	/**
 	 * Updates the wayside's train list
 	 */
 	private void updateTrainList() {
-		
+		System.out.println("\nupdateTrainList() called");
+
 		/*If list empty than search if any end blocks currently are active */
 		if (trainList.isEmpty()) {
 			for (Block blk : activeBlocks) {
+				System.out.println("\nBlock :" + blk.id + " is active");
 				if (TrainWrapper.isEndBlk(endBlocks, blk.id)) {
-					Train temp = mainCTCOffice.getTrainsInBlock(blk.id).get(0);
-							trainList.add(new TrainWrapper(temp, blk));
+					Block fwd = blk.getNext(Block.DIRECTION_FWD);
+					Block rev = blk.getNext(Block.DIRECTION_REV);		
+
+					/*Train temp = mainCTCOffice.getTrainsInBlock(blk.id).get(0);
+					trainList.add(new TrainWrapper(temp, blk));*/ 
+
+					ArrayList<Train> tmpList = mainCTCOffice.getTrainsInBlock(blk.id);
+					if (tmpList.size() == 0) {
+						if (fwd.isOccupied()) {
+							if (blockIsInZone(fwd)) {
+								ArrayList<Train> tmpListTwo = mainCTCOffice.getTrainsInBlock(blk.id);
+								if (tmpListTwo.size() > 0) {
+									trainList.add(new TrainWrapper(tmpListTwo.get(0), fwd));
+								}
+							}
+						} else if (rev.isOccupied()) {
+							if (blockIsInZone(rev)) {
+								ArrayList<Train> tmpListTwo = mainCTCOffice.getTrainsInBlock(blk.id);
+								if (tmpListTwo.size() > 0) {
+									trainList.add(new TrainWrapper(tmpListTwo.get(0), rev));
+								}
+							}
+						}
+					} else {
+						trainList.add(new TrainWrapper(tmpList.get(0), blk));
+					}
+
 				}
 			}
 		}else {
 			//updates positions of currently tracked trains
 			LinkedList<TrainWrapper> removals = new LinkedList<TrainWrapper>();
-			
+
 			for (TrainWrapper sTrain : trainList) {
 				sTrain.updateLocation();
 				if (!blockIsInZone(sTrain.getBlockLocation()))
 					removals.add(sTrain);
 			}
-			
-			for (TrainWrapper rTrain : removals) {
-				trainList.remove(rTrain);
-			}
-			
+
+			removeFromList(removals);
+
 			//adds new trains found on endblocks that weren't in the train list
 			for (Integer blkId : endBlocks) {
 				if (isActive(blkId)) {
@@ -131,6 +157,22 @@ public class Wayside {
 		}
 	}
 
+
+	public void removeFromList(LinkedList<TrainWrapper> removals) {
+		for (TrainWrapper rTrain : removals){
+			int i = 0;
+			boolean found = false;
+			for (TrainWrapper sTrain : trainList){
+				if (rTrain.train.id == sTrain.train.id) {
+					found = true;
+					break;
+				}
+				i++;
+			}
+			if (found)
+				trainList.remove(i);
+		}
+	}
 	/**
 	 * checks if specified train is in the current trainlist
 	 * @param tr
@@ -143,7 +185,7 @@ public class Wayside {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * checks if block id is an active block
 	 * @param id
@@ -157,20 +199,20 @@ public class Wayside {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * checks if block is in wayside's zone
 	 * @param blk
 	 * @return
 	 */
 	private boolean blockIsInZone(Block blk) {
-		
+
 		Iterator<Block> itr = blockTable.values().iterator();
 		Block tempBlk;
-		
+
 		if (blk == null)
 			return false;
-		
+
 		while(itr.hasNext())
 		{
 			tempBlk = itr.next();
@@ -180,7 +222,7 @@ public class Wayside {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * checks for any broken track circuits by comparing active blocks to verified trains' locations.
 	 */
@@ -199,8 +241,8 @@ public class Wayside {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Activates the wayside for its next cycle
 	 */
@@ -210,81 +252,83 @@ public class Wayside {
 		checkForBrokenCircuits();
 
 		//Now stage is set
-		
+
 		//run PLC redundancy 
 		runRedundancy();
-		
+
 		//set safetyInfo
 		if (currStateInfo.safetyState) {
-			
+
 			if (currStateInfo.lightState.getState() != 0) {
 				toggleComponent(currStateInfo.lightState.getBlockLocation(), 
 						ComponentType.LIGHT_COMP, currStateInfo.lightState.getState());
 			}
-			
+
 			toggleSwitch(currStateInfo.switchState);
-			
+
 			//calculate limits
 			for (TrainWrapper sTrain : trainList)
 			{
 				//if train's next block is in the zone then it is receiving the train and should edit the limits
 				//otherwise it shouldn't set the limits
-				if (blockIsInZone(sTrain.getFutureBlock())) {
-					
-					Limits newLimits;
-					double auth;
-					double currSpeed = sTrain.train.curVelocity;
-					
-					double distance = Double.MAX_VALUE;
-					for (TrainWrapper tTrain : trainList)
-					{
-						double temp = sTrain.distToTrain(endBlocks, tTrain);
-						if (temp < distance)
-							distance = temp;
-					}
-					
-					//only train on the track or no tracks are ahead or something went wrong somehow
-					if (distance == Double.MAX_VALUE) {
-						distance = 200; //make a safety judgment of
-					}
-					
-					double tempAuth = 0;
-					boolean notGood = true;
-					while (currSpeed > 0 && notGood) {
-						
-						tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
-						if (tempAuth <= distance)
+				if (sTrain.getFutureBlock() != null) {
+					if (blockIsInZone(sTrain.getFutureBlock())) {
+
+						Limits newLimits;
+						double auth;
+						double currSpeed = sTrain.train.curVelocity;
+
+						double distance = Double.MAX_VALUE;
+						for (TrainWrapper tTrain : trainList)
 						{
-							auth = distance - tempAuth;
-							newLimits = new Limits(currSpeed, auth);
+							double temp = sTrain.distToTrain(endBlocks, tTrain);
+							if (temp < distance)
+								distance = temp;
+						}
+
+						//only train on the track or no tracks are ahead or something went wrong somehow
+						if (distance == Double.MAX_VALUE) {
+							distance = 200; //make a safety judgment of
+						}
+
+						double tempAuth = 0;
+						boolean notGood = true;
+						while (currSpeed > 0 && notGood) {
+
+							tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
+							if (tempAuth <= distance)
+							{
+								auth = distance - tempAuth;
+								newLimits = new Limits(currSpeed, auth);
+								sTrain.setCurrLimits(newLimits);
+								setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
+								notGood = false;
+							}
+							currSpeed = currSpeed - 1.0;
+						}
+
+						if (notGood)
+						{
+							newLimits = new Limits(0.0, 0.0);
 							sTrain.setCurrLimits(newLimits);
 							setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-							notGood = false;
+
+							// TO-DO must adjust suggested speed
+							System.out.print("Authority Calculation may be incorrect");
+
 						}
-						currSpeed = currSpeed - 1.0;
 					}
-					
-					if (notGood)
-					{
-						newLimits = new Limits(0.0, 0.0);
-						sTrain.setCurrLimits(newLimits);
-						setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-						
-						// TO-DO must adjust suggested speed
-						System.out.print("Authority Calculation may be incorrect");
-						
-					}
+
 				}
-				
 			}
-	
-			
+
+
 		}
 		else {
 			shutdown();
 		}
 	}
-	
+
 	/**
 	 * Toggles the selected component's state in the designated block
 	 * @param blkID
@@ -298,28 +342,55 @@ public class Wayside {
 			break;
 		}
 	}
-	
+
 	private void toggleSwitch(boolean currState) {
 		this.centralSwitch.state = currState;
 	}
-	
+
 	/**
 	 * Run the triple redundancy protocol for the PLCProgram 
 	 */
 	public void runRedundancy() {
-		currStateInfo = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
+
+		SafetyInfo runOne = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
+		SafetyInfo runTwo = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
+		SafetyInfo runThree = loadedPLC.runPLC(blockTable, endBlocks, activeBlocks, trainList, centralSwitch);
+
+		boolean isSafe;
+		boolean swState;
+		if (runOne.safetyState == runTwo.safetyState && runOne.safetyState == runThree.safetyState) {
+			isSafe = runOne.safetyState;
+		} else if (runOne.safetyState != runTwo.safetyState && runOne.safetyState == runThree.safetyState) {
+			isSafe = runOne.safetyState;
+		} else if (runOne.safetyState != runTwo.safetyState && runOne.safetyState != runThree.safetyState) {
+			isSafe = runTwo.safetyState;
+		} else {
+			isSafe = runTwo.safetyState;
+		}
+
+		if (runOne.switchState == runTwo.switchState && runOne.switchState == runThree.switchState) {
+			swState = runOne.switchState;
+		} else if (runOne.switchState != runTwo.switchState && runOne.switchState == runThree.switchState) {
+			swState = runOne.switchState;
+		} else if (runOne.switchState != runTwo.switchState && runOne.switchState != runThree.switchState) {
+			swState = runTwo.switchState;
+		} else {
+			swState = runTwo.switchState;
+		}
+
+		currStateInfo = new SafetyInfo(swState, runOne.lightState, isSafe);
 	}
-	
+
 	/**
 	 * Shuts down the NSECS application due to unsafe conditions
 	 */
 	private void shutdown() {
 		System.out.println("Track is Unsafe and therefore must be shutdown!!!\n");
 	}
-	
+
 	public enum ComponentType {
 		SWITCH_COMP, LIGHT_COMP;
 	}
-	
-	
+
+
 }
