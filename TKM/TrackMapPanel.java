@@ -75,7 +75,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
         float[] dash = (blk.isUground) ? dashUground : dashAground;
 
-        Stroke s = new BasicStroke(7f, BasicStroke.CAP_ROUND,
+        Stroke s = new BasicStroke(5f, BasicStroke.CAP_ROUND,
                 BasicStroke.JOIN_MITER, 1f, dash, 0f);
 
         g2.setStroke(s);
