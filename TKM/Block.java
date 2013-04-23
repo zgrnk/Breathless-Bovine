@@ -21,7 +21,7 @@ public class Block extends TrackElement
     public boolean isStation;
     public boolean isCrossing;
     public String stationName;
-    //public String transponderMessage;
+    public String transponderMessage;
     public String transponderMessageFwd;
     public String transponderMessageRev;
     public TrackElement prev;
@@ -32,6 +32,7 @@ public class Block extends TrackElement
     public boolean brokenRailFailure;
     public boolean trackCircuitFailure;
     public boolean powerFailure;
+    public boolean isClosed;
 
     //public double mbSpeed;
     //public double mbAuthority;
@@ -49,7 +50,7 @@ public class Block extends TrackElement
         prev = null;
         next = null;
         id = -1;
-        //transponderMessage = "";
+        transponderMessage = "";
     }
 
     public Block(int id, String lineId, String sectionId, double length, double grade,

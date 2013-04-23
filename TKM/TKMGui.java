@@ -10,7 +10,15 @@ public class TKMGui extends JPanel {
 
     private TrackLayout lyt;
     private TrackMapPanel pMap;
+    private CTCOffice off;
 
+    public TKMGui(TrackLayout tl, CTCOffice off)
+    {
+        lyt = tl;
+        office = off;
+        loadGui();
+    }
+    
     public TKMGui(TrackLayout tl)
     {
         lyt = tl;
