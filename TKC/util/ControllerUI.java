@@ -228,7 +228,7 @@ public class ControllerUI extends JPanel {
 		blockPanelContent = new JPanel();
 		blockPanelContent.setBorder(new CompoundBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)), new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0))));
 		scrollPaneBlock.setViewportView(blockPanelContent);
-		blockPanelContent.setLayout(new BoxLayout(blockPanelContent, BoxLayout.X_AXIS));
+		blockPanelContent.setLayout(new BoxLayout(blockPanelContent, BoxLayout.Y_AXIS));
 
 		JLabel lblWayside = new JLabel("Wayside");
 
