@@ -1,4 +1,4 @@
-package MBO;
+
 
 
 import java.awt.*;
@@ -198,7 +198,7 @@ public class MBO_GUI extends JFrame{
 		comboBox.setPreferredSize(new Dimension(25, 20));
 
 		for(int i=0; i<mbo_Test.trainList.size(); i++){
-			comboBox.addItem(mbo_Test.trainList.get(i).id);
+			comboBox.addItem(mbo_Test.trainList.get(i).stringId);
 		}
 
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
