@@ -21,6 +21,9 @@ public class Block extends TrackElement
     public boolean isStation;
     public boolean isCrossing;
     public String stationName;
+    public String transponderMessage;
+    public String transponderMessageFwd;
+    public String transponderMessageRev;
     public TrackElement prev;
     public TrackElement next;
 
@@ -29,6 +32,7 @@ public class Block extends TrackElement
     public boolean brokenRailFailure;
     public boolean trackCircuitFailure;
     public boolean powerFailure;
+    public boolean isClosed;
 
     //public double mbSpeed;
     //public double mbAuthority;
@@ -46,6 +50,7 @@ public class Block extends TrackElement
         prev = null;
         next = null;
         id = -1;
+        transponderMessage = "";
     }
 
     public Block(int id, String lineId, String sectionId, double length, double grade,
@@ -70,8 +75,15 @@ public class Block extends TrackElement
     }
 
 
-    public void connect(TrackElement prev, TrackElement next)
-    {
+    public String readTransponder(boolean travelDirection) {
+        if (travelDirection == DIRECTION_FWD) {
+            return transponderMessageFwd;
+        } else {
+            return transponderMessageRev;
+        }
+    }
+
+    public void connect(TrackElement prev, TrackElement next){
         this.prev = prev;
         this.next = next;
     }
@@ -95,13 +107,13 @@ public class Block extends TrackElement
                 return sw.blkDiverg;
         } else if (this == sw.blkStraight) {
             if (!dryRun && sw.state != Switch.STATE_STRAIGHT) {
-                System.out.printf("Warning: switch %d auto-flipped to STRAIGHT\n", sw.id);
+                System.out.printf("CRASH: switch %d auto-flipped to STRAIGHT\n", sw.id);
                 sw.state = Switch.STATE_STRAIGHT;
             }
             return sw.blkMain;
         } else if (this == sw.blkDiverg) {
             if (!dryRun && sw.state != Switch.STATE_DIVERGENT) {
-                System.out.printf("Warning: switch %d auto-flipped to DIVERGENT\n", sw.id);
+                System.out.printf("CRASH: switch %d auto-flipped to DIVERGENT\n", sw.id);
                 sw.state = Switch.STATE_DIVERGENT;
             }
             return sw.blkMain;
@@ -163,13 +175,15 @@ public class Block extends TrackElement
             train.positionBlock.occupied = true;
 
             /* Have the train become fully inside this block? */
-            if ((
+            if (
+                train.positionBlock != train.positionBlockTail // Not already contained within a block
+                && ((
                     train.positionDirection == DIRECTION_FWD &&
                     train.positionMeters > train.length
                 ) || (
                     train.positionDirection == DIRECTION_REV &&
                     (train.positionBlock.length - train.positionMeters) > train.length
-                )) {
+                ))) {
                     train.positionBlockTail.occupied = false;
                     train.positionBlockTail = train.positionBlock;
                 }
