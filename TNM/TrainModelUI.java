@@ -501,6 +501,7 @@ public class TrainModelUI {
 		ArrayList<Train> tempAL = new ArrayList<Train>();
 		for (int i = 0; i < trainList.size(); i++) {
 			if (trainList.get(i).positionBlock.id == id) {
+System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i).positionBlock.id));
 				tempAL.add(trainList.get(i));
 			}
 		}
