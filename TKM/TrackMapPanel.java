@@ -210,11 +210,13 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         }
 
         /* Draw trains */
-        if (lyt.trains != null)
-        {
+        if (lyt.trains != null) {
             for (Train t : lyt.trains) {
                 drawTrain(g, t);
             }
+        }
+        else {
+            System.out.printf("Trainlist not set!\n");
         }
     }
 
