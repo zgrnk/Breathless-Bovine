@@ -96,33 +96,6 @@ public class TrackLayout {
                 }
             }
 
-            /* Add transponders */
-            for (Block curBlk : blocks) {
-                if (curBlk.isStation) {
-                    curBlk.transponderMessage = curBlk.stationName;
-                    /* If my next block is pointing towards me or if it's bidir,
-                     * put a transponder there */
-                    if (curBlk.next instanceof Block
-                        && (curBlk.next.next == curBlk || curBlk.next.isBidir)) {
-                        curBlk.next.transponderMessageRev = curBlk.stationName;
-                    }
-                    /* If my prev block is pointing towards me or if it's bidir,
-                     * put a transponder there */
-                    if (curBlk.prev instanceof Block
-                        && (curBlk.prev.next == curBlk || curBlk.prev.isBidir)) {
-                        curBlk.prev.transponderMessageFwd = curBlk.stationName;
-                    }
-
-                    /* Put a direct transponderMessage on the station */
-                    curBlk.transponderMessage = curBlk.stationName;
-
-                    if (curBlk.prev instanceof Switch
-                     || curBlk.next instanceof Switch) {
-                        System.out.println("Station next to switch!");
-                    }
-                }
-            }
-
             for (Switch curSw : switches) {
                 if (curSw.blkMain == null) {
                     curSw.blkMain = (Block) getElementById(curSw.mainId);
@@ -135,6 +108,33 @@ public class TrackLayout {
                 if (curSw.blkDiverg == null) {
                     curSw.blkDiverg = (Block) getElementById(curSw.divergId);
                     if (curSw.blkDiverg == null) numFaults++;
+                }
+            }
+            
+            /* Add transponders to blocks adjacent to stations */
+            for (Block curBlk : blocks) {
+                if (curBlk.next instanceof Block && ((Block)curBlk.next).isStation) {
+                    curBlk.transponderMessageFwd = ((Block)curBlk.next).stationName;
+                } else if (curBlk.next instanceof Switch) {
+                    Switch nextSw = (Switch) curBlk.next;
+                    if (
+                            nextSw.blkMain.isStation
+                            && (
+                                nextSw.blkStraight == curBlk
+                                || nextSw.blkDiverg == curBlk
+                            )
+                       ) {
+                        curBlk.transponderMessageFwd = nextSw.blkMain.stationName;
+                    } else if ((nextSw.blkStraight.isStation && nextSw.blkMain == curBlk)
+                       || (nextSw.blkDiverg.isStation && nextSw.blkMain == curBlk)) {
+                           System.out.println("Bad transponder location");
+                    }
+                }
+
+                if (curBlk.isBidir && curBlk.prev instanceof Block && ((Block)curBlk.prev).isStation) {
+                    curBlk.transponderMessageRev = ((Block)curBlk.prev).stationName;
+                } else if (curBlk.isBidir && curBlk.prev instanceof Switch) {
+                    Switch nextSw = (Switch) curBlk.prev;
                 }
             }
             
