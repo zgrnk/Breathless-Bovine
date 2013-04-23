@@ -10,12 +10,12 @@
 
 /*
 XXX
-change resolution of screen so that both popups fully appear
 handle case if train starts rolling backwards while attempting to go uphill
 	train position may needchanged to prevBlock and routeIndex--
 when train moves out of block, don't want to necessarily change isOccupied to false since there may be another train in the block
 handle crashing of trains?...
 when train goes onto switch circuuit to avoid crash and the switched block is not in the route list...
+make them look like buttons
 XXX
 */
 
@@ -54,7 +54,7 @@ public class TrainModelUI {
 	// Main JFrames
 	protected static JFrame dynamicWindow;
 	protected static JFrame staticWindow;
-	Border borderline = BorderFactory.createLineBorder(Color.black, 2);
+	Border borderline = BorderFactory.createLineBorder(Color.black, 1);
 	
 	// dynamicWindow JButtons
 	protected static JButton btnShowStaticValues;
@@ -131,8 +131,8 @@ public class TrainModelUI {
 	 */
 	public TrainModelUI() {
 		try {
-			//JPanel emptyJPanel = new JPanel();
-			//emptyJPanel.add(new JLabel("                                                                                                                                                                                                                                                                                                                                                          "));
+			JPanel emptyJPanel = new JPanel();
+			emptyJPanel.add(new JLabel("            "));
 			isPaused = true;
 			
 			// Setup the dynamicWindow.
@@ -200,7 +200,7 @@ public class TrainModelUI {
 			dwPanel1.add(buildJPanel(jlManRecPower));
 			dwPanel1.add(buildJPanel(btnToggleManRecPower));
 			dwPanel1.add(buildJPanel(jlToggleManRecPower));
-			dwPanel1.add(buildJPanel(new JLabel("Speed Limit Posted on Signs (km/hr)", JLabel.CENTER)));
+			dwPanel1.add(buildJPanel(new JLabel("Speed Limit Posted on Signs (m/s)", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlPostedSpdLmt));
 			dwPanel1.add(buildJPanel(btnSetManDesSpdLmt));
 			dwPanel1.add(buildJPanel(jlManDesSpdLmt));
@@ -208,13 +208,13 @@ public class TrainModelUI {
 			dwPanel1.add(buildJPanel(jlToggleManDesSpdLmt));
 			dwPanel1.add(buildJPanel(new JLabel("Relative Grade from TKM (%)", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlGrade));
-			dwPanel1.add(buildJPanel(new JLabel("Total Mass (inc. humans) (kg)", JLabel.CENTER)));
+			dwPanel1.add(buildJPanel(new JLabel("Total Mass (inc. passengers/crew) (kg)", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlTotalMass));
 			dwPanel1.add(buildJPanel(new JLabel("Passenger Count", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlPassengerCount));
 			dwPanel1.add(buildJPanel(new JLabel("Crew Count", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlCrewCount));
-			dwPanel1.add(buildJPanel(new JLabel("Position from GPS ([block], m)", JLabel.CENTER)));
+			dwPanel1.add(buildJPanel(new JLabel("Position from Onboard GPS ([block], m)", JLabel.CENTER)));
 			dwPanel1.add(buildJPanel(jlPosition));
 			dwPanel1.add(buildJPanel(btnToggleSignalPickupFailure));
 			dwPanel1.add(buildJPanel(jlToggleSignalPickupFailure));
@@ -240,9 +240,9 @@ public class TrainModelUI {
 			dwPanel2.add(buildJPanel(jlManDoors));
 			dwPanel2.add(buildJPanel(btnToggleManDoors));
 			dwPanel2.add(buildJPanel(jlToggleManDoors));
-			dwPanel2.add(buildJPanel(new JLabel("Current Temp. (degrees C)", JLabel.CENTER)));
+			dwPanel2.add(buildJPanel(new JLabel("Current Temp. (degrees F)", JLabel.CENTER)));
 			dwPanel2.add(buildJPanel(jlCurTemperature));
-			dwPanel2.add(buildJPanel(new JLabel("Target Temp. from TNC (degrees C)", JLabel.CENTER)));
+			dwPanel2.add(buildJPanel(new JLabel("Target Temp. from TNC (degrees F)", JLabel.CENTER)));
 			dwPanel2.add(buildJPanel(jlTarTemperature));
 			dwPanel2.add(buildJPanel(btnSetManTarTemperature));
 			dwPanel2.add(buildJPanel(jlManTarTemperature));
@@ -261,16 +261,16 @@ public class TrainModelUI {
 			JPanel jp = new JPanel();
 			jp.setLayout(new BoxLayout(jp, BoxLayout.Y_AXIS));
 			jp.add(primaryButtons);
+			jp.add(emptyJPanel);
 			jp.add(new JSeparator(JSeparator.HORIZONTAL));
 			jp.add(dwPanel1);
 			jp.add(new JSeparator(JSeparator.HORIZONTAL));
 			jp.add(dwPanel2);
 
-			jp.setMaximumSize(new Dimension(400, 1000));
+			jp.setMaximumSize(new Dimension(400, 700));
 
 			JScrollPane dScroll = new JScrollPane(jp);
 			dScroll.setViewportView(jp);
-			//scroll.getVerticalScrollBar().setUnitIncrement(50);
 			
 			dynamicWindow = new JFrame();
 			dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   --)");
@@ -317,9 +317,9 @@ public class TrainModelUI {
 			swPanel.add(buildJPanel(jlEmergencyBrakeDecel));
 			swPanel.add(buildJPanel(new JLabel("Coefficient of Friction", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlFrictionCoeff));
-			swPanel.add(buildJPanel(new JLabel("Train Mass (not inc. humans) (kg)", JLabel.CENTER)));
+			swPanel.add(buildJPanel(new JLabel("Train Mass (not inc. passengers/crew) (kg)", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlEmptyTrainMass));
-			swPanel.add(buildJPanel(new JLabel("Mass Per Human (kg)", JLabel.CENTER)));
+			swPanel.add(buildJPanel(new JLabel("Mass Per Passenger/Crew (kg)", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlPersonMass));
 			swPanel.add(buildJPanel(new JLabel("Maximum Seated Passenger Count", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlMaxSeatedCount));
@@ -327,10 +327,6 @@ public class TrainModelUI {
 			swPanel.add(buildJPanel(jlMaxStandingCount));
 			swPanel.add(buildJPanel(new JLabel("Maximum Crew Count", JLabel.CENTER)));
 			swPanel.add(buildJPanel(jlMaxCrewCount));
-			
-			//JScrollPane staticJSP = new JScrollPane(swPanel);
-			//staticJSP.setViewportView(swPanel);
-		  //scroll.getVerticalScrollBar().setUnitIncrement(50);
 			
 			staticWindow = new JFrame();
 			staticWindow.setTitle("Train Model (Chris Paskie)   -   Static Values   (Train ID:   --)");
@@ -461,7 +457,7 @@ public class TrainModelUI {
 		jlPostedSpdLmt.setText("" + trainList.get(selectedId - 1).postedSpeedLimit);
 		jlManDesSpdLmt.setText("" + trainList.get(selectedId - 1).manualSpeedLimit);
 		jlToggleManDesSpdLmt.setText("" + trainList.get(selectedId - 1).issetManualSpeedLimit);
-		jlGrade.setText("" + trainList.get(selectedId - 1).positionBlock.grade);
+		jlGrade.setText("" + trainList.get(selectedId - 1).getRelativeGrade());
 		jlTotalMass.setText("" + trainList.get(selectedId - 1).totalMass);
 		jlPassengerCount.setText("" + trainList.get(selectedId - 1).numPassengers);
 		jlCrewCount.setText("" + trainList.get(selectedId - 1).numCrew);
@@ -757,7 +753,7 @@ System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i)
 				} else if (aEvent.getActionCommand() == "Set Manual Desired Speed Limit"){
 					// Set Manual Desired Speed Limit
 					try {
-						String tempManDesSpdLmt = (String)JOptionPane.showInputDialog(null, "Enter the desired speed limit (km/hr) (number only):", 
+						String tempManDesSpdLmt = (String)JOptionPane.showInputDialog(null, "Enter the desired speed limit (m/s) (number only):", 
 													"Train Model - Set Desired Speed Limit", JOptionPane.QUESTION_MESSAGE);
 						if (tempManDesSpdLmt != null) {
 							trainList.get(selectedId - 1).manualSpeedLimit = Double.parseDouble(tempManDesSpdLmt);
@@ -837,7 +833,7 @@ System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i)
 				} else if (aEvent.getActionCommand() == "Set Manual Target Temp.") {
 					// Set Manual Target Temp.
 					try {
-						String tempManTarTemperature = (String)JOptionPane.showInputDialog(null, "Enter the target temperature (degrees Celsius) (number only):", 
+						String tempManTarTemperature = (String)JOptionPane.showInputDialog(null, "Enter the target temperature (degrees F) (number only):", 
 														"Train Model - Set Target Temperature", JOptionPane.QUESTION_MESSAGE);
 						if (tempManTarTemperature != null) {
 							trainList.get(selectedId - 1).targetTemperatureManual = Double.parseDouble(tempManTarTemperature);

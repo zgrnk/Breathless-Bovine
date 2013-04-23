@@ -24,6 +24,8 @@ public class TKMControlPanel extends JPanel implements ActionListener {
     JTextField fieldBlkGrade;
     JTextField fieldBlkSpeedLimit;
     JTextField fieldBlkStationName;
+    JLabel lblPrevElem;
+    JLabel lblNextElem;
 
     JCheckBox cboxBlkBidir;
     JCheckBox cboxBlkUground;
@@ -31,8 +33,9 @@ public class TKMControlPanel extends JPanel implements ActionListener {
     JCheckBox cboxBlkCrossing;
     
     JCheckBox cboxSwDiv;
-    //JLabel lblTest;
-    //JButton bTest;
+    JLabel lblMainBlk;
+    JLabel lblStraightBlk;
+    JLabel lblDivBlk;
 
     public TKMControlPanel(TrackLayout tl) {
 
@@ -65,24 +68,42 @@ public class TKMControlPanel extends JPanel implements ActionListener {
 
         lblElemId = new JLabel();
         lblElemId.setMaximumSize(new Dimension(200,13));
+
         fieldBlkSection = new JTextField();
         fieldBlkSection.setMaximumSize(new Dimension(200,13));
+        fieldBlkSection.addActionListener(this);
+
         fieldBlkLength = new JTextField();
         fieldBlkLength.setMaximumSize(new Dimension(200,13));
+        fieldBlkLength.addActionListener(this);
+
         fieldBlkGrade = new JTextField();
         fieldBlkGrade.setMaximumSize(new Dimension(200,13));
+        fieldBlkGrade.addActionListener(this);
+
         fieldBlkSpeedLimit = new JTextField();
         fieldBlkSpeedLimit.setMaximumSize(new Dimension(200,13));
+        fieldBlkSpeedLimit.addActionListener(this);
+
         fieldBlkStationName = new JTextField();
         fieldBlkStationName.setMaximumSize(new Dimension(200,13));
+        fieldBlkStationName.addActionListener(this);
         
         cboxBlkBidir = new JCheckBox();
+        cboxBlkBidir.addActionListener(this);
         cboxBlkUground = new JCheckBox();
+        cboxBlkUground.addActionListener(this);
         cboxBlkCrossing = new JCheckBox();
+        cboxBlkCrossing.addActionListener(this);
 
+        lblPrevElem = new JLabel();
+        lblNextElem = new JLabel();
 
         cboxSwDiv = new JCheckBox();
         cboxSwDiv.addActionListener(this);
+        lblMainBlk = new JLabel();
+        lblStraightBlk = new JLabel();
+        lblDivBlk = new JLabel();
 
         pBlkInfo.add(new JLabel("Select Line"));
         pBlkInfo.add(cbLine);
@@ -94,7 +115,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         pBlkInfo.add(fieldBlkLength);
         pBlkInfo.add(new JLabel("Grade"));
         pBlkInfo.add(fieldBlkGrade);
-        pBlkInfo.add(new JLabel("Speed Limit"));
+        pBlkInfo.add(new JLabel("Speed Limit (m/s)"));
         pBlkInfo.add(fieldBlkSpeedLimit);
         pBlkInfo.add(new JLabel("Station"));
         pBlkInfo.add(fieldBlkStationName);
@@ -104,13 +125,22 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         pBlkInfo.add(cboxBlkUground);
         pBlkInfo.add(new JLabel("Is Crossing"));
         pBlkInfo.add(cboxBlkCrossing);
+
+        pBlkInfo.add(new JLabel("Previous Element"));
+        pBlkInfo.add(lblPrevElem);
+        pBlkInfo.add(new JLabel("Next Element"));
+        pBlkInfo.add(lblNextElem);
         
-        pSwInfo.add(new JLabel("Switch Info"));
-        pSwInfo.add(new JLabel(""));
         pSwInfo.add(new JLabel("Select Switch"));
         pSwInfo.add(cbSwitch);
-        pSwInfo.add(new JLabel("Switched to divergent"));
+        pSwInfo.add(new JLabel("Switched to Divergent"));
         pSwInfo.add(cboxSwDiv);
+        pSwInfo.add(new JLabel("Main Block"));
+        pSwInfo.add(lblMainBlk);
+        pSwInfo.add(new JLabel("Straight Block"));
+        pSwInfo.add(lblStraightBlk);
+        pSwInfo.add(new JLabel("Divergent Block"));
+        pSwInfo.add(lblDivBlk);
 
         //bTest = new JButton("Test train");
         //bTest.addActionListener(this);
@@ -129,33 +159,80 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         this.add(Box.createVerticalGlue());
         this.setMaximumSize(new Dimension(400, 65535));
        // this.setPreferredSize(new Dimension(400, 65535));
-
+    
+        updateBlkInfo(lyt.redLine.yard, true);
     }
 
     public void setMapPanel(TrackMapPanel tmp) {
         pMap = tmp;
     }
 
-    public void updateSwInfo(Switch sw) {
+    public void updateSwInfo(Switch sw, boolean updateCombos) {
+        if (updateCombos) {
+            cbLine.setSelectedItem(sw.line);
+            cbSwitch.setSelectedItem(sw);
+        }
+
         cboxSwDiv.setSelected(sw.state);
+        lblMainBlk.setText(sw.blkMain.toString());
+        lblStraightBlk.setText(sw.blkStraight.toString());
+        lblDivBlk.setText(sw.blkDiverg.toString());
     }
 
-    public void updateBlkInfo(Block blk) {
+    public void updateBlkInfo(Block blk, boolean updateCombos) {
         lblElemId.setText("Block");
 
-        /* Set block fields */
-        fieldBlkSection.setText(blk.sectionId);
-        fieldBlkLength.setText(Double.toString(blk.length));
-        fieldBlkGrade.setText(Double.toString(blk.grade));
-        fieldBlkSpeedLimit.setText(Double.toString(blk.speedLimit));
-        if (blk.isStation) {
-            fieldBlkStationName.setText(blk.stationName);
-        } else {
-            fieldBlkStationName.setText("No station");
+        if (updateCombos) {
+            cbLine.setSelectedItem(blk.line);
+            cbBlock.setSelectedItem(blk);
         }
-        cboxBlkBidir.setSelected(blk.isBidir);
-        cboxBlkUground.setSelected(blk.isUground);
-        cboxBlkCrossing.setSelected(blk.isCrossing);
+
+        /* Set block fields */
+        if (blk == blk.line.yard) {
+            
+            fieldBlkSection.setText("Yard");
+            fieldBlkSection.setEnabled(false);
+            fieldBlkLength.setText("");
+            fieldBlkLength.setEnabled(false);
+            fieldBlkGrade.setText("");
+            fieldBlkGrade.setEnabled(false);
+            fieldBlkSpeedLimit.setText("");
+            fieldBlkSpeedLimit.setEnabled(false);
+            cboxBlkBidir.setSelected(false);
+            cboxBlkBidir.setEnabled(false);
+            cboxBlkUground.setSelected(false);
+            cboxBlkUground.setEnabled(false);
+            cboxBlkCrossing.setSelected(false);
+            cboxBlkCrossing.setEnabled(false);
+            lblPrevElem.setText("");
+            lblNextElem.setText("");
+        } else {
+            fieldBlkSection.setEnabled(true);
+            fieldBlkLength.setEnabled(true);
+            fieldBlkGrade.setEnabled(true);
+            fieldBlkSpeedLimit.setEnabled(true);
+            cboxBlkBidir.setEnabled(true);
+            cboxBlkUground.setEnabled(true);
+            cboxBlkCrossing.setEnabled(true);
+            
+            fieldBlkSection.setText(blk.sectionId);
+            fieldBlkLength.setText(Double.toString(blk.length));
+            fieldBlkGrade.setText(Double.toString(blk.grade));
+            fieldBlkSpeedLimit.setText(Double.toString(blk.speedLimit));
+            if (blk.isStation) {
+                fieldBlkStationName.setText(blk.stationName);
+                fieldBlkStationName.setEnabled(true);
+            } else {
+                fieldBlkStationName.setText("No station");
+                fieldBlkStationName.setEnabled(false);
+            }
+            cboxBlkBidir.setSelected(blk.isBidir);
+            cboxBlkUground.setSelected(blk.isUground);
+            cboxBlkCrossing.setSelected(blk.isCrossing);
+
+            lblPrevElem.setText(blk.prev.toString());
+            lblNextElem.setText(blk.next.toString());
+        }
 
         //pMap.setMarker(blk.mapX,blk.mapY);
         
@@ -163,10 +240,10 @@ public class TKMControlPanel extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 		
-    TrackElement elem;
+        //TrackElement elem;
 
         if (e.getSource() == cboxSwDiv) {
-            selectedSwitch.state = ((JCheckBox)e.getSource()).isSelected();
+            selectedSwitch.state = cboxSwDiv.isSelected();
         }
                 
         if ("comboBoxChanged".equals(e.getActionCommand())) {
@@ -178,15 +255,44 @@ public class TKMControlPanel extends JPanel implements ActionListener {
             } else if (cb == cbBlock) {
                 Block blk = (Block)cb.getSelectedItem();
                 lyt.setSelectedElement(blk);
-                updateBlkInfo(blk);
+                updateBlkInfo(blk, false);
                 selectedBlock = blk;
 
             } else if (cb == cbSwitch) {
                 Switch sw = (Switch)cb.getSelectedItem();
                 lyt.setSelectedElement(sw);
-                updateSwInfo(sw);
+                updateSwInfo(sw, false);
                 selectedSwitch = sw;
             }
+        }
+
+        //System.out.println(e.getSource());
+
+        if(e.getSource() == fieldBlkLength) {
+            //System.out.println("updated length");
+            selectedBlock.length = Double.parseDouble(fieldBlkLength.getText());
+        }
+        if(e.getSource() == fieldBlkGrade) {
+            selectedBlock.grade = Double.parseDouble(fieldBlkGrade.getText());
+        }
+        if(e.getSource() == fieldBlkSpeedLimit) {
+            selectedBlock.speedLimit = Double.parseDouble(fieldBlkSpeedLimit.getText());
+        }
+        if(e.getSource() == fieldBlkSection) {
+            selectedBlock.sectionId = fieldBlkSection.getText();
+        }
+        if(e.getSource() == fieldBlkStationName) {
+            selectedBlock.stationName = fieldBlkStationName.getText();
+        }
+        
+        if(e.getSource() == cboxBlkBidir) {
+            selectedBlock.isBidir = cboxBlkBidir.isSelected();
+        }
+        if(e.getSource() == cboxBlkCrossing) {
+            selectedBlock.isCrossing = cboxBlkCrossing.isSelected();
+        }
+        if(e.getSource() == fieldBlkStationName) {
+            selectedBlock.isUground = cboxBlkUground.isSelected();
         }
 
         if (pMap != null) {

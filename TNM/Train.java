@@ -151,9 +151,9 @@ public class Train {
 		issetDoorsOpen = true;
 		issetDoorsOpenManual = true;
 		issetDoorsOpenUseManual = false;
-		curTemperature = 72.0;
-		targetTemperatureTNC = 72.0;
-		targetTemperatureManual = 72.0;
+		curTemperature = 22.0;
+		targetTemperatureTNC = 22.0;
+		targetTemperatureManual = 22.0;
 		issetTargetTemperatureManual = false;
 		announcement = "";
 		
@@ -174,6 +174,17 @@ public class Train {
 	}
 	
 	/**
+	 * Get the grade of the current block based on the direction in which the train is travelling.
+	 */
+	public double getRelativeGrade() {
+		if ((positionBlock.grade == 0.0) || (positionDirection == Block.DIRECTION_FWD)) {
+			return positionBlock.grade;
+		} else {
+			return (-1.0) * positionBlock.grade;
+		}
+	}
+	
+	/**
 	 * Performs calculations and updates counts relating to the train.
 	 */
 	public void timeTick(double time, double period, boolean isSolo) {
@@ -184,7 +195,8 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 		if (!isSolo) {
 			tncResponse = tnc.timeTick(time, curVelocity, period, positionBlock, positionBlockTail, 
 										issetSignalPickupFailure, issetEngineFailure, issetBrakeFailure, 
-										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0));
+										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0), 
+										positionBlock.readTransponder(positionDirection));
 		}
 		
 		if ((!issetDoorsOpen) && (numCrew > 0)) {
@@ -203,9 +215,9 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 			} else {
 				flat = true;
 			}
-System.out.println("XXX - uphill\t\t"+(uphill));
-System.out.println("XXX - downhill\t\t"+(downhill));
-System.out.println("XXX - flat\t\t"+(flat));
+//System.out.println("XXX - uphill\t\t"+(uphill));
+//System.out.println("XXX - downhill\t\t"+(downhill));
+//System.out.println("XXX - flat\t\t"+(flat));
 			
 			// Angle of Inclination (used for the later Gravity calculations)
 			double angle = 0.0;
@@ -246,7 +258,6 @@ System.out.println("XXX - flat\t\t"+(flat));
 						accelEngine = receivedPower / (curVelocity * totalMass);
 					}
 				} else {
-System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY\t\t");
 					if (curVelocity <= 0.0) {
 						// Special case when train is currently stopped (or rolling backwards).
 						accelEngine = manualPower / (0.0001 * totalMass);
@@ -255,9 +266,9 @@ System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY\t\t");
 					}
 				}
 			}
-System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
-System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
-System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
+//System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
+//System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
+//System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
 			
 			if (accelEngine > (motorPower /  (0.0001 * totalMass))) {
 				// Limit the engine acceleration if necessary.
@@ -319,14 +330,14 @@ System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
 				accelFriction = 0.0;
 			}
 			double velFriction = accelFriction * period;
-System.out.println("XXX - accelEngine\t"+accelEngine);
-System.out.println("XXX - accelBrakes\t"+accelBrakes);
-System.out.println("XXX - accelGravity\t"+accelGravity);
-System.out.println("XXX - accelFriction\t"+accelFriction);
-System.out.println("XXX - velEngine\t\t"+velEngine);
-System.out.println("XXX - velBrakes\t\t"+velBrakes);
-System.out.println("XXX - velGravity\t"+velGravity);
-System.out.println("XXX - velFriction\t"+velFriction);
+//System.out.println("XXX - accelEngine\t"+accelEngine);
+//System.out.println("XXX - accelBrakes\t"+accelBrakes);
+//System.out.println("XXX - accelGravity\t"+accelGravity);
+//System.out.println("XXX - accelFriction\t"+accelFriction);
+//System.out.println("XXX - velEngine\t\t"+velEngine);
+//System.out.println("XXX - velBrakes\t\t"+velBrakes);
+//System.out.println("XXX - velGravity\t"+velGravity);
+//System.out.println("XXX - velFriction\t"+velFriction);
 			
 			// Current - Acceleration & Velocity (w/ Brakes & Friction)
 			curAccel += (accelBrakes + accelFriction);
@@ -378,90 +389,23 @@ System.out.println("XXX - velFriction\t"+velFriction);
 				curVelocity = newVelocity;
 			}
 			curVelocity = round(curVelocity, 3);
-System.out.println("XXX - curVelocity\t"+curVelocity);
-			
-/*
-			// Position
-			if (positionDirection)
-			{
-//System.out.println("XXX - positionDirection\t"+positionDirection);
-				positionMeters += (curVelocity * period);
-				
-				if (positionMeters >= positionBlock.length)
-				{
-//System.out.println("XXX - positionMeters >= positionBlock.length");
-					double difference = positionMeters - positionBlock.length;
-//System.out.println("XXX - difference\t"+difference);
-					
-					if (positionBlock.id == positionBlock.nextBlock.nextBlock.id)
-						positionDirection = false;
-					else
-						positionDirection = true;
-//System.out.println("XXX - positionDirection\t"+positionDirection);
-					
-					positionBlock.isOccupied = false;
-					positionBlock = positionBlock.nextBlock;
-					positionBlock.isOccupied = true;
-					routeIndex++;
-					
-					if (positionDirection)
-						positionMeters = difference;
-					else
-						positionMeters = positionBlock.length - difference;
-//System.out.println("XXX - positionMeters\t"+positionMeters);
-				}
-			}
-			else
-			{
-//System.out.println("XXX - positionDirection\t"+positionDirection);
-				positionMeters -= (curVelocity * period);
-				
-				if (positionMeters < 0.0)
-				{
-//System.out.println("XXX - positionMeters < 0.0");
-					double difference = positionMeters * (-1.0);
-//System.out.println("XXX - difference\t"+difference);
-					
-					if (positionBlock.id == positionBlock.prevBlock.nextBlock.id)
-						positionDirection = false;
-					else
-						positionDirection = true;
-//System.out.println("XXX - positionDirection\t"+positionDirection);
-					
-					positionBlock.isOccupied = false;
-					positionBlock = positionBlock.prevBlock;
-					positionBlock.isOccupied = true;
-					routeIndex++;
-					
-					if (positionDirection)
-						positionMeters = difference;
-					else
-						positionMeters = positionBlock.length - difference;
-//System.out.println("XXX - positionMeters\t"+positionMeters);
-				}
-			}
-			positionBlockTail.isOccupied = false;
-			if ((positionDirection  &&  positionMeters > length)  ||  (!positionDirection  &&  positionBlock.length - positionMeters > length))
-				positionBlockTail = positionBlock;
-			positionBlockTail.isOccupied = true;
-			positionMeters = round(positionMeters, 3);
-			gps = new GPS(positionBlock, (int) positionMeters, curVelocity, positionDirection);
-*/
-System.out.println("XXX - this.positionDirection\t"+this.positionDirection);
-System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
+//System.out.println("XXX - curVelocity\t"+curVelocity);
+//System.out.println("XXX - this.positionDirection\t"+this.positionDirection);
+//System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
 			// Actually update the position of the train on the track.
 			Block.advanceTrain(this, curVelocity * period);
-			gps = new GPS(positionBlock, (int) positionMeters, curVelocity, (positionDirection == Block.DIRECTION_FWD));
+			gps = new GPS(positionBlock, (int) (positionMeters + 0.5), curVelocity, (positionDirection == Block.DIRECTION_FWD));
 			if (!isSolo) {
+				postedSpeedLimit = positionBlock.speedLimit;
 				fixedSuggestedAuthority = positionBlock.fbAuthority;
 				fixedSuggestedSpeed = positionBlock.fbSpeed;
 				// mboSuggestedAuthority = XXXXXXX;
 				// mboSuggestedSpeed = XXXXXXX;
 			}
-System.out.println("XXX - (int) positionMeters\t"+((int) positionMeters));
+//System.out.println("XXX - (int) (positionMeters + 0.5)\t"+((int) (positionMeters + 0.5)));
 		}
-System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
-System.out.println("XXX - positionMeters\t"+positionMeters);
+//System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
+//System.out.println("XXX - positionMeters\t"+positionMeters);
 		
 		// Lights
 		if ((issetLightsOnUseManual) || (isSolo)) {
@@ -487,15 +431,15 @@ System.out.println("XXX - positionMeters\t"+positionMeters);
 		 */
 		if ((issetTargetTemperatureManual) || (isSolo)) {
 			if (curTemperature > targetTemperatureManual) {
-				curTemperature -= 0.1;
+				curTemperature -= 0.01;
 			} else if (curTemperature < targetTemperatureManual) {
-				curTemperature += 0.1;
+				curTemperature += 0.01;
 			}
 		} else {
 			if (curTemperature > targetTemperatureTNC) {
-				curTemperature -= 0.1;
+				curTemperature -= 0.01;
 			} else if (curTemperature < targetTemperatureTNC) {
-				curTemperature += 0.1;
+				curTemperature += 0.01;
 			}
 		}
 		curTemperature = round(curTemperature, 1);
@@ -538,37 +482,6 @@ System.out.println("XXX - positionMeters\t"+positionMeters);
 		}
 		
 		// Crew
-/*
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
-System.out.println("XXX - "+issetDoorsOpen+"\tissetDoorsOpen");
-System.out.println("XXX - "+engineer.goOnBreak+"\tengineer.goOnBreak");
-System.out.println("XXX - "+(routeIndex > 0)+"\trouteIndex > 0");
-System.out.println("XXX - "+(routeIndex < route.size() - 1)+"\trouteIndex < route.size() - 1");
-System.out.println("XXX - "+(engineer.timeOnBreakStarts >= time)+"\tengineer.timeOnBreakStarts >= time");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
-System.out.println("XXX - "+engineer.onBreak+"\tengineer.onBreak");
-System.out.println("XXX - "+(routeIndex > 0)+"\trouteIndex > 0");
-System.out.println("XXX - "+(routeIndex < route.size() - 1)+"\trouteIndex < route.size() - 1");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
-System.out.println("XXX - "+issetDoorsOpen+"\tissetDoorsOpen");
-System.out.println("XXX - "+(routeIndex == 0)+"\trouteIndex == 0");
-System.out.println("XXX - "+(time - period < dispatchTime)+"\ttime - period < dispatchTime");
-System.out.println("XXX - "+(time >= dispatchTime)+"\ttime >= dispatchTime");
-System.out.println("XXX - "+(time - period < 0)+"\ttime - period < 0");
-System.out.println("XXX - "+(24*60*60 + time - period < dispatchTime)+"\t24*60*60 + time - period < dispatchTime");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
-System.out.println("XXX - "+issetDoorsOpen+"\tissetDoorsOpen");
-System.out.println("XXX - "+(routeIndex == route.size() - 1)+"\trouteIndex == route.size() - 1");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-System.out.println("XXX - "+time+"\ttime");
-System.out.println("XXX - "+period+"\tperiod");
-System.out.println("XXX - "+dispatchTime+"\tdispatchTime");
-System.out.println("XXX - XXXXXXXXXXXXXXX");
-*/
 		if (curVelocity == 0.0) {
 			if ((positionBlock.isYard) && (issetDoorsOpen) && (engineer.goOnBreak) && (routeIndex > 0) 
 					&& (routeIndex < route.size() - 1) && (engineer.timeOnBreakStarts >= time) && (numCrew > 0)) {
