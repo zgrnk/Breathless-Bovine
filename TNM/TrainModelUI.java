@@ -54,7 +54,7 @@ public class TrainModelUI {
 	// Main JFrames
 	protected static JFrame dynamicWindow;
 	protected static JFrame staticWindow;
-	Border borderline = BorderFactory.createLineBorder(Color.black, 2);
+	Border borderline = BorderFactory.createLineBorder(Color.black, 1);
 	
 	// dynamicWindow JButtons
 	protected static JButton btnShowStaticValues;
