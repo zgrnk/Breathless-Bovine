@@ -240,9 +240,9 @@ public class TrainModelUI {
 			dwPanel2.add(buildJPanel(jlManDoors));
 			dwPanel2.add(buildJPanel(btnToggleManDoors));
 			dwPanel2.add(buildJPanel(jlToggleManDoors));
-			dwPanel2.add(buildJPanel(new JLabel("Current Temp. (degrees C)", JLabel.CENTER)));
+			dwPanel2.add(buildJPanel(new JLabel("Current Temp. (degrees F)", JLabel.CENTER)));
 			dwPanel2.add(buildJPanel(jlCurTemperature));
-			dwPanel2.add(buildJPanel(new JLabel("Target Temp. from TNC (degrees C)", JLabel.CENTER)));
+			dwPanel2.add(buildJPanel(new JLabel("Target Temp. from TNC (degrees F)", JLabel.CENTER)));
 			dwPanel2.add(buildJPanel(jlTarTemperature));
 			dwPanel2.add(buildJPanel(btnSetManTarTemperature));
 			dwPanel2.add(buildJPanel(jlManTarTemperature));
@@ -276,7 +276,7 @@ public class TrainModelUI {
 			dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   --)");
 			dynamicWindow.setSize(600, 400);
 			dynamicWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-			dynamicWindow.setContentPane(dScroll);
+			dynamicWindow.add(dScroll);
 			isVisible = false;
 			dynamicWindow.setVisible(isVisible);
 			
@@ -833,7 +833,7 @@ System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i)
 				} else if (aEvent.getActionCommand() == "Set Manual Target Temp.") {
 					// Set Manual Target Temp.
 					try {
-						String tempManTarTemperature = (String)JOptionPane.showInputDialog(null, "Enter the target temperature (degrees Celsius) (number only):", 
+						String tempManTarTemperature = (String)JOptionPane.showInputDialog(null, "Enter the target temperature (degrees F) (number only):", 
 														"Train Model - Set Target Temperature", JOptionPane.QUESTION_MESSAGE);
 						if (tempManTarTemperature != null) {
 							trainList.get(selectedId - 1).targetTemperatureManual = Double.parseDouble(tempManTarTemperature);

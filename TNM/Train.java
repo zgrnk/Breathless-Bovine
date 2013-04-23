@@ -151,9 +151,9 @@ public class Train {
 		issetDoorsOpen = true;
 		issetDoorsOpenManual = true;
 		issetDoorsOpenUseManual = false;
-		curTemperature = 72.0;
-		targetTemperatureTNC = 72.0;
-		targetTemperatureManual = 72.0;
+		curTemperature = 22.0;
+		targetTemperatureTNC = 22.0;
+		targetTemperatureManual = 22.0;
 		issetTargetTemperatureManual = false;
 		announcement = "";
 		
@@ -195,7 +195,8 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 		if (!isSolo) {
 			tncResponse = tnc.timeTick(time, curVelocity, period, positionBlock, positionBlockTail, 
 										issetSignalPickupFailure, issetEngineFailure, issetBrakeFailure, 
-										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0));
+										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0), 
+										positionBlock.readTransponder(positionDirection));
 		}
 		
 		if ((!issetDoorsOpen) && (numCrew > 0)) {
@@ -430,15 +431,15 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 		 */
 		if ((issetTargetTemperatureManual) || (isSolo)) {
 			if (curTemperature > targetTemperatureManual) {
-				curTemperature -= 0.1;
+				curTemperature -= 0.01;
 			} else if (curTemperature < targetTemperatureManual) {
-				curTemperature += 0.1;
+				curTemperature += 0.01;
 			}
 		} else {
 			if (curTemperature > targetTemperatureTNC) {
-				curTemperature -= 0.1;
+				curTemperature -= 0.01;
 			} else if (curTemperature < targetTemperatureTNC) {
-				curTemperature += 0.1;
+				curTemperature += 0.01;
 			}
 		}
 		curTemperature = round(curTemperature, 1);
