@@ -30,7 +30,7 @@ import javax.swing.border.MatteBorder;
 import TKM.Block;
 import TKM.Switch;
 
-public class ControllerUI extends JFrame {
+public class ControllerUI extends JPanel {
 
 	private JPanel contentPane;
 	public JSpinner spinnerTrack;
@@ -53,7 +53,7 @@ public class ControllerUI extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Throwable e) {
@@ -62,14 +62,16 @@ public class ControllerUI extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					/*ControllerUI frame = new ControllerUI(null);
+					frame.setVisible(true);*/
 					ControllerUI frame = new ControllerUI(null);
-					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-	}*/
+	}
 
 	/**
 	 * Create the frame.
@@ -82,14 +84,18 @@ public class ControllerUI extends JFrame {
 			e.printStackTrace();
 		}
 		
+		//Create and set up the window.
+        JFrame frame = new JFrame("Track Controller - UI");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setBounds(100, 100, 778, 481);
+        
 		this.tkc = paramtkc;
 		
-		setTitle("Track Controller - UI");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 778, 481);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
+		
+		frame.setContentPane(contentPane);
 		
 		String [] trackNames = {"Red Line", "Green Line"};
 		SpinnerListModel trackSModel = new SpinnerListModel(trackNames);
@@ -274,6 +280,9 @@ public class ControllerUI extends JFrame {
 				);
 		selectedItemPanel.setLayout(gl_selectedItemPanel);
 		contentPane.setLayout(gl_contentPane);
+		
+		frame.pack();
+		frame.setVisible(true);
 	}
 
 	public class ControllerListener implements ActionListener {
