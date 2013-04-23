@@ -27,7 +27,7 @@ public class TKMGui extends JPanel {
 
         //Create and set up the window.
         JFrame frame = new JFrame("TKM Proto");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         TKMControlPanel pControl = new TKMControlPanel(lyt);
 

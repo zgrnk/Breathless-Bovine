@@ -276,7 +276,7 @@ public class TrainModelUI {
 			dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   --)");
 			dynamicWindow.setSize(600, 400);
 			dynamicWindow.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-			dynamicWindow.add(dScroll);
+			dynamicWindow.setContentPane(dScroll);
 			isVisible = false;
 			dynamicWindow.setVisible(isVisible);
 			

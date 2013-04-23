@@ -5,8 +5,7 @@ package TKM;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.List;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
@@ -95,6 +94,70 @@ public class TrackLayout {
                     curBlk.prev = getElementById(curBlk.revId);
                     if (curBlk.prev == null) numFaults++;
                 }
+            }
+
+            /* Add transponders to blocks adjacent to stations */
+            for (Block curBlk : blocks) {
+                if (curBlk.next instanceof Block && ((Block)curBlk.next).isStation) {
+                    curBlk.transponderMessageFwd = ((Block)curBlk.next).stationName;
+                } else if (curBlk.next instanceof Switch) {
+                    Switch nextSw = (Switch) curBlk.next;
+                    //if (nextSw.blkMain.isStation && nextSw.blkStraight == curBlk) {
+                    //}
+                }
+
+                if (curBlk.isBidir && curBlk.prev instanceof Block && ((Block)curBlk.prev).isStation) {
+                    curBlk.transponderMessageRev = ((Block)curBlk.prev).stationName;
+                } else if (curBlk.isBidir && curBlk.prev instanceof Switch) {
+                    Switch nextSw = (Switch) curBlk.prev;
+                }
+                
+                //~ if (curBlk.isStation) {
+                    //~ curBlk.transponderMessage = curBlk.stationName;
+//~ 
+//~ 
+                    //~ /* If a adjacent block points towards me, give it a
+                     //~ * transponder in its forward direction. If it points
+                     //~ * away, give it a transponder in its reverse direction */
+                    //~ if (curBlk.next instanceof Block) {
+                        //~ Block nextBlk = (Block) curBlk.next;
+                        //~ if (nextBlk.next == curBlk) {
+                            //~ nextBlk.transponderMessageFwd = curBlk.stationName;
+                        //~ }
+                        //~ if (nextBlk.prev == curBlk && nextBlk.isBidir) {
+                            //~ nextBlk.transponderMessageRev = curBlk.stationName;
+                        //~ }
+                    //~ } else {
+                        //~ /* FIXME Handle switch */
+                    //~ }
+//~ 
+                    //~ 
+                    //~ if (curBlk.prev instanceof Block) {
+                        //~ Block prevBlk = (Block) curBlk.prev;
+                        //~ if (prevBlk.next == curBlk) {
+                            //~ prevBlk.transponderMessageFwd = curBlk.stationName;
+                        //~ }
+                        //~ if (prevBlk.prev == curBlk && prevBlk.isBidir) {
+                            //~ prevBlk.transponderMessageRev = curBlk.stationName;
+                        //~ }
+                    //~ } else {
+                        //~ /* FIXME Handle switch */
+                        //~ Switch prevSw = (Switch) curBlk.prev;
+                        //~ if (prevSw.blkMain == curBlk)
+                    //~ }
+                    //~ 
+                    //~ /* Put a direct transponderMessage on the station */
+                    //~ curBlk.transponderMessageFwd = curBlk.stationName;
+                    //~ if (curBlk.isBidir) {
+                        //~ curBlk.transponderMessageRev = curBlk.stationName;
+                    //~ }
+//~ 
+                    //~ if (curBlk.prev instanceof Switch
+                     //~ || curBlk.next instanceof Switch) {
+                        //~ System.out.printf("Station %s next to switch!\n",
+                                           //~ curBlk.stationName);
+                    //~ }
+                //~ }
             }
 
             for (Switch curSw : switches) {
@@ -190,7 +253,6 @@ public class TrackLayout {
         redLine = new TrackLine("Red Line");
         greenLine = new TrackLine("Green Line");
 
-
         TrackLine tLine = redLine;
         
         /* open csv */
@@ -199,16 +261,14 @@ public class TrackLayout {
         Scanner scanner;
         try {
 
-            scanner = new Scanner(path, StandardCharsets.UTF_8.name());
-            
-            
+            scanner = new Scanner(path); //StandardCharsets.UTF_8.name());
+
             /* parse csv */
             int mode = -1;
             boolean skip = false;
 
-            System.out.println("Begin parsing");
+            System.out.println("Parsing track database");
             while (scanner.hasNextLine()){
-
                 
                 String line = scanner.nextLine();
                 //System.out.println(line);
