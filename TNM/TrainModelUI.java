@@ -500,7 +500,7 @@ public class TrainModelUI {
 	public ArrayList<Train> getTrainsInBlock(int id) {
 		ArrayList<Train> tempAL = new ArrayList<Train>();
 		for (int i = 0; i < trainList.size(); i++) {
-			if (trainList.get(i).id == id) {
+			if (trainList.get(i).positionBlock.id == id) {
 				tempAL.add(trainList.get(i));
 			}
 		}
