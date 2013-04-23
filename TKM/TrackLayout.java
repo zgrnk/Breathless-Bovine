@@ -159,6 +159,7 @@ public class TrackLayout {
 
     public TrackElement getElementById(int id) {
         /* FIXME only returns red line */
+        /* Deprecated */
         return getElementById(redLine, id);
     }
 
