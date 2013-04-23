@@ -8,6 +8,7 @@ import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.ListIterator;
 import TNM.Train;
 
@@ -24,6 +25,8 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
     private int x;
     private int y;
+
+    private ArrayList<Block> foundStations;
 
     public TrackMapPanel(TrackLayout lyt) {
         try {
@@ -92,7 +95,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
     }
 
-    private void drawTrackOverlay(Graphics g, Block blk, Color tkColor) {
+    private void drawTrackOverlay(Graphics g, TrackLayout.TrackLine line, Block blk, Color tkColor) {
         Graphics2D g2 = (Graphics2D) g;
 
         Stroke s = new BasicStroke(2f, BasicStroke.CAP_ROUND,
@@ -111,10 +114,31 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         int yAvg = (blk.mapY1 + blk.mapY2)/2;
 
         if (blk.isStation) {
+            /* Check if this station is repeated somewhere else */
+            //boolean foundPartner = false;
+
+            for (Block b: line.getBlocks())
+            {
+                if (b != blk && b.stationName.equals(blk.stationName))
+                {
+                    int xAvg2 = (b.mapX1 + b.mapX2)/2;
+                    int yAvg2 = (b.mapY1 + b.mapY2)/2;
+                    g2.setPaint(Color.WHITE);
+                    g2.draw(new Line2D.Double(xAvg, yAvg, xAvg2, yAvg2));
+                    //foundPartner = true;
+                    foundStations.add(b);
+                }
+            }
+            
             g2.fill(new Ellipse2D.Double(xAvg-5,yAvg-5,10,10));
-            g.setColor(Color.WHITE);
-            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
-            g.drawString(blk.stationName, xAvg + 12, yAvg + 12);
+
+            if (!foundStations.contains(blk))
+            {
+                g.setColor(Color.WHITE);
+                g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
+                g.drawString(blk.stationName, xAvg + 12, yAvg + 12);
+            }
+
         }
 
         if (blk.isCrossing) {
@@ -157,6 +181,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         for (TrackLayout.TrackLine line : lyt.getLines()) {
 
             Color tkColor;
+            foundStations = new ArrayList<Block>();
 
             if (line == lyt.redLine) {
                 tkColor = new Color(192,0,0);
@@ -175,7 +200,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             }
 
             for (Block blk : line.getBlocks()) {
-                drawTrackOverlay(g, blk, tkColor);
+                drawTrackOverlay(g, line, blk, tkColor);
             }
 
             /* Draw switches */

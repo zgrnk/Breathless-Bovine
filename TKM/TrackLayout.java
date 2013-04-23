@@ -123,12 +123,11 @@ public class TrackLayout {
     }
 	
 
-
     //private ArrayList<TrackElement> elements;
     //private ArrayList<Block> blocks;
     //private ArrayList<Switch> switches;
     
-    public Block yard;
+    //public Block yard;
     public TrackLine redLine;
     public TrackLine greenLine;
     private ArrayList lines;

@@ -41,6 +41,7 @@ public class TKMGui extends JPanel {
 
         //Display the window.
         frame.pack();
+        frame.setSize(1000,1000);
         frame.setVisible(true);
     }
     
