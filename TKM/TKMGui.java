@@ -25,9 +25,6 @@ public class TKMGui extends JPanel {
 
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
-        //Create and set up the window.
-        JFrame frame = new JFrame("TKM Proto");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         TKMControlPanel pControl = new TKMControlPanel(lyt);
 
@@ -37,15 +34,18 @@ public class TKMGui extends JPanel {
         add(pControl);
         add(pMap);
 
-        //Create and set up the content pane.
-        JComponent newContentPane = this;
-        newContentPane.setOpaque(true); //content panes must be opaque
-        frame.setContentPane(newContentPane);
-
-        //Display the window.
-        frame.pack();
-        frame.setSize(1000,1000);
-        frame.setVisible(true);
+        //~ //Create and set up the content pane.
+        //~ JComponent newContentPane = this;
+        //~ newContentPane.setOpaque(true); //content panes must be opaque
+//~ 
+        //~ //Create and set up the window.
+        //~ JFrame frame = new JFrame("TKM Proto");
+        //~ frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //~ frame.setContentPane(newContentPane);
+        //~ //Display the window.
+        //~ frame.pack();
+        //~ frame.setSize(1000,1000);
+        //~ frame.setVisible(true);
     }
     
     public static void main(String[] args)

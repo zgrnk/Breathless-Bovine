@@ -2,6 +2,7 @@ package TKC.util;
 
 import java.awt.EventQueue;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -49,6 +50,10 @@ public class ControllerUI extends JPanel {
 	public JLabel waysideLabel;
 	public JLabel trainTotalLabel;
 	public JLabel blockTotalLabel;
+
+	public JComponent getGuiPanel() {
+		return contentPane;
+	}
 	
 	/**
 	 * Launch the application.
@@ -282,7 +287,7 @@ public class ControllerUI extends JPanel {
 		contentPane.setLayout(gl_contentPane);
 		
 		frame.pack();
-		frame.setVisible(true);
+		//frame.setVisible(true);
 	}
 
 	public class ControllerListener implements ActionListener {

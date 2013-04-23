@@ -36,93 +36,99 @@ import javax.swing.border.Border;
  * It can created by the CTC in which case it will run with other modules, 
  * or it may be run solo from the command line.
  */
-public class TrainModelUI {
+public class TrainModelUI extends JPanel {
 	private static boolean isSolo = false;			// Is the train module being run individually?
 	private static int soloNumTrains = 0;
 	private static double soloTime = 0;
 	private static Date soloDate = new Date();		// Used with soloTime when TNM run solo.
 	private static int soloDelta = 100;				// Timestep in milliseconds.
-	private static int refreshUI = 0;				// Used to refresh GUI only once a second.
+	private int refreshUI = 0;				// Used to refresh GUI only once a second.
 	
-	protected static ArrayList<Train> trainList;
-	protected static int selectedId;				// ID of the currently selected train.
-	protected static String[] idArray;				// Contains string IDs of trains.
-	protected static boolean isPaused;
-	protected static boolean isVisible;				// Is the main window visible?
-	protected static boolean isVisibleStatic;		// Is the static values window visible?
+	private ArrayList<Train> trainList;
+	private int selectedId;				// ID of the currently selected train.
+	private static String[] idArray;				// Contains string IDs of trains.
+	private boolean isPaused;
+	private boolean isVisible;				// Is the main window visible?
+	private boolean isVisibleStatic;		// Is the static values window visible?
 	
 	// Main JFrames
-	protected static JFrame dynamicWindow;
-	protected static JFrame staticWindow;
+	private JFrame dynamicWindow;
+	private JFrame staticWindow;
 	Border borderline = BorderFactory.createLineBorder(Color.black, 1);
 	
 	// dynamicWindow JButtons
-	protected static JButton btnShowStaticValues;
-	protected static JButton btnSelectTrain;
-	protected static JButton btnPauseResume;
-	protected static JButton btnSetManRecPower;
-	protected static JButton btnToggleManRecPower;
-	protected static JButton btnSetManDesSpdLmt;
-	protected static JButton btnToggleManDesSpdLmt;
-	protected static JButton btnToggleSignalPickupFailure;
-	protected static JButton btnToggleEngineFailure;
-	protected static JButton btnToggleBrakeFailure;
-	protected static JButton btnToggleServiceBrake;
-	protected static JButton btnToggleEmergencyBrake;
-	protected static JButton btnSetManLights;
-	protected static JButton btnToggleManLights;
-	protected static JButton btnSetManDoors;
-	protected static JButton btnToggleManDoors;
-	protected static JButton btnSetManTarTemperature;
-	protected static JButton btnToggleManTarTemperature;
+	private JButton btnShowStaticValues;
+	private JButton btnSelectTrain;
+	private JButton btnPauseResume;
+	private JButton btnSetManRecPower;
+	private JButton btnToggleManRecPower;
+	private JButton btnSetManDesSpdLmt;
+	private JButton btnToggleManDesSpdLmt;
+	private JButton btnToggleSignalPickupFailure;
+	private JButton btnToggleEngineFailure;
+	private JButton btnToggleBrakeFailure;
+	private JButton btnToggleServiceBrake;
+	private JButton btnToggleEmergencyBrake;
+	private JButton btnSetManLights;
+	private JButton btnToggleManLights;
+	private JButton btnSetManDoors;
+	private JButton btnToggleManDoors;
+	private JButton btnSetManTarTemperature;
+	private JButton btnToggleManTarTemperature;
 	
 	// dynamicWindow JLabels
-	protected static JLabel jlTime;
-	protected static JLabel jlCurVel;
-	protected static JLabel jlCurAccel;
-	protected static JLabel jlRecPowerTNC;
-	protected static JLabel jlManRecPower;
-	protected static JLabel jlToggleManRecPower;
-	protected static JLabel jlPostedSpdLmt;
-	protected static JLabel jlManDesSpdLmt;
-	protected static JLabel jlToggleManDesSpdLmt;
-	protected static JLabel jlGrade;
-	protected static JLabel jlTotalMass;
-	protected static JLabel jlPassengerCount;
-	protected static JLabel jlCrewCount;
-	protected static JLabel jlPosition;
-	protected static JLabel jlToggleSignalPickupFailure;
-	protected static JLabel jlToggleEngineFailure;
-	protected static JLabel jlToggleBrakeFailure;
-	protected static JLabel jlToggleServiceBrake;
-	protected static JLabel jlToggleEmergencyBrake;
-	protected static JLabel jlLights;
-	protected static JLabel jlManLights;
-	protected static JLabel jlToggleManLights;
-	protected static JLabel jlDoors;
-	protected static JLabel jlManDoors;
-	protected static JLabel jlToggleManDoors;
-	protected static JLabel jlCurTemperature;
-	protected static JLabel jlTarTemperature;
-	protected static JLabel jlManTarTemperature;
-	protected static JLabel jlToggleManTarTemperature;
-	protected static JLabel jlAnnouncement;
+	private JLabel jlTime;
+	private JLabel jlCurVel;
+	private JLabel jlCurAccel;
+	private JLabel jlRecPowerTNC;
+	private JLabel jlManRecPower;
+	private JLabel jlToggleManRecPower;
+	private JLabel jlPostedSpdLmt;
+	private JLabel jlManDesSpdLmt;
+	private JLabel jlToggleManDesSpdLmt;
+	private JLabel jlGrade;
+	private JLabel jlTotalMass;
+	private JLabel jlPassengerCount;
+	private JLabel jlCrewCount;
+	private JLabel jlPosition;
+	private JLabel jlToggleSignalPickupFailure;
+	private JLabel jlToggleEngineFailure;
+	private JLabel jlToggleBrakeFailure;
+	private JLabel jlToggleServiceBrake;
+	private JLabel jlToggleEmergencyBrake;
+	private JLabel jlLights;
+	private JLabel jlManLights;
+	private JLabel jlToggleManLights;
+	private JLabel jlDoors;
+	private JLabel jlManDoors;
+	private JLabel jlToggleManDoors;
+	private JLabel jlCurTemperature;
+	private JLabel jlTarTemperature;
+	private JLabel jlManTarTemperature;
+	private JLabel jlToggleManTarTemperature;
+	private JLabel jlAnnouncement;
 	
 	// staticWindow JLabels
-	protected static JLabel jlLength;
-	protected static JLabel jlWidth;
-	protected static JLabel jlHeight;
-	protected static JLabel jlNumCars;
-	protected static JLabel jlMotorPower;
-	protected static JLabel jlMaxSpeed;
-	protected static JLabel jlServiceBrakeDecel;
-	protected static JLabel jlEmergencyBrakeDecel;
-	protected static JLabel jlFrictionCoeff;
-	protected static JLabel jlEmptyTrainMass;
-	protected static JLabel jlPersonMass;
-	protected static JLabel jlMaxSeatedCount;
-	protected static JLabel jlMaxStandingCount;
-	protected static JLabel jlMaxCrewCount;
+	private JLabel jlLength;
+	private JLabel jlWidth;
+	private JLabel jlHeight;
+	private JLabel jlNumCars;
+	private JLabel jlMotorPower;
+	private JLabel jlMaxSpeed;
+	private JLabel jlServiceBrakeDecel;
+	private JLabel jlEmergencyBrakeDecel;
+	private JLabel jlFrictionCoeff;
+	private JLabel jlEmptyTrainMass;
+	private JLabel jlPersonMass;
+	private JLabel jlMaxSeatedCount;
+	private JLabel jlMaxStandingCount;
+	private JLabel jlMaxCrewCount;
+
+	private JScrollPane dScroll;
+
+	public JComponent getGuiPanel() {
+		return dScroll;
+	}
 	
 	/**
 	 * Create the train module GUI (the dynamic and static windows).
@@ -268,7 +274,7 @@ public class TrainModelUI {
 
 			jp.setMaximumSize(new Dimension(400, 700));
 
-			JScrollPane dScroll = new JScrollPane(jp);
+			dScroll = new JScrollPane(jp);
 			dScroll.setViewportView(jp);
 			//scroll.getVerticalScrollBar().setUnitIncrement(50);
 			
@@ -444,7 +450,7 @@ public class TrainModelUI {
 	 * Update the GUI (both the dynamic and static windows) so that it displays the 
 	 * data of the newly selected train.
 	 */
-	public static void setSelectedId(int selId) {
+	public void setSelectedId(int selId) {
 		selectedId = selId;
 		dynamicWindow.setTitle("Train Model (Chris Paskie)   -   UI   (Train ID:   " + trainList.get(selectedId - 1).stringId + ")");
 		staticWindow.setTitle("Train Model (Chris Paskie)   -   Static Values   (Train ID:   " + trainList.get(selectedId - 1).stringId + ")");
@@ -518,7 +524,7 @@ System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i)
 	/**
 	 * Updates all train data and refreshes the GUI.
 	 */
-	public static void timeTick(Date date, int delta) {
+	public void timeTick(Date date, int delta) {
 		if (!isPaused) {
 			refreshUI += delta;
 			double time = date.getHours() * 60 * 60 + date.getMinutes() * 60 + date.getSeconds();
@@ -555,6 +561,7 @@ System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i)
 	 * Called when run from the command line.  The train module will run (mostly) individually.
 	 */
 	public static void main(String[] args) {
+		
 		try {
 			isSolo = true;
 			
@@ -647,44 +654,45 @@ System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i)
 			route.add(b17);
 			route.add(bYard);
 			
+			// Create the UI.
+			TrainModelUI tnmUI = new TrainModelUI();
+			
 			/*
  			 * Create the trains.
 			 * The first will depart at 8:00 AM, the second at 8:30 AM, the third at 9:00 AM, etc.
 			 * The first will depart at 8:00 AM, the second at 8:15 AM, the third at 8:30 AM, etc.
  			 * All will have break time set to 4 hours after their departure times.
  			 */
- 			trainList = new ArrayList<Train>();
+ 			ArrayList<Train> tList = new ArrayList<Train>();
  			idArray = new String[soloNumTrains];
  			for (int i = 0; i < soloNumTrains; i++) {
-				trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), 
+				tList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), 
  						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 15 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
- 				idArray[i] = new String("T" + (i + 1));
+ 				tnmUI.idArray[i] = new String("T" + (i + 1));
  			}
 			
-			// Create the UI.
-			TrainModelUI tnmUI = new TrainModelUI();
-			tnmUI.setTrainList(trainList);
+			tnmUI.setTrainList(tList);
 			
 			// Setup the timer.
 			soloTime = 7 * 60 * 60 + 59 * 60 + 55;
 			soloDate = new Date(93, 2, 2, 7, 59, 55);
-			ActionListener taskPerformer = new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					timeTick(soloDate, soloDelta);
-				}
-			};
-			new javax.swing.Timer(20, taskPerformer).start();
+			//~ ActionListener taskPerformer = new ActionListener() {
+				//~ public void actionPerformed(ActionEvent evt) {
+					//~ tnmUI.timeTick(soloDate, soloDelta);
+				//~ }
+			//~ };
+			//~ new javax.swing.Timer(20, taskPerformer).start();
 			
 			// Disable all "Toggle" buttons that are associated with a manual entry.
-			btnToggleManRecPower.setEnabled(false);
-			btnToggleManDesSpdLmt.setEnabled(false);
-			btnToggleManLights.setEnabled(false);
-			btnToggleManDoors.setEnabled(false);
-			btnToggleManTarTemperature.setEnabled(false);
+			tnmUI.btnToggleManRecPower.setEnabled(false);
+			tnmUI.btnToggleManDesSpdLmt.setEnabled(false);
+			tnmUI.btnToggleManLights.setEnabled(false);
+			tnmUI.btnToggleManDoors.setEnabled(false);
+			tnmUI.btnToggleManTarTemperature.setEnabled(false);
 			
 			// Make it so only manual values are used.
 			for (int i = 0; i < soloNumTrains; i++) {
-				Train t = trainList.get(i);
+				Train t = tnmUI.trainList.get(i);
 				t.issetManualPower = true;
 				t.issetManualSpeedLimit = true;
 				t.issetLightsOnUseManual = true;
@@ -692,8 +700,8 @@ System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i)
 				t.issetTargetTemperatureManual = true;
 			}
 			
-			btnPauseResume.setEnabled(true);
-			tnmUI.setSelectedId(trainList.get(0).id);
+			tnmUI.btnPauseResume.setEnabled(true);
+			tnmUI.setSelectedId(tnmUI.trainList.get(0).id);
 			tnmUI.setIsPaused(tnmUI.getIsPaused());
 			tnmUI.setIsVisible(true);
 		} catch (Exception e) {
