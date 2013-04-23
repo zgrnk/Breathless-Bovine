@@ -90,8 +90,6 @@ public class Train {
 	public double fixedSuggestedSpeed;
 	public double mboSuggestedAuthority;
 	public double mboSuggestedSpeed;
-	public double suggestedAuthority;
-	public double suggestedSpeed;
 	public Engineer engineer;
 	public boolean goOnBreak;
 	
@@ -171,8 +169,6 @@ public class Train {
 		fixedSuggestedSpeed = 0.0;
 		mboSuggestedAuthority = 0.0;
 		mboSuggestedSpeed = 0.0;
-		suggestedAuthority = 0.0;
-		suggestedSpeed = 0.0;
 		this.engineer = engineer;
 		goOnBreak = false;
 	}
@@ -457,6 +453,12 @@ System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
 			// Actually update the position of the train on the track.
 			Block.advanceTrain(this, curVelocity * period);
 			gps = new GPS(positionBlock, (int) positionMeters, curVelocity, (positionDirection == Block.DIRECTION_FWD));
+			if (!isSolo) {
+				fixedSuggestedAuthority = positionBlock.fbAuthority;
+				fixedSuggestedSpeed = positionBlock.fbSpeed;
+				// mboSuggestedAuthority = XXXXXXX;
+				// mboSuggestedSpeed = XXXXXXX;
+			}
 System.out.println("XXX - (int) positionMeters\t"+((int) positionMeters));
 		}
 System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
@@ -538,7 +540,7 @@ System.out.println("XXX - positionMeters\t"+positionMeters);
 		
 		// Crew
 /*
-System.out.println("XXX - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+System.out.println("XXX - XXXXXXXXXXXXXXX");
 System.out.println("XXX - "+positionBlock.isYard+"\tpositionBlock.isYard");
 System.out.println("XXX - "+issetDoorsOpen+"\tissetDoorsOpen");
 System.out.println("XXX - "+engineer.goOnBreak+"\tengineer.goOnBreak");
@@ -566,6 +568,7 @@ System.out.println("XXX - XXXXXXXXXXXXXXX");
 System.out.println("XXX - "+time+"\ttime");
 System.out.println("XXX - "+period+"\tperiod");
 System.out.println("XXX - "+dispatchTime+"\tdispatchTime");
+System.out.println("XXX - XXXXXXXXXXXXXXX");
 */
 		if (curVelocity == 0.0) {
 			if ((positionBlock.isYard) && (issetDoorsOpen) && (engineer.goOnBreak) && (routeIndex > 0) 

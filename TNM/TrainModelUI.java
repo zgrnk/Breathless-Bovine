@@ -141,6 +141,7 @@ public class TrainModelUI {
 			btnShowStaticValues = buildJButton("Show Static Values");
 			btnSelectTrain = buildJButton("Select Train");
 			btnPauseResume = buildJButton("Pause");
+			btnPauseResume.setEnabled(false);
 			btnSetManRecPower = buildJButton("Set Manual Received Power");
 			btnToggleManRecPower = buildJButton("Toggle Manual Received Power");
 			btnSetManDesSpdLmt = buildJButton("Set Manual Desired Speed Limit");
@@ -683,6 +684,7 @@ public class TrainModelUI {
 				t.issetTargetTemperatureManual = true;
 			}
 			
+			btnPauseResume.setEnabled(true);
 			tnmUI.setSelectedId(trainList.get(0).id);
 			tnmUI.setIsPaused(tnmUI.getIsPaused());
 			tnmUI.setIsVisible(true);
