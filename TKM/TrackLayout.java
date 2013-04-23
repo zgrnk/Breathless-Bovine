@@ -96,70 +96,6 @@ public class TrackLayout {
                 }
             }
 
-            /* Add transponders to blocks adjacent to stations */
-            for (Block curBlk : blocks) {
-                if (curBlk.next instanceof Block && ((Block)curBlk.next).isStation) {
-                    curBlk.transponderMessageFwd = ((Block)curBlk.next).stationName;
-                } else if (curBlk.next instanceof Switch) {
-                    Switch nextSw = (Switch) curBlk.next;
-                    //if (nextSw.blkMain.isStation && nextSw.blkStraight == curBlk) {
-                    //}
-                }
-
-                if (curBlk.isBidir && curBlk.prev instanceof Block && ((Block)curBlk.prev).isStation) {
-                    curBlk.transponderMessageRev = ((Block)curBlk.prev).stationName;
-                } else if (curBlk.isBidir && curBlk.prev instanceof Switch) {
-                    Switch nextSw = (Switch) curBlk.prev;
-                }
-                
-                //~ if (curBlk.isStation) {
-                    //~ curBlk.transponderMessage = curBlk.stationName;
-//~ 
-//~ 
-                    //~ /* If a adjacent block points towards me, give it a
-                     //~ * transponder in its forward direction. If it points
-                     //~ * away, give it a transponder in its reverse direction */
-                    //~ if (curBlk.next instanceof Block) {
-                        //~ Block nextBlk = (Block) curBlk.next;
-                        //~ if (nextBlk.next == curBlk) {
-                            //~ nextBlk.transponderMessageFwd = curBlk.stationName;
-                        //~ }
-                        //~ if (nextBlk.prev == curBlk && nextBlk.isBidir) {
-                            //~ nextBlk.transponderMessageRev = curBlk.stationName;
-                        //~ }
-                    //~ } else {
-                        //~ /* FIXME Handle switch */
-                    //~ }
-//~ 
-                    //~ 
-                    //~ if (curBlk.prev instanceof Block) {
-                        //~ Block prevBlk = (Block) curBlk.prev;
-                        //~ if (prevBlk.next == curBlk) {
-                            //~ prevBlk.transponderMessageFwd = curBlk.stationName;
-                        //~ }
-                        //~ if (prevBlk.prev == curBlk && prevBlk.isBidir) {
-                            //~ prevBlk.transponderMessageRev = curBlk.stationName;
-                        //~ }
-                    //~ } else {
-                        //~ /* FIXME Handle switch */
-                        //~ Switch prevSw = (Switch) curBlk.prev;
-                        //~ if (prevSw.blkMain == curBlk)
-                    //~ }
-                    //~ 
-                    //~ /* Put a direct transponderMessage on the station */
-                    //~ curBlk.transponderMessageFwd = curBlk.stationName;
-                    //~ if (curBlk.isBidir) {
-                        //~ curBlk.transponderMessageRev = curBlk.stationName;
-                    //~ }
-//~ 
-                    //~ if (curBlk.prev instanceof Switch
-                     //~ || curBlk.next instanceof Switch) {
-                        //~ System.out.printf("Station %s next to switch!\n",
-                                           //~ curBlk.stationName);
-                    //~ }
-                //~ }
-            }
-
             for (Switch curSw : switches) {
                 if (curSw.blkMain == null) {
                     curSw.blkMain = (Block) getElementById(curSw.mainId);
@@ -172,6 +108,33 @@ public class TrackLayout {
                 if (curSw.blkDiverg == null) {
                     curSw.blkDiverg = (Block) getElementById(curSw.divergId);
                     if (curSw.blkDiverg == null) numFaults++;
+                }
+            }
+            
+            /* Add transponders to blocks adjacent to stations */
+            for (Block curBlk : blocks) {
+                if (curBlk.next instanceof Block && ((Block)curBlk.next).isStation) {
+                    curBlk.transponderMessageFwd = ((Block)curBlk.next).stationName;
+                } else if (curBlk.next instanceof Switch) {
+                    Switch nextSw = (Switch) curBlk.next;
+                    if (
+                            nextSw.blkMain.isStation
+                            && (
+                                nextSw.blkStraight == curBlk
+                                || nextSw.blkDiverg == curBlk
+                            )
+                       ) {
+                        curBlk.transponderMessageFwd = nextSw.blkMain.stationName;
+                    } else if ((nextSw.blkStraight.isStation && nextSw.blkMain == curBlk)
+                       || (nextSw.blkDiverg.isStation && nextSw.blkMain == curBlk)) {
+                           System.out.println("Bad transponder location");
+                    }
+                }
+
+                if (curBlk.isBidir && curBlk.prev instanceof Block && ((Block)curBlk.prev).isStation) {
+                    curBlk.transponderMessageRev = ((Block)curBlk.prev).stationName;
+                } else if (curBlk.isBidir && curBlk.prev instanceof Switch) {
+                    Switch nextSw = (Switch) curBlk.prev;
                 }
             }
             
