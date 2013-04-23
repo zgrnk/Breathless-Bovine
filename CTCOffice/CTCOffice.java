@@ -19,12 +19,10 @@ import TKM.*;
 public class CTCOffice extends PApplet {
 
 	ControlP5 cp5;
-	ControlTimer timer;
 	DropdownList closeTrack, removeTrack, AddTrack1, AddTrack2, trainInfo_drop;
 	RadioButton trackRadio;
 	Group track, g_clock, sched, TLgroup, trainInfo;
 	List<Group> groups;
-	Textlabel showTimer;
 	Button startBtn, setTrainSpd, SimRatioBtn;
 	Knob kn_trainSpeed;
 
@@ -69,9 +67,6 @@ public class CTCOffice extends PApplet {
 		simTimeRatio = 100;
 
 		cp5 = new ControlP5(this);
-		timer = new ControlTimer();
-		showTimer = new Textlabel(cp5, "--", 100, 100);
-		timer.setSpeedOfTime((float)simTimeRatio);
 		targetTime = Calendar.getInstance();
 		tempTime = Calendar.getInstance();
 
@@ -97,8 +92,6 @@ public class CTCOffice extends PApplet {
 
 	public void draw() {
 		background(193, 205, 193);
-		showTimer.setValue(timer.toString());
-		showTimer.setPosition(1, 1);
 
 		if (simStarted) {
 			targetTime.setTime(currentTime);
@@ -113,31 +106,8 @@ public class CTCOffice extends PApplet {
 			}
 			tkmgui.repaint();
 			
-/*			if (lastTick != timer.millis()) {
-				Calendar tempTime = Calendar.getInstance();
-				tempTime.setTime(currentTime);
-				tempTime.add(Calendar.MILLISECOND,simTimeRatio);
-				currentTime = tempTime.getTime();
-				tnmUI.timeTick(currentTime, 100);
-				lastTick = timer.millis();
-			}*/
 			trainList = tnmUI.getTrainList();
 			
-			
-			
-			
-			
-/*			showTimer.draw(this);
-			//second in relation to simRatio speed
-			if (lastTick != timer.millis()) {
-				Calendar tempTime = Calendar.getInstance();
-				tempTime.setTime(currentTime);
-				tempTime.add(Calendar.MILLISECOND,simTimeRatio);
-				currentTime = tempTime.getTime();
-				tnmUI.timeTick(currentTime, 100);
-				lastTick = timer.millis();
-			}
-			trainList = tnmUI.getTrainList();*/
 		}
 
 		try {
@@ -249,10 +219,6 @@ public class CTCOffice extends PApplet {
 
 		customizeDropDownTrain(trainInfo_drop, trainList);
 
-		/*
-		 * track_layout.pre(); // use cc.post(); to draw on top of existing
-		 * controllers. cp5.addCanvas(track_layout) .setGroup() ;
-		 */
 	}
 
 	public void customizeDropDownBlock(DropdownList list, ArrayList<Block> aList) {
@@ -317,7 +283,6 @@ public class CTCOffice extends PApplet {
 				simStarted = true;
 				tnmUI.setIsPaused(false);
 				startBtn.setCaptionLabel("Pause");
-				timer.reset();
 				track.hide();
 				g_clock.hide();
 				sched.hide();
