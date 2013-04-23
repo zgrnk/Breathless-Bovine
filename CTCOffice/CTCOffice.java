@@ -42,6 +42,7 @@ public class CTCOffice extends PApplet {
 	Calendar targetTime; 
 	Calendar tempTime; 
 	TKMGui tkmgui;
+	TrackController tkc;
 
 	public static void main(String args[]) {
 		//PApplet.main(new String[] { "--present", "CTCOffice" });
@@ -102,11 +103,12 @@ public class CTCOffice extends PApplet {
 			
 			while(currentTime.getTime() < targetTime.getTime().getTime()){
 				tnmUI.timeTick(currentTime, 100);
+				tkc.nextTick();
 				tempTime.setTime(currentTime);
 				tempTime.add(Calendar.MILLISECOND,100);
 				currentTime = tempTime.getTime();
-				tkmgui.repaint();
 			}
+			tkmgui.repaint();
 			
 /*			if (lastTick != timer.millis()) {
 				Calendar tempTime = Calendar.getInstance();
@@ -390,8 +392,11 @@ public class CTCOffice extends PApplet {
 			Integer tempInt = new Integer(i + 1);
 			idArray[i] = new String("T"+(i+1));
 		}
+		
 		track.setTrainList(trainList);
 		tkmgui = new TKMGui(track);
+		
+		tkc = new TrackController(track, this);
 	}
 
 }
