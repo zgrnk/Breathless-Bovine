@@ -168,14 +168,20 @@ public class TrackLayout {
 
     public AbstractCollection<Block> getBlocks()
     {
-        /* deprecated */
-        return redLine.getBlocks();
+        ArrayList<Block> allBlocks = new ArrayList();
+        allBlocks.addAll(redLine.getBlocks());
+        allBlocks.addAll(greenLine.getBlocks());
+        
+        return allBlocks;
     }
     
     public AbstractCollection<Switch> getSwitches()
     {
-        /* deprecated */
-        return redLine.getSwitches();
+        ArrayList<Switch> allSwitches = new ArrayList();
+        allSwitches.addAll(redLine.getSwitches());
+        allSwitches.addAll(greenLine.getSwitches());
+        
+        return allSwitches;
     }
 
  

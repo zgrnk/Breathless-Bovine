@@ -32,6 +32,7 @@ public class TKMGui extends JPanel {
         TKMControlPanel pControl = new TKMControlPanel(lyt);
 
         pControl.setMapPanel(pMap);
+        pMap.setControlPanel(pControl);
  
         add(pControl);
         add(pMap);

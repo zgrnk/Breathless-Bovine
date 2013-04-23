@@ -19,9 +19,10 @@ import TNM.Train;
 
 public class TrackMapPanel extends JPanel implements MouseListener{
 
+    private static final float TRACK_WIDTH = 5f;
     BufferedImage xingIcon;
-    TrackLayout lyt;
-    //AbstractList<Train> trainList;
+    private TrackLayout lyt;
+    private TKMControlPanel cPanel;
 
     private int x;
     private int y;
@@ -38,6 +39,10 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         y = 0;
 
         addMouseListener(this);
+    }
+
+    public void setControlPanel(TKMControlPanel panel) {
+        cPanel = panel;
     }
 
     private void drawTrain(Graphics g, Train tn) {
@@ -209,6 +214,11 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             }
         }
 
+        /* Draw selected block. This ensures we see the whole thing */
+        if (lyt.getSelectedElement() instanceof Block) {
+            drawTrackBlock(g, (Block) lyt.getSelectedElement(), Color.CYAN);
+        }
+
         /* Draw trains */
         if (lyt.trains != null) {
             for (Train t : lyt.trains) {
@@ -216,20 +226,42 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             }
         }
         else {
-            System.out.printf("Trainlist not set!\n");
+            //System.out.printf("Trainlist not set!\n");
         }
     }
 
     public void mouseClicked(MouseEvent e) {
-        //System.out.printf("%d %d\n", e.getX(), e.getY());
         /* Check if we clicked a track block */
+        for (Block b : lyt.getBlocks())
+        {
+             /* Is the mouse on the line? */
+            int xAvg = (b.mapX1 + b.mapX2)/2;
+            int yAvg = (b.mapY1 + b.mapY2)/2;
+            double len = Math.sqrt((b.mapX2 - b.mapX1)*(b.mapX2 - b.mapX1)
+                         +(b.mapY2 - b.mapY1)*(b.mapY2 - b.mapY1));
+
+            double dx = (e.getX()-xAvg);
+            double dy = (e.getY()-yAvg);
+            double rad = len/2;
+
+            if (dx*dx + dy*dy < rad*rad) {
+                lyt.setSelectedElement(b);
+                if (cPanel != null) {
+                    cPanel.updateBlkInfo(b);
+                }
+                repaint();
+                return;
+            }
         }
+
+        /* Check if we clicked a switch */
+    }
     public void mouseEntered(MouseEvent e) {
-        }
+    }
     public void mouseExited(MouseEvent e) {
-        }
+    }
     public void mousePressed(MouseEvent e) {
-        }
+    }
     public void mouseReleased(MouseEvent e) {
-        }
+    }
 }
