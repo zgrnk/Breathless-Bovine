@@ -91,6 +91,7 @@ public class Wayside {
 		/*If list empty than search if any end blocks currently are active */
 		if (trainList.isEmpty()) {
 			for (Block blk : activeBlocks) {
+				System.out.println("\nBlock :" + blk.id + " is active");
 				if (TrainWrapper.isEndBlk(endBlocks, blk.id)) {
 					Train temp = mainCTCOffice.getTrainsInBlock(blk.id).get(0);
 							trainList.add(new TrainWrapper(temp, blk));
