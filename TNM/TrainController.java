@@ -252,7 +252,7 @@ public class TrainController
         //    autspeed=mboSuggestedSpeed;
         }
         speedlimit=positionBlock.speedLimit;
-        nextName=nextStationName;
+        nextName=positionBlock.transponderMessage;
         currAnnoun=setAnnouncement();
         
        //begin computer actions
