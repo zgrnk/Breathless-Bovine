@@ -1,16 +1,20 @@
 /**
- * NSECS-TNM & TNC
+ * @class ResponseTNC
  * 
- * This file contains the main container class which holds the response from a 
- *   given train's controller after each timeTick.
+ * @version 1.0
  * 
- * @author Chris Paskie 
- * @version 04/25/2013
-*/
+ * @date 04/25/2013
+ * 
+ * @author Chris Paskie
+ */
 
 
 package TNM;
 
+/**
+ * This file contains the main container class which holds the response from a 
+ * given train's controller after each timeTick.
+ */
 public class ResponseTNC {
 	public double powerCommand;
 	public boolean issetServiceBrake;

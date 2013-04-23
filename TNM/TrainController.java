@@ -7,7 +7,7 @@ import TKM.*;
  * EITHER TNM or TNC-UI
  * 
  * @author Ben Tomasulo 
- * @version 4/9/2013
+ * @version 4/12/2013
  */
 public class TrainController
 {
@@ -37,15 +37,16 @@ public class TrainController
     public double dtime;
     public String currAnnoun;
     public double tperiod;
-    public final double Kp=1000;
-    public final double Ki=500;
+    public final double Kp=8000;
+    public final double Ki=300;
     public double ukprev;
     public double prerr;
+    public boolean opstate;
+    public String nextName;
     
     // initialize fake blocks
 	Block negout = new Block(-4, "A", "I", 100.0, 3.0, 60.0, false, false, true, false, false, "You found the secret stop, exit now to collect 100 rupies!", false, false, false);
 	Block negone = new Block(-1, "B", "II", 100.0, 3.0, 55.0, false, false, false, false, false, "Arriving at 0", false, false, false);
-	
     
     /**
      * Constructor for objects of class TrainController
@@ -73,11 +74,13 @@ public class TrainController
         railFail=thisBlock.brokenRailFailure;
         trackFail=thisBlock.trackCircuitFailure;
         powerFail=thisBlock.powerFailure;
-        stationState=3;
+        stationState=0;
         currAnnoun="";
         tperiod=1;
         ukprev=0;
         prerr=0;
+        opstate=false;
+        nextName=null;
     }
 
     // Sets target temperature
@@ -165,7 +168,7 @@ public class TrainController
         }
         else
         {
-            if((currspeed<safespeed)&&(!eBrake))
+            if((currspeed < safespeed)&&(!eBrake))
             {
                 //disengage service brake and close doors if needed
                 sBrake=false;
@@ -206,6 +209,7 @@ public class TrainController
                 prerr=safespeed-currspeed;
                 ukprev=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
             }
+            // System.out.println("power: "+power);
         }
     }
     
@@ -230,7 +234,7 @@ public class TrainController
     public ResponseTNC timeTick(double ntime, double curVelocity, double period, Block positionBlock, 
     Block positionBlockTail, boolean issetSignalPickupFailure, boolean issetEngineFailure, 
     boolean issetBrakeFailure, double fixedSuggestedSpeed, double mboSuggestedSpeed, 
-    boolean issetEmerBrake, double curTemperature)
+    boolean issetEmerBrake, boolean operator)
     {
         time=ntime;
         tperiod=period;
@@ -239,6 +243,7 @@ public class TrainController
         oldBlock=positionBlockTail;
         signalFail=issetSignalPickupFailure;
         engineFail=issetEngineFailure;
+        opstate=operator;
         // note that brake commands may still be sent even if brake failure is detected
         brakeFail=issetBrakeFailure;
         //autspeed=fixedSuggestedSpeed;
@@ -247,12 +252,8 @@ public class TrainController
         //    autspeed=mboSuggestedSpeed;
         }
         speedlimit=positionBlock.speedLimit;
-		if (thisBlock.isStation)
-			currAnnoun="Welcome to Station "+thisBlock.stationName+"!";
-		else if (thisBlock.isYard)
-			currAnnoun="Welcome to the Yard!";
-		else
-			currAnnoun="";
+        nextName=positionBlock.transponderMessage;
+        currAnnoun=setAnnouncement();
         
        //begin computer actions
         setSafeSpeed();
@@ -261,22 +262,43 @@ public class TrainController
         checkStation();
         ResponseTNC tnmSignal=new ResponseTNC(power, sBrake, eBrake, lights, doors, tTemp, currAnnoun);
         return tnmSignal;
+        
+    }
+    
+    // sets the current announcements
+    public String setAnnouncement()
+    {
+        String thisAnnounce="Announcement Error";
+        if((thisBlock.stationName==null)||(thisBlock.stationName.length()==0))
+        {
+            if((nextName==null)||(nextName.length()==0))
+            {
+                thisAnnounce="";
+            }
+            else
+            {
+                thisAnnounce=nextName;
+            }
+        }
+        else
+        {
+            thisAnnounce=thisBlock.stationName;
+        }
+        return thisAnnounce;
     }
     
     // takes action if approaching station
     public void checkStation()
     {
-        if((stationState==3)&&(time>28805))
+        if(thisBlock.isStation||thisBlock.isYard)
         {
-            stationState=0;
-        }
-        else if(stationState==3)
-        {
-            doors=true;
-        }
-        else if(thisBlock.isStation)
-        {
-            if(stationState==0)
+            if(!opstate)
+            {
+                power=0;
+                sBrake=true;
+				doors=true;
+            }
+            else if(stationState==0)
             {
                 power=0;
                 sBrake=true;
@@ -297,10 +319,10 @@ public class TrainController
                     stationState++;
                 }
             }
-            else
-            {
-                stationState=0;
-            }
         }
+		else
+		{
+			stationState=0;
+		}
     }
 }

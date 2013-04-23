@@ -1,16 +1,20 @@
 /**
- * NSECS-TNM
+ * @class Engineer
  * 
- * This file contains the main container class which holds the information regarding 
- *   the crew member (engineer) and his/her break schedule/status.
+ * @version 1.0
  * 
- * @author Chris Paskie 
- * @version 04/25/2013
-*/
+ * @date 04/25/2013
+ * 
+ * @author Chris Paskie
+ */
 
 
 package TNM;
 
+/**
+ * This file contains the main container class which holds the information regarding 
+ * the crew member (engineer) and his/her break schedule/status.
+ */
 public class Engineer {
 	public boolean goOnBreak;			// Is it past the engineer's break time?
 	public boolean onBreak;				// Is the engineer currently on break?

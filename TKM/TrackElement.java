@@ -6,5 +6,6 @@ public abstract class TrackElement {
     public int mapY1;
     public String sectionId;
     public String lineId;
+    public TrackLayout.TrackLine line;
     abstract public String toString();
 }

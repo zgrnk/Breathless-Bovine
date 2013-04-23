@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.AbstractList;
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -20,111 +20,73 @@ import TNM.Train;
 
     
 public class TrackLayout {
-	
-    //TrainLocation tloc;
 
-    boolean dir = Block.DIRECTION_FWD;
+    public class TrackLine {
+        //private ArrayList<TrackElement> elements;
+        private ArrayList<Block> blocks;
+        private ArrayList<Switch> switches;
+        public Block yard;
+        public String id;
 
-    private ArrayList<TrackElement> elements;
-    private ArrayList<Block> blocks;
-    private ArrayList<Switch> switches;
-    public Block yard;
-    private TrackElement selected;
+        public TrackLine(String lineId)
+        {
+            //elements = new ArrayList<TrackElement>();
+            blocks = new ArrayList<Block>();
+            switches = new ArrayList<Switch>();
+            id = lineId;
+        }
 
-    public AbstractList<Train> trains;
+        public AbstractCollection<Block> getBlocks()
+        {
+            //ArrayList
+            return blocks;
+        }
+        
+        public AbstractCollection<Switch> getSwitches()
+        {
+            return switches;
+        }
 
-    public void setTrainList(AbstractList<Train> tl)
-    {
-        trains = tl;
-    }
-
-    public void setSelectedElement(TrackElement t) {
-        selected = t;
-    }
-
-    public TrackElement getSelectedElement() {
-        return selected;
-    }
-
-    public TrackElement getElementById(int id) {
-        ListIterator<TrackElement> iter = elements.listIterator();
-
-        while (iter.hasNext()) {
-            TrackElement elem = iter.next();
-            //System.out.printf("%d,",elem.id);
-            if (elem.id == id) {
-                //System.out.printf("Found element %d\n", id);
-                return elem;
+        public Block getBlockById(int id) {
+            for (Block b : blocks) {
+                if (b.id == id) {
+                    return b;
+                }
             }
+            return null;
         }
         
-        System.out.printf("Could not find element %d\n", id);
-        return null;
-    }
-
-    public AbstractList<Block> getBlocks()
-    {
-        return blocks;
-    }
-    
-    public AbstractList<Switch> getSwitches()
-    {
-        return switches;
-    }
-
-    public void chooChoo(TrackMapPanel pMap) {
-        /* Simulate train traversing track */
-
-        //Switch sw = (Switch) getElementById(1002);
-        //sw.state = Switch.STATE_DIVERGENT;
-        
-        /* run this once */
-        /* FIXME use Train instead of TrainLocation *
-        
-        if (tloc == null) tloc = new TrainLocation(yard, Block.DIRECTION_FWD, 0.0);
-
-        System.out.printf("(%s) Block %d, dir:%s, dist:%f", tloc.block.sectionId, tloc.block.id, Boolean.toString(tloc.direction), tloc.distance);
-
-        if (tloc.block.isStation) {
-            System.out.printf(": Arriving at %s", tloc.block.stationName);
+        public Switch getSwitchById(int id) {
+            for (Switch s : switches) {
+                if (s.id == id) {
+                    return s;
+                }
+            }
+            return null;
         }
-        System.out.printf(" +%f", tloc.block.speedLimit/18.241);
-        System.out.printf("\n");
-        //old = cur;
-        
-        
-        
-        Block.advanceTrain(tloc, tloc.block.speedLimit/20);
-        
-        pMap.setMarker(tloc.getMapX(), tloc.getMapY());
-        
-        if (tloc.block == yard) {
-            System.out.printf("Returned to yard. Done.\n");
-            return;
+
+        public TrackElement getElementById(int id) {
+            for (Block b : blocks) {
+                if (b.id == id) {
+                    return b;
+                }
+            }
+            for (Switch s : switches) {
+                if (s.id == id) {
+                    return s;
+                }
+            }
+            System.out.printf("Could not find element %d\n", id);
+            return null;
         }
-        if (tloc.failed) {
-            System.out.printf("Movement failed\n");
-            return;
-        }
-            //if (old == cur) {
-            //    System.out.printf("Arrived at same block!\n");
-            //    return;
-            //}
-        */
-    }
 
-    public void constructTrack() {
-        /* Find the yard and make it the root */
-        yard = (Block) getElementById(0);
-        ListIterator<TrackElement> iter = elements.listIterator();
+        private void constructTrack() {
+            /* Find the yard and make it the root */
+            yard = (Block) getBlockById(0);
 
-        int numFaults = 0;
+            int numFaults = 0;
 
-        while (iter.hasNext()) {
-            TrackElement cur = iter.next();
-            //System.out.printf("Processing element %d\n", cur.id);
-            if (cur instanceof Block) {
-                Block curBlk = (Block) cur;
+            for (Block curBlk : blocks) {
                 if (curBlk.next == null) {
                     curBlk.next = getElementById(curBlk.fwdId);
                     if (curBlk.next == null) numFaults++;
@@ -133,8 +95,9 @@ public class TrackLayout {
                     curBlk.prev = getElementById(curBlk.revId);
                     if (curBlk.prev == null) numFaults++;
                 }
-            } else {
-                Switch curSw = (Switch) cur;
+            }
+
+            for (Switch curSw : switches) {
                 if (curSw.blkMain == null) {
                     curSw.blkMain = (Block) getElementById(curSw.mainId);
                     if (curSw.blkMain == null) numFaults++;
@@ -148,16 +111,87 @@ public class TrackLayout {
                     if (curSw.blkDiverg == null) numFaults++;
                 }
             }
+            
+            System.out.printf("Track model has %d elements\n", blocks.size() + switches.size());
+            System.out.printf("Built %s Line with %d faults\n", blocks.get(0).lineId, numFaults);
         }
 
-        System.out.printf("Track model has %d elements\n", elements.size());
-        System.out.printf("Built track model with %d faults\n", numFaults);
+        public String toString()
+        {
+            return id;
+        }
+    }
+	
+
+    //private ArrayList<TrackElement> elements;
+    //private ArrayList<Block> blocks;
+    //private ArrayList<Switch> switches;
+    
+    //public Block yard;
+    public TrackLine redLine;
+    public TrackLine greenLine;
+    private ArrayList lines;
+    private TrackElement selected;
+
+    public AbstractCollection<Train> trains;
+
+    public TrackLayout() {
+        lines = new ArrayList<TrackLine>(2);
+
+    }
+        
+    public AbstractCollection<TrackLine> getLines() {
+        return lines;
     }
 
+    public void setTrainList(AbstractCollection<Train> tl) {
+        trains = tl;
+    }
+
+    public void setSelectedElement(TrackElement t) {
+        selected = t;
+    }
+
+    public TrackElement getSelectedElement() {
+        return selected;
+    }
+
+    public TrackElement getElementById(int id) {
+        /* FIXME only returns red line */
+        /* Deprecated */
+        return getElementById(redLine, id);
+    }
+
+    public TrackElement getElementById(TrackLine line, int id) {
+        return line.getElementById(id);
+    }
+
+    public AbstractCollection<Block> getBlocks()
+    {
+        ArrayList<Block> allBlocks = new ArrayList();
+        allBlocks.addAll(redLine.getBlocks());
+        allBlocks.addAll(greenLine.getBlocks());
+        
+        return allBlocks;
+    }
+    
+    public AbstractCollection<Switch> getSwitches()
+    {
+        ArrayList<Switch> allSwitches = new ArrayList();
+        allSwitches.addAll(redLine.getSwitches());
+        allSwitches.addAll(greenLine.getSwitches());
+        
+        return allSwitches;
+    }
+
+ 
+
     public void parseTrackDB (String pathname) {
-        elements = new ArrayList<TrackElement>();
-        blocks = new ArrayList<Block>();
-        switches = new ArrayList<Switch>();
+        redLine = new TrackLine("Red Line");
+        greenLine = new TrackLine("Green Line");
+
+
+        TrackLine tLine = redLine;
         
         /* open csv */
         Path path = Paths.get(pathname);
@@ -207,10 +241,18 @@ public class TrackLayout {
                         Block blk = new Block();
 
                         blk.lineId = tokens[0];
+
+                        if (blk.lineId.equalsIgnoreCase("green")) {
+                            tLine = greenLine;
+                        } else {
+                            tLine = redLine;
+                        }
+                            
                         blk.sectionId = tokens[1];
                         blk.id = Integer.parseInt(tokens[2]);
                         blk.length = Double.parseDouble(tokens[3]);
                         blk.grade = Double.parseDouble(tokens[4]);
+                        /* Speed limit is given in km/h but we need m/s */
                         blk.speedLimit = Double.parseDouble(tokens[5]) * 0.27777;
                         blk.isUground = tokens[6].equals("y");
                         //blk.hasSwitch [7]
@@ -236,8 +278,8 @@ public class TrackLayout {
                         //System.out.printf("Block:  id=%d, length=%f station=%s\n",
                         //    blk.id, blk.length, blk.stationName);
 
-                        elements.add(blk);
-                        blocks.add(blk);
+                        blk.line = tLine;
+                        tLine.blocks.add(blk);
                             
                     } else if (mode == 1) {
                         /* read a switch line */
@@ -245,6 +287,13 @@ public class TrackLayout {
                         /* Line,Sect,ID,,,,,Main,Straight,Div,,, */
                         Switch sw = new Switch();
                         sw.lineId = tokens[0];
+
+                        if (sw.lineId.equalsIgnoreCase("green")) {
+                            tLine = greenLine;
+                        } else {
+                            tLine = redLine;
+                        }
+                        
                         sw.sectionId = tokens[1];
                         sw.id = Integer.parseInt(tokens[2]);
                         sw.mainId = Integer.parseInt(tokens[7]);
@@ -255,8 +304,8 @@ public class TrackLayout {
                         
                         //System.out.printf("Switch: id=%d\n", sw.id);
 
-                        elements.add(sw);
-                        switches.add(sw);
+                        sw.line = tLine;
+                        tLine.switches.add(sw);
                     } else {
                         System.out.println("Error: stray line");
                     }
@@ -266,6 +315,9 @@ public class TrackLayout {
             System.err.println("Caught IOException: " + e.getMessage());
         }
 
-        constructTrack();
+        redLine.constructTrack();
+        greenLine.constructTrack();
+        lines.add(redLine);
+        lines.add(greenLine);
     }
 }

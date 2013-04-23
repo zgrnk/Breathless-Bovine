@@ -3,13 +3,18 @@ package TKC.test;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 
+import CTCOffice.CTCOffice;
 import TKC.util.ControllerUI;
 import TKC.util.TrackController;
+import TKM.TrackLayout;
 
 
 public class TrackControllerTEST {
 
-
+	public TrackLayout lyt;
+	public TrackController tkc;
+	public CTCOffice ctc;
+	
 	public static void main(String[] args) {
 
 		EventQueue.invokeLater(new Runnable() {
@@ -24,6 +29,14 @@ public class TrackControllerTEST {
 		});
 	}
 
+	
+	public void setUp(){
+		lyt = new TrackLayout();
+		lyt.parseTrackDB("track_db.csv");
+		
+		ctc = null;
+		tkc = new TrackController(lyt, ctc);
+	}
 	/*
 	/*public Train testTrain;
 	public CTCOffice mainOffice;

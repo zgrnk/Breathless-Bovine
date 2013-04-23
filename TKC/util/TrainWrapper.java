@@ -15,12 +15,20 @@ public class TrainWrapper {
 	public TrainWrapper(Train paramTrain, Block blockId) {
 		this.train = paramTrain;
 		this.setBlockLocation(blockId);
-		this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
+		try {
+			this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
+		} catch (IndexOutOfBoundsException ex) {
+			this.setFutureBlock(null);
+		}
 	}
 
 	public void updateLocation() {
 		this.blockLocation = this.train.positionBlock;
-		this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
+		try {
+			this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
+		} catch (IndexOutOfBoundsException ex) {
+			this.setFutureBlock(null);
+		}
 	}
 
 	public Block getFutureBlock() {

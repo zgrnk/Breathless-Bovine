@@ -12,6 +12,8 @@ import javax.swing.JFrame;
 
 import TNM.*;
 import SSC.*;
+import TKC.util.ControllerUI;
+import TKC.util.TrackController;
 import TKM.*;
 
 public class CTCOffice extends PApplet {
@@ -41,6 +43,9 @@ public class CTCOffice extends PApplet {
 	Date currentTime; 
 	Calendar targetTime; 
 	Calendar tempTime; 
+	TKMGui tkmgui;
+	ControllerUI tkcgui;
+	TrackController tkc;
 
 	public static void main(String args[]) {
 		//PApplet.main(new String[] { "--present", "CTCOffice" });
@@ -101,10 +106,12 @@ public class CTCOffice extends PApplet {
 			
 			while(currentTime.getTime() < targetTime.getTime().getTime()){
 				tnmUI.timeTick(currentTime, 100);
+				tkc.nextTick();
 				tempTime.setTime(currentTime);
 				tempTime.add(Calendar.MILLISECOND,100);
 				currentTime = tempTime.getTime();
 			}
+			tkmgui.repaint();
 			
 /*			if (lastTick != timer.millis()) {
 				Calendar tempTime = Calendar.getInstance();
@@ -348,7 +355,7 @@ public class CTCOffice extends PApplet {
 		
 		TrackLayout track = new TrackLayout();	
 		track.parseTrackDB("track_db.csv");	
-		bYard = track.yard;	
+		bYard = track.redLine.yard;
 		redRoute = new ArrayList<Block>();
 		
 		//create red line route
@@ -380,14 +387,20 @@ public class CTCOffice extends PApplet {
 		// Create the trains.
 		for (i = 0; i < numTrains; i++) {
 			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
-					(8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), redRoute,
+					(8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), redRoute,
 					new Engineer(true, false, 0.0,
-							(8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60)
+							(8 * 60 * 60 + i * 15 * 60 + 4 * 60 * 60)
 									% (24 * 60 * 60)), bYard);
 			trainList.add(tempTrain);
 			Integer tempInt = new Integer(i + 1);
 			idArray[i] = new String("T"+(i+1));
 		}
+		
+		track.setTrainList(trainList);
+		tkmgui = new TKMGui(track);
+		
+		tkc = new TrackController(track, this);
+		tkcgui = new ControllerUI(tkc);
 	}
 
 }

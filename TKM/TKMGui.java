@@ -11,11 +11,13 @@ public class TKMGui extends JPanel {
     private TrackLayout lyt;
     private TrackMapPanel pMap;
 
+    public TKMGui(TrackLayout tl)
+    {
+        lyt = tl;
+        loadGui();
+    }
+
     public void loadGui() {
-
-        lyt = new TrackLayout();
-
-        lyt.parseTrackDB("track_db.csv");
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
@@ -30,6 +32,7 @@ public class TKMGui extends JPanel {
         TKMControlPanel pControl = new TKMControlPanel(lyt);
 
         pControl.setMapPanel(pMap);
+        pMap.setControlPanel(pControl);
  
         add(pControl);
         add(pMap);
@@ -41,24 +44,17 @@ public class TKMGui extends JPanel {
 
         //Display the window.
         frame.pack();
+        frame.setSize(1000,1000);
         frame.setVisible(true);
     }
     
     public static void main(String[] args)
     {
         /* Create GUI */
-        TKMGui gui = new TKMGui();
-        gui.loadGui();
-        //lyt.chooChoo();
-    }
-    
-    public void startTrainTest() {
-        int delay = 30; //milliseconds
-        ActionListener taskPerformer = new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                lyt.chooChoo(pMap);
-            }
-        };
-        new Timer(delay, taskPerformer).start();
+
+        TrackLayout tl = new TrackLayout();
+        tl.parseTrackDB("track_db.csv");
+        
+        TKMGui gui = new TKMGui(tl);
     }
 }
