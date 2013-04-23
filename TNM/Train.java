@@ -188,7 +188,8 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 		if (!isSolo) {
 			tncResponse = tnc.timeTick(time, curVelocity, period, positionBlock, positionBlockTail, 
 										issetSignalPickupFailure, issetEngineFailure, issetBrakeFailure, 
-										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, curTemperature);
+										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0),
+										positionBlock.getNext(positionDirection == Block.DIRECTION_FWD).stationName);
 		}
 		
 		if ((!issetDoorsOpen) && (numCrew > 0)) {
@@ -250,6 +251,7 @@ System.out.println("XXX - flat\t\t"+(flat));
 						accelEngine = receivedPower / (curVelocity * totalMass);
 					}
 				} else {
+System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY\t\t");
 					if (curVelocity <= 0.0) {
 						// Special case when train is currently stopped (or rolling backwards).
 						accelEngine = manualPower / (0.0001 * totalMass);
@@ -261,7 +263,7 @@ System.out.println("XXX - flat\t\t"+(flat));
 System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
 System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
 System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
-
+			
 			if (accelEngine > (motorPower /  (0.0001 * totalMass))) {
 				// Limit the engine acceleration if necessary.
 				accelEngine = motorPower / (0.0001 * totalMass);
@@ -511,7 +513,7 @@ System.out.println("XXX - positionMeters\t"+positionMeters);
 		}
 		
 		// Passengers
-		if ((positionBlock.isStation) && (issetDoorsOpen)) {
+		if ((positionBlock.isStation) && (issetDoorsOpen) && (curVelocity == 0.0)) {
 			// Passengers can only enter/exit the train while the doors are open at a station.
 			
 			Random r = new Random(System.currentTimeMillis());
@@ -565,34 +567,36 @@ System.out.println("XXX - "+time+"\ttime");
 System.out.println("XXX - "+period+"\tperiod");
 System.out.println("XXX - "+dispatchTime+"\tdispatchTime");
 */
-		if ((positionBlock.isYard) && (issetDoorsOpen) && (engineer.goOnBreak) && (routeIndex > 0) 
-				&& (routeIndex < route.size() - 1) && (engineer.timeOnBreakStarts >= time) && (numCrew > 0)) {
-			// Break Starts
-			numCrew -= 1;
-			engineer.goOnBreak = false;
-			engineer.onBreak = true;
-		} else if ((positionBlock.isYard) && (engineer.onBreak) && (routeIndex > 0) && (routeIndex < route.size() - 1)) {
-			// On Break
-			engineer.timeOnBreak += period;
-			
-			if ((issetDoorsOpen) && (engineer.timeOnBreak >= 30 * 60) && (numCrew <= 0)) {
-				// Break Ends
+		if (curVelocity == 0.0) {
+			if ((positionBlock.isYard) && (issetDoorsOpen) && (engineer.goOnBreak) && (routeIndex > 0) 
+					&& (routeIndex < route.size() - 1) && (engineer.timeOnBreakStarts >= time) && (numCrew > 0)) {
+				// Break Starts
+				numCrew -= 1;
+				engineer.goOnBreak = false;
+				engineer.onBreak = true;
+			} else if ((positionBlock.isYard) && (engineer.onBreak) && (routeIndex > 0) && (routeIndex < route.size() - 1)) {
+				// On Break
+				engineer.timeOnBreak += period;
+				
+				if ((issetDoorsOpen) && (engineer.timeOnBreak >= 30 * 60) && (numCrew <= 0)) {
+					// Break Ends
+					numCrew += 1;
+					engineer.onBreak = false;
+				}
+			} else if ((positionBlock.isYard) && (issetDoorsOpen) && (routeIndex == 0) 
+					&& (((time - period < dispatchTime) && (time >= dispatchTime)) 
+							|| ((time - period < 0) && (24 * 60 * 60 + time - period < dispatchTime))) 
+					&& (numCrew <= 0)) {
+				// Shift Starts
 				numCrew += 1;
+			} else if ((positionBlock.isYard) && (issetDoorsOpen) && (routeIndex == route.size() - 1) && (numCrew > 0)) {
+				// Shift Ends
+				numCrew -= 1;
+				engineer.goOnBreak = true;
 				engineer.onBreak = false;
+				engineer.timeOnBreak = 0.0;
+				routeIndex = 0;
 			}
-		} else if ((positionBlock.isYard) && (issetDoorsOpen) && (routeIndex == 0) 
-				&& (((time - period < dispatchTime) && (time >= dispatchTime)) 
-						|| ((time - period < 0) && (24 * 60 * 60 + time - period < dispatchTime))) 
-				&& (numCrew <= 0)) {
-			// Shift Starts
-			numCrew += 1;
-		} else if ((positionBlock.isYard) && (issetDoorsOpen) && (routeIndex == route.size() - 1) && (numCrew > 0)) {
-			// Shift Ends
-			numCrew -= 1;
-			engineer.goOnBreak = true;
-			engineer.onBreak = false;
-			engineer.timeOnBreak = 0.0;
-			routeIndex = 0;
 		}
 		
 		// Update the total mass based on the current crew and passengers counts.
