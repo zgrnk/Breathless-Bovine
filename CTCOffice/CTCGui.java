@@ -82,9 +82,11 @@ public class CTCGui extends JPanel implements ActionListener {
     tPane.addTab("Track Map", pTkm);
     tPane.addTab("Trains", pTnm);
     tPane.addTab("Wayside Controllers", pTkc);
+    //tPane.setMaximumSize(new Dimension(400,2000));
 
     add(pSim);
     add(tPane);
+    //add(new TrackMapPanel(tl));
 
     JFrame mainWin = new JFrame();
     mainWin.setContentPane(this);
