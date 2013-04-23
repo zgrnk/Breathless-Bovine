@@ -47,6 +47,10 @@ public class TrackController {
 		{
 			way.nextTick();
 		}
+		for (Wayside way : greenControllerList)
+		{
+			way.nextTick();
+		}
 		
 	}
 	public void initControllers() {
