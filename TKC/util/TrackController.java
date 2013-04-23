@@ -39,6 +39,7 @@ public class TrackController {
 		this.layout = lyt;
 		this.ctc = ctc;
 		this.redControllerList = new ArrayList<Wayside>();
+		this.greenControllerList = new ArrayList<Wayside>();
 		initControllers();
 	}
 	
