@@ -156,7 +156,7 @@ public class TrackController {
 		fourBL.put(73, (Block) layout.getElementById(73));
 		fourBL.put(74, (Block) layout.getElementById(74));
 		fourBL.put(75, (Block) layout.getElementById(75));
-		fourBL.put(30, (Block) layout.getElementById(33));
+		fourBL.put(30, (Block) layout.getElementById(30));
 		fourBL.put(31, (Block) layout.getElementById(31));
 		fourBL.put(32, (Block) layout.getElementById(32));
 		

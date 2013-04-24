@@ -86,7 +86,7 @@ public class TrainWrapper {
 
 		while (flag) {
 			try {
-				if (train.route.get(index + 1).id == toTrain.blockLocation.id) {
+				if (train.route.get(index + 1).id == toTrain.getBlockLocation().id) {
 					flag = false;
 				}else if (isEndBlk(endBlks, train.route.get(index + 1).id)) {
 					dist += train.route.get(index + 1).length;

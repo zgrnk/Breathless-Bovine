@@ -60,7 +60,7 @@ public class Wayside {
 		Block temp;
 
 		activeBlocks = new LinkedList<Block>();
-		System.out.println("ACTIVE BLOCKS: ");
+		System.out.println("BLOCKS: ");
 		while (itr.hasNext())
 		{
 			temp = itr.next();
@@ -68,6 +68,8 @@ public class Wayside {
 				activeBlocks.add(temp);
 
 				//DEBUG
+				System.out.println("\t" + temp.id + " Active");
+			} else {
 				System.out.println("\t" + temp.id);
 			}
 		}
@@ -307,7 +309,10 @@ public class Wayside {
 								if (tempAuth <= distance)
 								{
 									auth = distance - tempAuth;
-									newLimits = new Limits(currSpeed, auth);
+									if (auth > 250.0)
+										newLimits = new Limits(sTrain.getBlockLocation().speedLimit, auth);
+									else
+										newLimits = new Limits(currSpeed, auth);
 									sTrain.setCurrLimits(newLimits);
 									setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
 									notGood = false;
@@ -354,6 +359,7 @@ public class Wayside {
 	private void toggleSwitch(boolean currState) {
 		this.centralSwitch.state = currState;
 	}
+	
 
 	private double distToEndOfZone(TrainWrapper sTrain) {
 		double dist = 0.0;
