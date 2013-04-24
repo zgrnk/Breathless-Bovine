@@ -79,6 +79,20 @@ public class Block extends TrackElement
         this.powerFailure = powerFailure;
     }
 
+    public double getFBSpeed() {
+        if (powerFailure) {
+            return Double.NaN;
+        }
+        return fbSpeed;
+    }
+
+    public double getFBAuthority() {
+        if (powerFailure) {
+            return Double.NaN;
+        }
+        return fbAuthority;
+    }
+
     public void disconnect(TrackElement target) {
         if (prev == target) {
             prev = null;
@@ -104,6 +118,12 @@ public class Block extends TrackElement
 
     public boolean isOccupied() {
         /* TODO: Correctly evaluate failure mode */
+        if (trackCircuitFailure && powerFailure) {
+            return false;
+        }
+        if (brokenRailFailure) {
+            return true;
+        }
         return occupied;
     }
 
@@ -251,6 +271,10 @@ public class Block extends TrackElement
             
             /* Move to next block */
             Block dest = train.positionBlock.getNext(train.positionDirection, false);
+
+            if (dest == line.yard) {
+                train.positionMeters = 0.;
+            }
 
             /* Default direction may have changed */
             if (dest.getNext(train.positionDirection, true) == train.positionBlock) {
