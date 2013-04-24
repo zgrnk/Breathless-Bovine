@@ -8,17 +8,6 @@
  * @author Chris Paskie
  */
 
-/*
-XXX
-handle case if train starts rolling backwards while attempting to go uphill
-	train position may needchanged to prevBlock and routeIndex--
-when train moves out of block, don't want to necessarily change isOccupied to false since there may be another train in the block
-handle crashing of trains?...
-when train goes onto switch circuuit to avoid crash and the switched block is not in the route list...
-make them look like buttons
-XXX
-*/
-
 
 package TNM;
 
@@ -43,6 +32,7 @@ public class TrainModelUI {
 	private static Date soloDate = new Date();		// Used with soloTime when TNM run solo.
 	private static int soloDelta = 100;				// Timestep in milliseconds.
 	private static int refreshUI = 0;				// Used to refresh GUI only once a second.
+	public static TNC_UI tncUI;
 	
 	protected static ArrayList<Train> trainList;
 	protected static int selectedId;				// ID of the currently selected train.
@@ -335,6 +325,13 @@ public class TrainModelUI {
 			staticWindow.add(swPanel);
 			isVisibleStatic = false;
 			staticWindow.setVisible(isVisibleStatic);
+			
+			// Set up the TNC UI.
+			if (!isSolo) {
+				tncUI = new TNC_UI();
+			}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 			JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
@@ -503,7 +500,10 @@ public class TrainModelUI {
 	public ArrayList<Train> getTrainsInBlock(int id) {
 		ArrayList<Train> tempAL = new ArrayList<Train>();
 		for (int i = 0; i < trainList.size(); i++) {
+<<<<<<< HEAD
+=======
       System.out.println("XXX - trainList.get(i).positionBlock.id\t"+(trainList.get(i).positionBlock.id));
+>>>>>>> 8f0d367f22975258bbb14ef090ab14647da7c869
 			if (trainList.get(i).positionBlock.id == id) {
 				tempAL.add(trainList.get(i));
 			}
@@ -521,7 +521,11 @@ public class TrainModelUI {
 			
 			for (int i = 0; i < trainList.size(); i++) {
 				// Update the data for each train.
-				trainList.get(i).timeTick(time, ((double) (delta)) / 1000.0, isSolo);
+				boolean isSelectedByTNC = false;
+				if (!isSolo) {
+					isSelectedByTNC = tncUI.uiSelect(trainList.get(i).id);
+				}
+				trainList.get(i).timeTick(time, ((double) (delta)) / 1000.0, isSolo, isSelectedByTNC);
 			}
 			
 			if (refreshUI >= 1000) {
@@ -586,13 +590,13 @@ public class TrainModelUI {
 			Block b17 = new Block(17, "R", "V", 50.0, 0.0, 15.0, true, false, false, false, false, "", false, false, false);
 			
 			bYard.connect(b17, b01);
-			b01.connect(bYard, b07);
+			b01.connect(bYard, b02);
 			b02.connect(b01, b03);
 			b03.connect(b02, b04);
 			b04.connect(b03, b05);
 			b05.connect(b04, b06);
 			b06.connect(b05, b07);
-			b07.connect(b08, b01);
+			b07.connect(b08, b06);
 			b08.connect(b09, b07);
 			b09.connect(b10, b08);
 			b10.connect(b11, b09);
@@ -653,7 +657,7 @@ public class TrainModelUI {
  			idArray = new String[soloNumTrains];
  			for (int i = 0; i < soloNumTrains; i++) {
 				trainList.add(new Train(i + 1, "T" + (i + 1), "Test", (8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), 
- 						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 15 * 60 + 4 * 60 * 60) % (24 * 60 * 60)), bYard));
+ 						route, new Engineer(true, false, 0.0, (8 * 60 * 60 + i * 15 * 60 + 5 * 60) % (24 * 60 * 60)), bYard));
  				idArray[i] = new String("T" + (i + 1));
  			}
 			
