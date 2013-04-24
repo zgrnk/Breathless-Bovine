@@ -151,8 +151,10 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             //g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
             //g.drawString("X", xAvg + 6, yAvg + 6);
             g.drawImage(xingIcon, xAvg - 10, yAvg - 10, null);
+            if (blk.isCrossingOn) {
+                g2.fill(new Ellipse2D.Double(xAvg-3+15,yAvg-3+0,6,6));
+            }
         }
-            
     }
 
     private void drawSwitch(Graphics g, Switch sw) {

@@ -24,6 +24,7 @@ public class Block extends TrackElement
     public boolean isStation;
     public boolean isCrossing;
     public boolean isCrossingOn;
+    public boolean signalState;
     public String stationName;
     public String transponderMessage;
     public String transponderMessageFwd;
@@ -78,6 +79,14 @@ public class Block extends TrackElement
         this.powerFailure = powerFailure;
     }
 
+    public void disconnect(TrackElement target) {
+        if (prev == target) {
+            prev = null;
+        }
+        if (next == target) {
+            next = null;
+        }
+    }
 
     public String readTransponder(boolean travelDirection) {
         if (travelDirection == DIRECTION_FWD) {

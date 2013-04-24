@@ -37,6 +37,12 @@ public class TrackLayout {
             id = lineId;
         }
 
+        public void removeBlock(Block blk) {
+            blk.prev.disconnect(blk);
+            blk.next.disconnect(blk);
+            blocks.remove(blk);
+        }
+        
         public AbstractCollection<Block> getBlocks()
         {
             //ArrayList
