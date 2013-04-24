@@ -272,53 +272,60 @@ public class Wayside {
 				//if train's next block is in the zone then it is receiving the train and should edit the limits
 				//otherwise it shouldn't set the limits
 				if (sTrain.getFutureBlock() != null) {
-					if (blockIsInZone(sTrain.getFutureBlock())) {
+					
+					if (TrainWrapper.isEndBlk(endBlocks, sTrain.train.route.get(sTrain.train.routeIndex).id) && 
+							!blockIsInZone(sTrain.train.route.get(sTrain.train.routeIndex + 1))) {
+						continue;
+					} else {
+						if (blockIsInZone(sTrain.getFutureBlock())) {
 
-						Limits newLimits;
-						double auth;
-						double currSpeed = sTrain.train.curVelocity;
+							Limits newLimits;
+							double auth;
+							double currSpeed = sTrain.train.curVelocity;
 
-						double distance = Double.MAX_VALUE;
-						for (TrainWrapper tTrain : trainList)
-						{
-							double temp = sTrain.distToTrain(endBlocks, tTrain);
-							if (temp < distance)
-								distance = temp;
-						}
-
-						//only train on the track or no tracks are ahead or something went wrong somehow
-						if (distance == Double.MAX_VALUE) {
-							distance = 200; //make a safety judgment of
-						}
-
-						double tempAuth = 0;
-						boolean notGood = true;
-						while (currSpeed > 0 && notGood) {
-
-							tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
-							if (tempAuth <= distance)
+							double distance = Double.MAX_VALUE;
+							for (TrainWrapper tTrain : trainList)
 							{
-								auth = distance - tempAuth;
-								newLimits = new Limits(currSpeed, auth);
+								if (tTrain.train.id != sTrain.train.id) {
+									double temp = sTrain.distToTrain(endBlocks, tTrain);
+									if (temp < distance)
+										distance = temp;
+								}
+							}
+
+							//only train on the track or no tracks are ahead or something went wrong somehow
+							if (distance == Double.MAX_VALUE) {
+								distance = distToEndOfZone(sTrain); //make a safety judgment to end of zone
+							}
+
+							double tempAuth = 0;
+							boolean notGood = true;
+							while (currSpeed > 0 && notGood) {
+
+								tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
+								if (tempAuth <= distance)
+								{
+									auth = distance - tempAuth;
+									newLimits = new Limits(currSpeed, auth);
+									sTrain.setCurrLimits(newLimits);
+									setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
+									notGood = false;
+								}
+								currSpeed = currSpeed - 1.0;
+							}
+
+							if (notGood)
+							{
+								newLimits = new Limits(sTrain.getBlockLocation().speedLimit, 200.0);
 								sTrain.setCurrLimits(newLimits);
 								setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-								notGood = false;
+
+								// TO-DO must adjust suggested speed
+								System.out.print("Authority Calculation may be incorrect");
+
 							}
-							currSpeed = currSpeed - 1.0;
-						}
-
-						if (notGood)
-						{
-							newLimits = new Limits(0.0, 0.0);
-							sTrain.setCurrLimits(newLimits);
-							setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-
-							// TO-DO must adjust suggested speed
-							System.out.print("Authority Calculation may be incorrect");
-
 						}
 					}
-
 				}
 			}
 
@@ -345,6 +352,34 @@ public class Wayside {
 
 	private void toggleSwitch(boolean currState) {
 		this.centralSwitch.state = currState;
+	}
+
+	private double distToEndOfZone(TrainWrapper sTrain) {
+		double dist = 0.0;
+		Train train = sTrain.train;
+		int index = train.routeIndex;
+		boolean flag = true;
+
+		if (TrainWrapper.isEndBlk(endBlocks, train.route.get(index).id) && 
+				!blockIsInZone(train.route.get(index + 1))) {
+			return 0.0;
+		}
+		while (flag) {
+			try {
+				if (TrainWrapper.isEndBlk(endBlocks, train.route.get(index + 1).id)) {
+					dist += train.route.get(index + 1).length;
+					flag = false;
+				}else {
+					dist += train.route.get(index + 1).length;
+					index++;
+				}
+			}catch (IndexOutOfBoundsException e) {
+				flag = false;
+			}
+		}
+
+		return dist;
+
 	}
 
 	/**
