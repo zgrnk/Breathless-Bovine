@@ -92,6 +92,7 @@ public class Train {
 	public double mboSuggestedSpeed;
 	public Engineer engineer;
 	public boolean goOnBreak;
+	public boolean justVisitedStation;
 	
 	
 	/**
@@ -171,6 +172,7 @@ public class Train {
 		mboSuggestedSpeed = 0.0;
 		this.engineer = engineer;
 		goOnBreak = false;
+		justVisitedStation = false;
 	}
 	
 	/**
@@ -389,7 +391,7 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 				curVelocity = newVelocity;
 			}
 			curVelocity = round(curVelocity, 3);
-//System.out.println("XXX - curVelocity\t"+curVelocity);
+System.out.println("XXX - curVelocity\t"+curVelocity);
 //System.out.println("XXX - this.positionDirection\t"+this.positionDirection);
 //System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
 			// Actually update the position of the train on the track.
@@ -458,27 +460,37 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 		}
 		
 		// Passengers
-		if ((positionBlock.isStation) && (issetDoorsOpen) && (curVelocity == 0.0)) {
-			// Passengers can only enter/exit the train while the doors are open at a station.
-			
-			Random r = new Random(System.currentTimeMillis());
-			
-			// Some passengers first exit the train.
-			if (numPassengers > 0) {
-				numPassengers -= r.nextInt(numPassengers);
+System.out.println("XXX - positionBlock.isStation\t"+(positionBlock.isStation));
+System.out.println("XXX - issetDoorsOpen\t"+(issetDoorsOpen));
+System.out.println("XXX - curVelocity == 0.0\t"+(curVelocity == 0.0));
+		if (positionBlock.isStation) {
+			if ((issetDoorsOpen) && (curVelocity == 0.0) && (!justVisitedStation)) {
+				// Passengers can only enter/exit the train while the doors are open at a station.
+				
+				Random r = new Random(System.currentTimeMillis());
+				
+				// Some passengers first exit the train.
+				if (numPassengers > 0) {
+					numPassengers -= r.nextInt(numPassengers);
+				}
+				
+				// Some passengers then board the train.
+				if (isSolo) {
+					numPassengers += r.nextInt(maxCapacityPassengers);
+				} else {
+					/* numPassengers += r.nextInt(XXX throughput XXX); */
+					numPassengers += r.nextInt(maxCapacityPassengers);
+				}
+				
+				// Limit the total number of passengers.
+				if (numPassengers > maxCapacityPassengers) {
+					numPassengers = maxCapacityPassengers;
+				}
+				
+				justVisitedStation = true;
 			}
-			
-			// Some passengers then board the train.
-			if (isSolo) {
-				numPassengers += r.nextInt(maxCapacityPassengers);
-			} else {
-				/* numPassengers += r.nextInt(XXX throughput XXX); */
-			}
-			
-			// Limit the total number of passengers.
-			if (numPassengers > maxCapacityPassengers) {
-				numPassengers = maxCapacityPassengers;
-			}
+		} else {
+			justVisitedStation = false;
 		}
 		
 		// Crew
