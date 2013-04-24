@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 import TKM.Block;
 import TKM.Switch;
+import TKM.TrackElement;
 
 
 /**
@@ -15,16 +16,31 @@ import TKM.Switch;
  *
  */
 public class PLCProgram {
-
-	public PLCProgram() {
-
+	
+	private Integer lightLocation;
+	private boolean on;
+	public PLCProgram(Integer lightLocation, boolean on) {
+		this.lightLocation = lightLocation;
+		this.on = on;
 	}
 
 	public SafetyInfo runPLC(Hashtable<Integer, Block> blkTable, ArrayList<Integer> endBlks, 
 			LinkedList<Block> activeBlks, LinkedList<TrainWrapper> trainList, Switch cSwitch) {
 
 		boolean swS = Switch.STATE_DIVERGENT;
-		Component litS = new Component(0,0);
+		Component litS;
+		if (lightLocation > 0) {
+			TrainWrapper prev = trainOnBlock(blkTable.get(lightLocation).getNext(Block.DIRECTION_REV), trainList);
+			TrainWrapper light = trainOnBlock(blkTable.get(lightLocation), trainList);
+			TrainWrapper next = trainOnBlock(blkTable.get(lightLocation).getNext(Block.DIRECTION_FWD), trainList);
+			if (prev != null || light != null || next != null) {
+				litS = new Component(lightLocation,1);
+			} else {
+				litS = new Component(lightLocation,0);
+			}
+		} else {
+			litS = new Component(0,0);
+		}
 		boolean isSafe = true;
 
 		TrainWrapper onMain = trainOnBlock(cSwitch.blkMain, trainList);

@@ -213,7 +213,10 @@ public class TrackController {
 		
 		Switch sixSw = (Switch) layout.getElementById(1005);
 		
-		six = new Wayside(sixBL, sixEndBL, ctc, newInfo, sixSw);
+		Component lightXRed = new Component(47,0);
+		SafetyInfo newInfoXRed = new SafetyInfo(switchS, lightXRed, true);
+		
+		six = new Wayside(sixBL, sixEndBL, ctc, newInfoXRed, sixSw);
 		redControllerList.add(six);
 		
 		Wayside seven;
@@ -290,7 +293,10 @@ public class TrackController {
 		
 		Switch zeroGSW = (Switch) layout.greenLine.getElementById(1001);
 		
-		zeroG = new Wayside(zeroGBL, zeroGEBL, ctc, newInfoG, zeroGSW);
+		Component lightXGreen = new Component(47,0);
+		SafetyInfo newInfoXGreen = new SafetyInfo(switchS, lightXGreen, true);
+		
+		zeroG = new Wayside(zeroGBL, zeroGEBL, ctc, newInfoXGreen, zeroGSW);
 		greenControllerList.add(zeroG);
 		
 		

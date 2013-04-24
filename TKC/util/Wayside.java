@@ -43,7 +43,12 @@ public class Wayside {
 		this.centralSwitch = cSwitch;
 
 		trainList = new LinkedList<TrainWrapper>();
-		this.loadedPLC = new PLCProgram();
+		boolean on;
+		if (currInfo.lightState.getState() == 0)
+			on = false;
+		else
+			on = true;
+		this.loadedPLC = new PLCProgram(currInfo.lightState.getBlockLocation(), on);
 	}
 
 	/*public void setPLC(PLCProgram plc) {
@@ -262,7 +267,7 @@ public class Wayside {
 		//set safetyInfo
 		if (currStateInfo.safetyState) {
 
-			if (currStateInfo.lightState.getState() != 0) {
+			if (currStateInfo.lightState.getBlockLocation() > 0) {
 				toggleComponent(currStateInfo.lightState.getBlockLocation(), 
 						ComponentType.LIGHT_COMP, currStateInfo.lightState.getState());
 			}
@@ -351,7 +356,10 @@ public class Wayside {
 		switch (type) {
 		case LIGHT_COMP:
 			//set light state
-			//blockTable.get(blkID).lightState = state;
+			if (state == 0)
+				blockTable.get(blkID).isCrossingOn = false;
+			else
+				blockTable.get(blkID).isCrossingOn = true;
 			break;
 		}
 	}
