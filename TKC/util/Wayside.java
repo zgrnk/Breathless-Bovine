@@ -65,7 +65,7 @@ public class Wayside {
 		Block temp;
 
 		activeBlocks = new LinkedList<Block>();
-		System.out.println("BLOCKS: ");
+		//System.out.println("BLOCKS: ");
 		while (itr.hasNext())
 		{
 			temp = itr.next();
@@ -73,9 +73,9 @@ public class Wayside {
 				activeBlocks.add(temp);
 
 				//DEBUG
-				System.out.println("\t" + temp.id + " Active");
+				//System.out.println("\t" + temp.id + " Active");
 			} else {
-				System.out.println("\t" + temp.id);
+				//System.out.println("\t" + temp.id);
 			}
 		}
 	}

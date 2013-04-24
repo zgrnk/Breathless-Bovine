@@ -71,7 +71,7 @@ public class TrainController
         oldBlock=thisBlock;
         time=-1;
         setpoint=100;
-        autspeed=100;
+        autspeed=-1;
         slimit=-1;
         setLights();
         safespeed=0;
@@ -238,7 +238,7 @@ public class TrainController
     public ResponseTNC timeTick(double ntime, double curVelocity, double period, Block positionBlock, 
     Block positionBlockTail, boolean issetSignalPickupFailure, boolean issetEngineFailure, 
     boolean issetBrakeFailure, double fixedSuggestedSpeed, double mboSuggestedSpeed, 
-    boolean issetEmerBrake, boolean operator, String nextStationName)
+    boolean issetEmerBrake, boolean operator, String nextStationName, boolean uiChosen)
     {
        time=ntime;
        tperiod=period;
@@ -266,15 +266,25 @@ public class TrainController
        setLights();
        checkStation();
        setDoors();
+       if(uiChosen)
+       {
+           updateUI();
+       }
        ResponseTNC tnmSignal=new ResponseTNC(power, sBrake, eBrake, lights, doors, tTemp, currAnnoun);
         
        return tnmSignal; 
     }
     
+    // public ResponseUI updateUI()
+    public void updateUI()
+    {
+        System.out.println("Communication Achieved");
+    }
+    
     // sets the doors open when the train is not moving
     public void setDoors()
     {
-        if(currspeed!=0||stationState==2)
+        if((currspeed!=0)||(stationState==2))
         {
             doors=false;
         }
