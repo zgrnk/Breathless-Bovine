@@ -19,16 +19,14 @@ import TKM.*;
 public class CTCOffice extends PApplet {
 
 	ControlP5 cp5;
-	ControlTimer timer;
 	DropdownList closeTrack, removeTrack, AddTrack1, AddTrack2, trainInfo_drop;
 	RadioButton trackRadio;
 	Group track, g_clock, sched, TLgroup, trainInfo;
 	List<Group> groups;
-	Textlabel showTimer;
 	Button startBtn, setTrainSpd, SimRatioBtn;
 	Knob kn_trainSpeed;
 
-	Canvas track_layout;
+
 	boolean simStarted, init;
 	int simTimeRatio, lastTick, numTrains;
 	int cnt = 0;
@@ -43,9 +41,14 @@ public class CTCOffice extends PApplet {
 	Date currentTime; 
 	Calendar targetTime; 
 	Calendar tempTime; 
+
 	TKMGui tkmgui;
 	ControllerUI tkcgui;
 	TrackController tkc;
+
+	JFrame mapwindow;
+	TrackLayout track_layout;
+
 
 	public static void main(String args[]) {
 		//PApplet.main(new String[] { "--present", "CTCOffice" });
@@ -69,15 +72,13 @@ public class CTCOffice extends PApplet {
 		simTimeRatio = 100;
 
 		cp5 = new ControlP5(this);
-		timer = new ControlTimer();
-		showTimer = new Textlabel(cp5, "--", 100, 100);
-		timer.setSpeedOfTime((float)simTimeRatio);
 		targetTime = Calendar.getInstance();
 		tempTime = Calendar.getInstance();
 
 		simStarted = false;
 		init = false;
 
+		createTKMGUI();
 		testInit();
 		//track_layout = new trackLayout();
 		addTrackGroup();
@@ -97,10 +98,9 @@ public class CTCOffice extends PApplet {
 
 	public void draw() {
 		background(193, 205, 193);
-		showTimer.setValue(timer.toString());
-		showTimer.setPosition(1, 1);
 
 		if (simStarted) {
+			mapwindow.repaint();
 			targetTime.setTime(currentTime);
 			targetTime.add(Calendar.MILLISECOND,1000);
 			
@@ -113,31 +113,8 @@ public class CTCOffice extends PApplet {
 			}
 			tkmgui.repaint();
 			
-/*			if (lastTick != timer.millis()) {
-				Calendar tempTime = Calendar.getInstance();
-				tempTime.setTime(currentTime);
-				tempTime.add(Calendar.MILLISECOND,simTimeRatio);
-				currentTime = tempTime.getTime();
-				tnmUI.timeTick(currentTime, 100);
-				lastTick = timer.millis();
-			}*/
 			trainList = tnmUI.getTrainList();
 			
-			
-			
-			
-			
-/*			showTimer.draw(this);
-			//second in relation to simRatio speed
-			if (lastTick != timer.millis()) {
-				Calendar tempTime = Calendar.getInstance();
-				tempTime.setTime(currentTime);
-				tempTime.add(Calendar.MILLISECOND,simTimeRatio);
-				currentTime = tempTime.getTime();
-				tnmUI.timeTick(currentTime, 100);
-				lastTick = timer.millis();
-			}
-			trainList = tnmUI.getTrainList();*/
 		}
 
 		try {
@@ -249,10 +226,6 @@ public class CTCOffice extends PApplet {
 
 		customizeDropDownTrain(trainInfo_drop, trainList);
 
-		/*
-		 * track_layout.pre(); // use cc.post(); to draw on top of existing
-		 * controllers. cp5.addCanvas(track_layout) .setGroup() ;
-		 */
 	}
 
 	public void customizeDropDownBlock(DropdownList list, ArrayList<Block> aList) {
@@ -312,17 +285,18 @@ public class CTCOffice extends PApplet {
 				sched.show();
 				TLgroup.hide();
 				trainInfo.hide();
+				mapwindow.setVisible(false);
 
 			} else {
 				simStarted = true;
 				tnmUI.setIsPaused(false);
 				startBtn.setCaptionLabel("Pause");
-				timer.reset();
 				track.hide();
 				g_clock.hide();
 				sched.hide();
 				TLgroup.show();
 				trainInfo.show();
+				mapwindow.setVisible(true);
 
 			}
 		} else if (theEvent.isGroup()) {
@@ -352,34 +326,56 @@ public class CTCOffice extends PApplet {
 		currentTime = tempTime.getTime();
 		
 		//current_clock_sec = 7 * 60 * 60 + 59 * 60 + 30;
-		
-		TrackLayout track = new TrackLayout();	
-		track.parseTrackDB("track_db.csv");	
-		bYard = track.redLine.yard;
+
+		trainList = new ArrayList<Train>();
+		idArray = new String[numTrains];
+		// Create the trains.
+		for (int i = 0; i < numTrains; i++) {
+			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
+					(8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), redRoute,
+					new Engineer(true, false, 0.0,
+							(8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60)
+									% (24 * 60 * 60)), bYard);
+			trainList.add(tempTrain);
+			Integer tempInt = new Integer(i + 1);
+			idArray[i] = new String("T"+(i+1));
+		}
+		track_layout.setTrainList(trainList);
+	}
+	
+	public void createTKMGUI(){
+		track_layout = new TrackLayout();	
+		track_layout.parseTrackDB("track_db.csv");	
+		mapwindow = new JFrame();
+		mapwindow.setContentPane(new TrackMapPanel(track_layout));
+		mapwindow.setSize(550, 653);
+	
+		bYard = track_layout.redLine.yard;	
+
 		redRoute = new ArrayList<Block>();
 		
 		//create red line route
 		//9-1, 16-66, 52-16, 1-9, yard(0) 
 		int i;
 		//route.add((Block)track.getElementById(0));
-		redRoute.add((Block)track.getElementById(0));
+		redRoute.add((Block)track_layout.getElementById(0));
 		for (i=9; i>0; i--){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		for (i=16; i<67; i++){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		for (i=52; i>15; i--){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		for (i=52; i>15; i--){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		for (i=1; i<10; i++){
-			redRoute.add((Block)track.getElementById(i));
+			redRoute.add((Block)track_layout.getElementById(i));
 		}
 		//yard
-		redRoute.add((Block)track.getElementById(0));
+		redRoute.add((Block)track_layout.getElementById(0));
 		
 
 
@@ -387,6 +383,8 @@ public class CTCOffice extends PApplet {
 		idArray = new String[numTrains];
 		// Create the trains.
 		for (i = 0; i < numTrains; i++) {
+			//Train(int id, String stringId, String line, double dispatchTime, ArrayList<Block> route, 
+			//Engineer engineer, Block positionBlock)
 			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
 					(8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), redRoute,
 					new Engineer(true, false, 0.0,
@@ -397,12 +395,14 @@ public class CTCOffice extends PApplet {
 			idArray[i] = new String("T"+(i+1));
 		}
 		
-		track.setTrainList(trainList);
-		tkmgui = new TKMGui(track);
+		track_layout.setTrainList(trainList);
+		tkmgui = new TKMGui(track_layout);
 		
-		tkc = new TrackController(track, this);
+		tkc = new TrackController(track_layout, this);
 		tkcgui = new ControllerUI(tkc);
+
 	}
+	
 
 }
 
