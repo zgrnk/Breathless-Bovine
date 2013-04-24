@@ -33,8 +33,8 @@ public class PLCProgram {
 			if (blkTable.get(lightLocation) == null)
 				System.exit(1);
 			//System.out.println(blkTable.get(lightLocation).id + "FIND ME");
-			System.out.println(blkTable.get(lightLocation).getNext(Block.DIRECTION_REV));
-			System.out.println(trainList);
+			//System.out.println(blkTable.get(lightLocation).getNext(Block.DIRECTION_REV));
+			//System.out.println(trainList);
 			TrainWrapper prev = trainOnBlock(blkTable.get(lightLocation).getNext(Block.DIRECTION_REV), trainList);
 			TrainWrapper light = trainOnBlock(blkTable.get(lightLocation), trainList);
 			TrainWrapper next = trainOnBlock(blkTable.get(lightLocation).getNext(Block.DIRECTION_FWD), trainList);
