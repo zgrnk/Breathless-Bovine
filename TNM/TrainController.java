@@ -253,7 +253,7 @@ public class TrainController
        //autspeed=fixedSuggestedSpeed;
        if(mboSuggestedSpeed<autspeed)
        {
-           autspeed=mboSuggestedSpeed;
+       //    autspeed=mboSuggestedSpeed;
        }
        slimit=positionBlock.speedLimit;
        nextName=nextStationName;
