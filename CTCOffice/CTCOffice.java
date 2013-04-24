@@ -296,7 +296,7 @@ public class CTCOffice extends PApplet {
 				sched.hide();
 				TLgroup.show();
 				trainInfo.show();
-				mapwindow.setVisible(true);
+				//mapwindow.setVisible(true);
 
 			}
 		} else if (theEvent.isGroup()) {
