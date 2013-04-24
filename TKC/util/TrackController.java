@@ -47,14 +47,14 @@ public class TrackController {
 		int i = 0;
 		for (Wayside way : redControllerList)
 		{
-			System.out.println("\nRed" + i);
+			//System.out.println("\nRed" + i);
 			way.nextTick();
 			i++;
 		}
 		i = 0;
 		for (Wayside way : greenControllerList)
 		{
-			System.out.println("\nGreen" + i);
+			//System.out.println("\nGreen" + i);
 			way.nextTick();
 			i++;
 		}
