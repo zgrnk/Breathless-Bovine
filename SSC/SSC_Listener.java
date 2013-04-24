@@ -10,19 +10,20 @@ import javax.swing.*;
 public class SSC_Listener implements ActionListener{
 
 	private SSC_GUI ssc_GUI;
-	public SSC_Test ssc_Test;
 	public String startTime;
 	public Date startTimeDate;
-	public Scheduler greenScheduler = new Scheduler();
-	public Scheduler redScheduler = new Scheduler();
+	public Scheduler scheduler = new Scheduler();
+	//public Scheduler greenScheduler = new Scheduler();
+	//public Scheduler redScheduler = new Scheduler();
 	public Schedule_Viewer schedule_viewer;
-	
+
 
 	public SSC_Listener(SSC_GUI mbo_GUI) {
 		this.ssc_GUI = mbo_GUI;
-		this.greenScheduler.line = "green";
-		this.redScheduler.line = "red";
+		//this.greenScheduler.line = "green";
+		//this.redScheduler.line = "red";
 	}
+	
 
 	public void actionPerformed(ActionEvent e) {	
 		if(e.getSource().equals(this.ssc_GUI.btn_load_tracks)){
@@ -85,12 +86,9 @@ public class SSC_Listener implements ActionListener{
 		if(okCancel == 0){
 			this.startTime = dateEditor.getTextField().getText();
 			this.startTimeDate = (Date) spinner.getValue();
-			this.greenScheduler.startTime = this.startTime;
-			this.greenScheduler.startTimeDate = this.startTimeDate;
-			this.redScheduler.startTime = this.startTime;
-			this.redScheduler.startTimeDate = this.startTimeDate;
+			this.scheduler.startTime = this.startTime;
+			this.scheduler.startTimeDate = this.startTimeDate;
 			this.ssc_GUI.lbl_start_time.setText(this.startTime);
-
 			this.ssc_GUI.btn_start_time.setEnabled(false);
 			this.ssc_GUI.btn_load_tracks.setEnabled(true);
 		}
@@ -100,8 +98,8 @@ public class SSC_Listener implements ActionListener{
 
 	public void loadTracks(){
 		ArrayList<String> test = new ArrayList<String>();
-		this.greenScheduler.track = test;
-		this.redScheduler.track = test;
+		this.scheduler.greenTrack = test;
+		this.scheduler.redTrack = test;
 		this.ssc_GUI.lbl_load_tracks.setText("loaded");
 
 		this.ssc_GUI.btn_load_tracks.setEnabled(false);
@@ -139,19 +137,19 @@ public class SSC_Listener implements ActionListener{
 			String tpLabel = "------";
 
 			if(none.isSelected()){
-				this.greenScheduler.throughput = 0;
+				this.scheduler.greenThroughput = 0;
 				tpLabel = "none";
 			}
 			else if(low.isSelected()){
-				this.greenScheduler.throughput = 1;
+				this.scheduler.greenThroughput = 1;
 				tpLabel = "low";
 			}
 			else if(med.isSelected()){
-				this.greenScheduler.throughput = 2;
+				this.scheduler.greenThroughput = 2;
 				tpLabel = "medium";
 			}
 			else if(high.isSelected()){
-				this.greenScheduler.throughput = 3;
+				this.scheduler.greenThroughput = 3;
 				tpLabel = "high";
 			}
 
@@ -192,19 +190,19 @@ public class SSC_Listener implements ActionListener{
 			String tpLabel = "------";
 
 			if(none.isSelected()){
-				this.redScheduler.throughput = 0;
+				this.scheduler.redThroughput = 0;
 				tpLabel = "none";
 			}
 			else if(low.isSelected()){
-				this.redScheduler.throughput = 1;
+				this.scheduler.redThroughput = 1;
 				tpLabel = "low";
 			}
 			else if(med.isSelected()){
-				this.redScheduler.throughput = 2;
+				this.scheduler.redThroughput = 2;
 				tpLabel = "medium";
 			}
 			else if(high.isSelected()){
-				this.redScheduler.throughput = 3;
+				this.scheduler.redThroughput = 3;
 				tpLabel = "high";
 			}
 
@@ -218,8 +216,9 @@ public class SSC_Listener implements ActionListener{
 
 
 	public void generateSchedules(){
-		this.greenScheduler.generateSchedules();
-		this.redScheduler.generateSchedules();
+		this.scheduler.generateSchedules();
+		//this.greenScheduler.generateSchedules();
+		//this.redScheduler.generateSchedules();
 		this.ssc_GUI.lbl_generate_sch.setText("generated");
 
 		this.ssc_GUI.btn_green_throughput.setEnabled(false);
@@ -229,50 +228,60 @@ public class SSC_Listener implements ActionListener{
 		this.ssc_GUI.btn_view_green_tp.setEnabled(true);
 		this.ssc_GUI.btn_view_red_tp.setEnabled(true);
 		this.ssc_GUI.btn_view_routes.setEnabled(true);
-		this.ssc_GUI.btn_view_green_sch.setEnabled(true);
-		this.ssc_GUI.btn_view_red_sch.setEnabled(true);
+		//this.ssc_GUI.btn_view_green_sch.setEnabled(true);
+		//this.ssc_GUI.btn_view_red_sch.setEnabled(true);
 		this.ssc_GUI.btn_view_engineer_sch.setEnabled(true);
 
 	}
 
 
 	public void viewGreenThroughputSch(){
-		viewSchedule("Green Throughput Schedule", this.ssc_GUI.lbl_view_green_tp, this.greenScheduler.throughputSch);
+		//viewSchedule("Green Throughput Schedule", this.ssc_GUI.lbl_view_green_tp, this.greenScheduler.throughputSch);
+		viewSchedule("Green Throughput Schedule", this.ssc_GUI.lbl_view_green_tp, this.scheduler.greenThroughputSch);
 	}
 
 
 	public void viewRedThroughputSch(){
-		viewSchedule("Red Throughput Schedule", this.ssc_GUI.lbl_view_red_tp, this.redScheduler.throughputSch);
+		//viewSchedule("Red Throughput Schedule", this.ssc_GUI.lbl_view_red_tp, this.redScheduler.throughputSch);
+		viewSchedule("Red Throughput Schedule", this.ssc_GUI.lbl_view_red_tp, this.scheduler.redThroughputSch);
 	}
 	
 
 	public void viewRoutes(){
+		/*
 		ArrayList<String> combinedRoutes = new ArrayList<String>(this.greenScheduler.routesSch);
 		for(int i=1; i<this.redScheduler.routesSch.size(); i++){
 			combinedRoutes.add(redScheduler.routesSch.get(i));
 		}
 		
 		viewSchedule("Green and Red Routes", ssc_GUI.lbl_view_routes, combinedRoutes);
+		*/
+		
+		viewSchedule("Green and Red Routes", ssc_GUI.lbl_view_routes, this.scheduler.routesSch);
 	}
 
 
 	public void viewGreenSch(){
-		viewSchedule("Green Line Train Schedule", ssc_GUI.lbl_green_sch, this.greenScheduler.trainSch);
+		//viewSchedule("Green Line Train Schedule", ssc_GUI.lbl_green_sch, this.greenScheduler.trainSch);
+		viewSchedule("Green Line Train Schedule", ssc_GUI.lbl_green_sch, this.scheduler.greenTrainSch);
+
 	}
 
 
 	public void viewRedSch(){
-		viewSchedule("Red Line Train Schedule", ssc_GUI.lbl_red_sch, this.redScheduler.trainSch);
+		//viewSchedule("Red Line Train Schedule", ssc_GUI.lbl_red_sch, this.redScheduler.trainSch);
+		viewSchedule("Red Line Train Schedule", ssc_GUI.lbl_red_sch, this.scheduler.redTrainSch);
 	}
 
 
 	public void viewEngineerSch(){
+		/*
 		ArrayList<String> combinedEngSch = new ArrayList<String>(this.greenScheduler.engineerSch);
 		for(int i=1; i<this.redScheduler.engineerSch.size(); i++){
 			combinedEngSch.add(redScheduler.engineerSch.get(i));
 		}
-		
-		viewSchedule("Engineer Schedule", ssc_GUI.lbl_engineer_sch, combinedEngSch);
+		*/
+		viewSchedule("Engineer Schedule", ssc_GUI.lbl_engineer_sch, this.scheduler.engineerSch);
 	}
 	
 	
@@ -317,8 +326,8 @@ public class SSC_Listener implements ActionListener{
 		if(this.ssc_GUI.lbl_view_green_tp.getText().equals("approved")
 				&& this.ssc_GUI.lbl_view_red_tp.getText().equals("approved")
 				&& this.ssc_GUI.lbl_view_routes.getText().equals("approved")
-				&& this.ssc_GUI.lbl_green_sch.getText().equals("approved")
-				&& this.ssc_GUI.lbl_red_sch.getText().equals("approved")
+				//&& this.ssc_GUI.lbl_green_sch.getText().equals("approved")
+				//&& this.ssc_GUI.lbl_red_sch.getText().equals("approved")
 				&& this.ssc_GUI.lbl_engineer_sch.getText().equals("approved")){
 			this.ssc_GUI.btn_export_sch.setEnabled(true);
 		}
@@ -327,10 +336,11 @@ public class SSC_Listener implements ActionListener{
 
 	
 	public void exportSchedules(){
-		File greenThroughputSch = new File("GreenThroughputSchedule.txt");
+		
+		File greenThroughputSchFile = new File("Green_Throughput_Schedule.txt");
 		try{
-			BufferedWriter greenTpOut = new BufferedWriter(new FileWriter(greenThroughputSch));
-			for(String str : greenScheduler.throughputSch){
+			BufferedWriter greenTpOut = new BufferedWriter(new FileWriter(greenThroughputSchFile));
+			for(String str : scheduler.greenThroughputSch){
 				greenTpOut.write(str + "\n");
 			}
 			greenTpOut.close();
@@ -338,10 +348,10 @@ public class SSC_Listener implements ActionListener{
 
 
 
-		File redThroughputSch = new File("RedThroughputSchedule.txt");
+		File redThroughputSchFile = new File("Red_Throughput_Schedule.txt");
 		try{
-			BufferedWriter redTpOut = new BufferedWriter(new FileWriter(redThroughputSch));
-			for(String str : redScheduler.throughputSch){
+			BufferedWriter redTpOut = new BufferedWriter(new FileWriter(redThroughputSchFile));
+			for(String str : scheduler.redThroughputSch){
 				redTpOut.write(str + "\n");
 			}
 			redTpOut.close();
@@ -349,21 +359,21 @@ public class SSC_Listener implements ActionListener{
 
 
 
-		File routesSch = new File("Routes.txt");
+		File routesSchFile = new File("Train_Routes.txt");
 		try{
-			BufferedWriter routesOut = new BufferedWriter(new FileWriter(routesSch));
-			for(String str : greenScheduler.routesSch){
+			BufferedWriter routesOut = new BufferedWriter(new FileWriter(routesSchFile));
+			for(String str : scheduler.routesSch){
 				routesOut.write(str + "\n");
 			}
 			routesOut.close();
 		}catch (IOException e){}
 
 
-
-		File greenSch = new File("GreenSchedule.txt");
+/*
+		File greenSchFile = new File("Green_Arrival_Schedule.txt");
 		try{
-			BufferedWriter greenOut = new BufferedWriter(new FileWriter(greenSch));
-			for(String str : greenScheduler.trainSch){
+			BufferedWriter greenOut = new BufferedWriter(new FileWriter(greenSchFile));
+			for(String str : scheduler.greenTrainSch){
 				greenOut.write(str + "\n");
 			}
 			greenOut.close();
@@ -371,19 +381,21 @@ public class SSC_Listener implements ActionListener{
 
 
 
-		File redSch = new File("RedSchedule.txt");
+		File redSchFile = new File("Red_Arrival_Schedule.txt");
 		try{
-			BufferedWriter redOut = new BufferedWriter(new FileWriter(redSch));
-			redOut.write("test");
+			BufferedWriter redOut = new BufferedWriter(new FileWriter(redSchFile));
+			for(String str : scheduler.redTrainSch){
+				redOut.write(str + "\n");
+			}
 			redOut.close();
 		}catch (IOException e){}
+*/
 
 
-
-		File engineerSch = new File("EngineerSchedule.txt");
+		File engineerSchFile = new File("Engineer_Schedule.txt");
 		try{
-			BufferedWriter engineerOut = new BufferedWriter(new FileWriter(engineerSch));
-			for(String str : greenScheduler.engineerSch){
+			BufferedWriter engineerOut = new BufferedWriter(new FileWriter(engineerSchFile));
+			for(String str : scheduler.engineerSch){
 				engineerOut.write(str + "\n");
 			}
 			engineerOut.close();

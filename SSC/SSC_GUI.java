@@ -33,7 +33,9 @@ public class SSC_GUI extends JFrame {
 	public JLabel lbl_export_sch;
 	public JLabel lbl_view_green_tp;
 	public JLabel lbl_view_red_tp;
-
+	
+	public SSC_Listener sscListener;
+	
 
 	public SSC_GUI() {
 
@@ -53,7 +55,7 @@ public class SSC_GUI extends JFrame {
 		setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		setTitle("SSC-MGP14");
 		setResizable(false);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JPanel panel_left = new JPanel();
@@ -284,7 +286,7 @@ public class SSC_GUI extends JFrame {
 
 		pack();
 
-		SSC_Listener sscListener = new SSC_Listener(this);
+		sscListener = new SSC_Listener(this);
 		btn_start_time.addActionListener(sscListener);
 		btn_load_tracks.addActionListener(sscListener);
 		btn_green_throughput.addActionListener(sscListener);
