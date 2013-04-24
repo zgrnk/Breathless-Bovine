@@ -14,38 +14,64 @@ public class TrainWrapper {
 
 	public TrainWrapper(Train paramTrain, Block blockId) {
 		this.train = paramTrain;
-		this.setBlockLocation(blockId);
+		/*this.setBlockLocation(blockId);
 		try {
 			this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
 		} catch (IndexOutOfBoundsException ex) {
 			this.setFutureBlock(null);
-		}
+		}*/
 	}
 
-	public void updateLocation() {
+	/*public void updateLocation() {
 		this.blockLocation = this.train.positionBlock;
 		try {
 			this.setFutureBlock(this.train.route.get(this.train.routeIndex + 1));
 		} catch (IndexOutOfBoundsException ex) {
 			this.setFutureBlock(null);
 		}
-	}
+	}*/
 
 	public Block getFutureBlock() {
-		return futureBlock;
+		Block temp;
+		try {
+			temp = train.route.get(train.routeIndex + 1);
+		} catch (IndexOutOfBoundsException ex) {
+			return null;
+		}
+		return temp;
+	}
+	
+	public Block getFutureFutureBlock() {
+		Block temp;
+		try {
+			temp = train.route.get(train.routeIndex + 2);
+		} catch (IndexOutOfBoundsException ex) {
+			return null;
+		}
+		return temp;
+	}
+	
+	public Block getPrevBlock() {
+		Block temp;
+		try {
+			temp = train.route.get(train.routeIndex - 1);
+		} catch (IndexOutOfBoundsException ex) {
+			return null;
+		}
+		return temp;
 	}
 
-	private void setFutureBlock(Block futureBlock) {
+	/*private void setFutureBlock(Block futureBlock) {
 		this.futureBlock = futureBlock;
-	}
+	}*/
 
 	public Block getBlockLocation() {
-		return blockLocation;
+		return train.positionBlock;
 	}
 
-	public void setBlockLocation(Block blockLocation) {
+	/*public void setBlockLocation(Block blockLocation) {
 		this.blockLocation = blockLocation;
-	}
+	}*/
 
 	/**
 	 * distance in meters to the specified train, only to be used if determining trains that aren't leaving zone

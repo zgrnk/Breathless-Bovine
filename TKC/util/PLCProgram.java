@@ -36,10 +36,20 @@ public class PLCProgram {
 				SafetyInfo newInfo = new SafetyInfo(swS, litS, false);
 				return newInfo;
 			} else {
-				if (onMain.getFutureBlock().id == cSwitch.blkStraight.id) {
-					swS = Switch.STATE_STRAIGHT;
-				} else if (onMain.getFutureBlock().id == cSwitch.blkDiverg.id) {
-					swS = Switch.STATE_DIVERGENT;
+				if (onMain.getFutureFutureBlock() != null){
+					if (onMain.getFutureFutureBlock().id == cSwitch.blkStraight.id || 
+							onMain.getFutureBlock().id == cSwitch.blkStraight.id) {
+						swS = Switch.STATE_STRAIGHT;
+					} else if (onMain.getFutureFutureBlock().id == cSwitch.blkDiverg.id || 
+							onMain.getFutureBlock().id == cSwitch.blkDiverg.id) {
+						swS = Switch.STATE_DIVERGENT;
+					} 
+				} else {
+					if (onMain.getFutureBlock().id == cSwitch.blkStraight.id) {
+						swS = Switch.STATE_STRAIGHT;
+					} else if (onMain.getFutureBlock().id == cSwitch.blkDiverg.id) {
+						swS = Switch.STATE_DIVERGENT;
+					} 
 				}
 			}
 		} else if (onStraight != null) {
@@ -47,8 +57,15 @@ public class PLCProgram {
 				SafetyInfo newInfo = new SafetyInfo(swS, litS, false);
 				return newInfo;
 			} else {
-				if (onStraight.getFutureBlock().id == cSwitch.blkMain.id) {
-					swS = Switch.STATE_STRAIGHT;
+				if (onStraight.getFutureFutureBlock() != null) {
+					if (onStraight.getFutureFutureBlock().id == cSwitch.blkMain.id ||
+							onStraight.getFutureBlock().id == cSwitch.blkMain.id) {
+						swS = Switch.STATE_STRAIGHT;
+					}
+				} else {
+					if (onStraight.getFutureBlock().id == cSwitch.blkMain.id) {
+						swS = Switch.STATE_STRAIGHT;
+					}
 				}
 			}
 		} else if (onDivergent != null) {
@@ -56,8 +73,15 @@ public class PLCProgram {
 				SafetyInfo newInfo = new SafetyInfo(swS, litS, false);
 				return newInfo;
 			} else {
-				if (onDivergent.getFutureBlock().id == cSwitch.blkMain.id) {
-					swS = Switch.STATE_DIVERGENT;
+				if (onDivergent.getFutureFutureBlock() != null) {
+					if (onDivergent.getFutureFutureBlock().id == cSwitch.blkMain.id || 
+							onDivergent.getFutureBlock().id == cSwitch.blkMain.id) {
+						swS = Switch.STATE_DIVERGENT;
+					}
+				} else {
+					if (onDivergent.getFutureBlock().id == cSwitch.blkMain.id) {
+						swS = Switch.STATE_DIVERGENT;
+					}
 				}
 			}
 		}

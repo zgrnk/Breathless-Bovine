@@ -130,7 +130,7 @@ public class Wayside {
 			LinkedList<TrainWrapper> removals = new LinkedList<TrainWrapper>();
 
 			for (TrainWrapper sTrain : trainList) {
-				sTrain.updateLocation();
+				//sTrain.updateLocation();
 				if (!blockIsInZone(sTrain.getBlockLocation()))
 					removals.add(sTrain);
 			}
