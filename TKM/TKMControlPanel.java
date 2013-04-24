@@ -37,6 +37,12 @@ public class TKMControlPanel extends JPanel implements ActionListener {
     JLabel lblStraightBlk;
     JLabel lblDivBlk;
 
+    JButton btnRemoveTrack;
+    JButton btnAddTrack;
+
+    JPanel pAddBlk;
+    JDialog dAddBlk;
+
     public TKMControlPanel(TrackLayout tl) {
 
         lyt = tl;
@@ -45,10 +51,17 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         JPanel pBlkInfo = new JPanel();
         JPanel pSwInfo = new JPanel();
 
+
+        //pAddBlk = new JPanel();
+        //pAddBlk.setLayout(new BoxLayout(this.BoxLayout.Y_AXIS));
+        
+        //dAddBlk.set
+
+
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 
-       pInfo.setLayout(new BoxLayout(pInfo, BoxLayout.PAGE_AXIS));
+        pInfo.setLayout(new BoxLayout(pInfo, BoxLayout.PAGE_AXIS));
         pBlkInfo.setLayout(new GridLayout(0,2));
         pSwInfo.setLayout(new GridLayout(0,2));
 
@@ -58,13 +71,13 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         cbLine.setMaximumSize(new Dimension(200,20));
         cbBlock.setMaximumSize(new Dimension(200,20));
         cbSwitch.setMaximumSize(new Dimension(200,20));
-
+        cbLine.setSelectedIndex(0);
         cbBlock.setSelectedIndex(0);
         cbSwitch.setSelectedIndex(0);
-        cbLine.setSelectedIndex(0);
         cbLine.addActionListener(this);
         cbBlock.addActionListener(this);
         cbSwitch.addActionListener(this);
+
 
         lblElemId = new JLabel();
         lblElemId.setMaximumSize(new Dimension(200,13));
@@ -99,6 +112,11 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         lblPrevElem = new JLabel();
         lblNextElem = new JLabel();
 
+        btnRemoveTrack = new JButton("Remove this block");
+        btnRemoveTrack.addActionListener(this);
+        btnAddTrack = new JButton("Add new block");
+        btnAddTrack.addActionListener(this);
+
         cboxSwDiv = new JCheckBox();
         cboxSwDiv.addActionListener(this);
         lblMainBlk = new JLabel();
@@ -125,6 +143,8 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         pBlkInfo.add(cboxBlkUground);
         pBlkInfo.add(new JLabel("Is Crossing"));
         pBlkInfo.add(cboxBlkCrossing);
+        pBlkInfo.add(btnRemoveTrack);
+        pBlkInfo.add(btnAddTrack);
 
         pBlkInfo.add(new JLabel("Previous Element"));
         pBlkInfo.add(lblPrevElem);
@@ -171,6 +191,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         if (updateCombos) {
             cbLine.setSelectedItem(sw.line);
             cbSwitch.setSelectedItem(sw);
+            selectedSwitch = sw;
         }
 
         cboxSwDiv.setSelected(sw.state);
@@ -179,12 +200,34 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         lblDivBlk.setText(sw.blkDiverg.toString());
     }
 
+    private void removeTrackDialog() {
+        /* make remove block dialog */
+        Object[] options = {"Confirm",
+                            "Cancel",
+                           };
+        int n = JOptionPane.showOptionDialog(this.getTopLevelAncestor(),
+            "Are you sure you want to remove " + selectedBlock.toString() + "?",
+            "Warning",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE,
+            null,
+            options,
+            options[1]);
+
+        if (n == 0) {
+            System.out.println("removing blk");
+            selectedBlock.line.removeBlock(selectedBlock);
+        }
+        pMap.repaint();
+    }
+
     public void updateBlkInfo(Block blk, boolean updateCombos) {
         lblElemId.setText("Block");
 
         if (updateCombos) {
             cbLine.setSelectedItem(blk.line);
             cbBlock.setSelectedItem(blk);
+            selectedBlock = blk;
         }
 
         /* Set block fields */
@@ -240,7 +283,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 		
-        //TrackElement elem;
+        System.out.println(e.getActionCommand());
 
         if (e.getSource() == cboxSwDiv) {
             selectedSwitch.state = cboxSwDiv.isSelected();
@@ -293,6 +336,13 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         }
         if(e.getSource() == fieldBlkStationName) {
             selectedBlock.isUground = cboxBlkUground.isSelected();
+        }
+
+        if (e.getSource() == btnRemoveTrack) {
+            removeTrackDialog();
+        }
+        if (e.getSource() == btnAddTrack) {
+            System.out.println("add track");
         }
 
         if (pMap != null) {

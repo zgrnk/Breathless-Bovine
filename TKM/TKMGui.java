@@ -5,12 +5,22 @@ package TKM;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import CTCOffice.*;
 
 public class TKMGui extends JPanel {
 
     private TrackLayout lyt;
     private TrackMapPanel pMap;
+    private CTCOffice office;
+    private JFrame frame;
 
+    public TKMGui(TrackLayout tl, CTCOffice off)
+    {
+        lyt = tl;
+        office = off;
+        loadGui();
+    }
+    
     public TKMGui(TrackLayout tl)
     {
         lyt = tl;
@@ -26,7 +36,7 @@ public class TKMGui extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
         //Create and set up the window.
-        JFrame frame = new JFrame("TKM Proto");
+        frame = new JFrame("Track Map");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         TKMControlPanel pControl = new TKMControlPanel(lyt);

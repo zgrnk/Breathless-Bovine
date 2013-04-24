@@ -3,7 +3,6 @@ package SSC;
 import java.awt.*;
 
 import javax.swing.*;
-//import org.eclipse.wb.swing.FocusTraversalOnArray;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 

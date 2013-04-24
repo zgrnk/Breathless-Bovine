@@ -1,4 +1,6 @@
-package TKM;
+package MBO;
+
+
 
 public class Switch extends TrackElement {
     public static final boolean STATE_STRAIGHT = false;
@@ -30,18 +32,6 @@ public class Switch extends TrackElement {
         this.blkMain = main;
         this.blkStraight = straight;
         this.blkDiverg = diverg;
-    }
-
-    public void disconnect(TrackElement blk) {
-        if ((Block)blk == blkMain) {
-            blkMain = null;
-        }
-        if ((Block)blk == blkStraight) {
-            blkStraight = null;
-        }
-        if ((Block)blk == blkDiverg) {
-            blkDiverg = null;
-        }
     }
 
     public String toString()

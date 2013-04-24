@@ -228,7 +228,7 @@ public class ControllerUI extends JPanel {
 		blockPanelContent = new JPanel();
 		blockPanelContent.setBorder(new CompoundBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)), new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0))));
 		scrollPaneBlock.setViewportView(blockPanelContent);
-		blockPanelContent.setLayout(new BoxLayout(blockPanelContent, BoxLayout.X_AXIS));
+		blockPanelContent.setLayout(new BoxLayout(blockPanelContent, BoxLayout.Y_AXIS));
 
 		JLabel lblWayside = new JLabel("Wayside");
 
@@ -337,6 +337,7 @@ public class ControllerUI extends JPanel {
 				
 				if (tTrain.getFutureBlock() != null) {
 					route = "" + tTrain.getBlockLocation().id + " -> " + tTrain.getFutureBlock().id;
+					//route = "" + tTrain.train.route.get(tTrain.train.routeIndex).id + " -> " + tTrain.train.route.get(tTrain.train.routeIndex + 1).id;
 				} else {
 					if (tTrain.getBlockLocation() != null) {
 						route = "" + tTrain.getBlockLocation().id;

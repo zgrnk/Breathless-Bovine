@@ -1,6 +1,8 @@
 package MBO;
 
 
+
+
 import java.awt.event.*;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
@@ -93,19 +95,19 @@ public class MBO_Listener implements ActionListener{
 		public void actionPerformed(ActionEvent evt) { 
 			for(Train train : mbo_Test.trainList){
 
-				if(train.signalPickup){
-					MBO_Calculator mbo_Calc = new MBO_Calculator(train);
+				if(!train.issetSignalPickupFailure){
+					//MBO_Calculator mbo_Calc = new MBO_Calculator(train);
 					
-					train.trainAheadDist = mbo_Calc.getNextTrainFrontDist();
-					train.trainBehindDist = mbo_Calc.getNextTrainBehindDist();
-					train.nextStationDist = mbo_Calc.getNextStationDist();
+					//train.trainAheadDist = mbo_Calc.getNextTrainFrontDist();
+					//train.trainBehindDist = mbo_Calc.getNextTrainBehindDist();
+					//train.nextStationDist = mbo_Calc.getNextStationDist();
 					
-					train.MBOsuggestedAuthority = mbo_Calc.calculateAuthority();
-					train.MBOsuggestedSetspeed = mbo_Calc.calculateSetspeed();
+					//train.mboSuggestedAuthority = mbo_Calc.calculateAuthority();
+					//train.mboSuggestedSpeed = mbo_Calc.calculateSetspeed();
 				}
 				else{
-					train.MBOsuggestedAuthority = 0;
-					train.MBOsuggestedSetspeed = 0;
+					train.mboSuggestedAuthority = 0;
+					train.mboSuggestedSpeed = 0;
 				}
 			}
 		}
@@ -118,18 +120,18 @@ public class MBO_Listener implements ActionListener{
 
 			Train train = mbo_Test.trainTable.get(trainID);	
 			mbo_GUI.lbl_line_val.setText(train.line);		
-			mbo_GUI.lbl_signal_pickup_val.setText(String.valueOf(train.signalPickup));
+			mbo_GUI.lbl_signal_pickup_val.setText(String.valueOf(!train.issetSignalPickupFailure));
 
-			if(train.signalPickup){
-				mbo_GUI.lbl_current_block_val.setText(train.gps.block.id);
+			if(!train.issetSignalPickupFailure){
+				mbo_GUI.lbl_current_block_val.setText(Integer.toString(train.gps.block.id));
 				mbo_GUI.lbl_current_speed_val.setText(Double.toString((int)train.gps.speed));
 
 				mbo_GUI.lbl_train_ahead_dist_val.setText(Double.toString((int)train.trainAheadDist));
 				mbo_GUI.lbl_train_behind_dist_val.setText(Double.toString((int)train.trainBehindDist));
 				mbo_GUI.lbl_next_station_dist_val.setText(Double.toString((int)train.nextStationDist));
 
-				mbo_GUI.lbl_calc_authority_val.setText(Double.toString((int)train.MBOsuggestedAuthority));
-				mbo_GUI.lbl_calc_speed_val.setText(Double.toString((int)train.MBOsuggestedSetspeed));
+				mbo_GUI.lbl_calc_authority_val.setText(Double.toString((int)train.mboSuggestedAuthority));
+				mbo_GUI.lbl_calc_speed_val.setText(Double.toString((int)train.mboSuggestedSpeed));
 			}
 			else{
 				for(int i=0; i<mbo_GUI.gpsLabels.size(); i++){

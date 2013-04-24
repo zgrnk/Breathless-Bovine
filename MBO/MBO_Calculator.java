@@ -1,6 +1,8 @@
 package MBO;
 
 
+
+
 public class MBO_Calculator{
 
 	MBO_Test mbo_Test;
@@ -19,11 +21,11 @@ public class MBO_Calculator{
 		
 		Block testBlock = this.train.gps.block;
 		this.distanceToNext += testBlock.length;
-		testBlock = testBlock.next;
+		testBlock = testBlock.getNext(false);
 		
-		while(testBlock.trainOnBlock == null){
+		while(testBlock.occupied == false){
 			this.distanceToNext += testBlock.length;
-			testBlock = testBlock.next;
+			testBlock = testBlock.getNext(false);
 		}
 		
 		Train nextTrain = testBlock.trainOnBlock;
@@ -36,10 +38,10 @@ public class MBO_Calculator{
 		
 		this.distanceToPrev = 0;
 		
-		Block testBlock = this.train.gps.block.prev;
-		while(testBlock.trainOnBlock == null){
+		Block testBlock = this.train.gps.block.getNext(true);
+		while(testBlock.occupied == false){
 			this.distanceToPrev += testBlock.length;
-			testBlock = testBlock.prev;
+			testBlock = testBlock.getNext(true);
 		}
 		
 		Train nextTrain = testBlock.trainOnBlock;

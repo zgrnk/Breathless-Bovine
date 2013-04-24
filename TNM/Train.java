@@ -91,7 +91,7 @@ public class Train {
 	public double mboSuggestedAuthority;
 	public double mboSuggestedSpeed;
 	public Engineer engineer;
-	public boolean goOnBreak;
+	public boolean justVisitedStation;
 	
 	
 	/**
@@ -151,9 +151,9 @@ public class Train {
 		issetDoorsOpen = true;
 		issetDoorsOpenManual = true;
 		issetDoorsOpenUseManual = false;
-		curTemperature = 72.0;
-		targetTemperatureTNC = 72.0;
-		targetTemperatureManual = 72.0;
+		curTemperature = 22.0;
+		targetTemperatureTNC = 22.0;
+		targetTemperatureManual = 22.0;
 		issetTargetTemperatureManual = false;
 		announcement = "";
 		
@@ -170,7 +170,7 @@ public class Train {
 		mboSuggestedAuthority = 0.0;
 		mboSuggestedSpeed = 0.0;
 		this.engineer = engineer;
-		goOnBreak = false;
+		justVisitedStation = false;
 	}
 	
 	/**
@@ -187,15 +187,15 @@ public class Train {
 	/**
 	 * Performs calculations and updates counts relating to the train.
 	 */
-	public void timeTick(double time, double period, boolean isSolo) {
-System.out.println("XXX - ////////////////////////////////////////////////////");
+	public void timeTick(double time, double period, boolean isSolo, boolean isSelectedByTNC) {
 		
 		// TrainController timeTick and Response
 		ResponseTNC tncResponse = new ResponseTNC(0.0, false, false, false, false, 0.0, "");
 		if (!isSolo) {
 			tncResponse = tnc.timeTick(time, curVelocity, period, positionBlock, positionBlockTail, 
 										issetSignalPickupFailure, issetEngineFailure, issetBrakeFailure, 
-										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0));
+										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0), 
+										positionBlock.readTransponder(positionDirection), isSelectedByTNC);
 		}
 		
 		if ((!issetDoorsOpen) && (numCrew > 0)) {
@@ -214,9 +214,6 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 			} else {
 				flat = true;
 			}
-//System.out.println("XXX - uphill\t\t"+(uphill));
-//System.out.println("XXX - downhill\t\t"+(downhill));
-//System.out.println("XXX - flat\t\t"+(flat));
 			
 			// Angle of Inclination (used for the later Gravity calculations)
 			double angle = 0.0;
@@ -265,9 +262,6 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 					}
 				}
 			}
-//System.out.println("XXX - issetEngineFailure\t\t"+(issetEngineFailure));
-//System.out.println("XXX - !isSolo  &&  !issetManualPower\t"+(!isSolo  &&  !issetManualPower));
-//System.out.println("XXX - curVelocity <= 0.0\t\t"+(curVelocity <= 0.0));
 			
 			if (accelEngine > (motorPower /  (0.0001 * totalMass))) {
 				// Limit the engine acceleration if necessary.
@@ -329,14 +323,6 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 				accelFriction = 0.0;
 			}
 			double velFriction = accelFriction * period;
-//System.out.println("XXX - accelEngine\t"+accelEngine);
-//System.out.println("XXX - accelBrakes\t"+accelBrakes);
-//System.out.println("XXX - accelGravity\t"+accelGravity);
-//System.out.println("XXX - accelFriction\t"+accelFriction);
-//System.out.println("XXX - velEngine\t\t"+velEngine);
-//System.out.println("XXX - velBrakes\t\t"+velBrakes);
-//System.out.println("XXX - velGravity\t"+velGravity);
-//System.out.println("XXX - velFriction\t"+velFriction);
 			
 			// Current - Acceleration & Velocity (w/ Brakes & Friction)
 			curAccel += (accelBrakes + accelFriction);
@@ -345,13 +331,16 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 			newVelocity = round(newVelocity, 3);
 			
 			// Handle special cases and limit to max speed depending on slope direction.
-			if ((((curVelocity < 0.0) && (newVelocity > 0.0)) || ((curVelocity > 0.0) && (newVelocity < 0.0))) 
-					&& (((!issetBrakeFailure) && ((issetEmerBrake) || (issetServiceBrake))) || flat)) {
+			if (((((!issetBrakeFailure) && ((issetEmerBrake) || (issetServiceBrake))) || flat) 
+						&& (((curVelocity < 0.0) && (newVelocity > 0.0)) || ((curVelocity > 0.0) && (newVelocity < 0.0)))) 
+					|| (((!issetBrakeFailure) && ((issetEmerBrake) || (issetServiceBrake))) 
+						&& (curVelocity == 0.0))) {
 				/*
 				 * If the train's direction of travel has changed and (the brakes are being applied or 
-				 * the slope is flat), then the train should come to a complete stop.
+				 * the slope is flat), then the train should come to a complete stop and stay stopped.
 				 */
 				curVelocity = 0.0;
+				curAccel = 0.0;
 			} else if ((uphill) && (newVelocity > maxSpeed + velFriction + velGravity)) {
 				/*
 				 * If the train is traveling uphill, then the final max speed of the train will actually 
@@ -388,23 +377,20 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 				curVelocity = newVelocity;
 			}
 			curVelocity = round(curVelocity, 3);
-//System.out.println("XXX - curVelocity\t"+curVelocity);
-//System.out.println("XXX - this.positionDirection\t"+this.positionDirection);
-//System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
 			// Actually update the position of the train on the track.
 			Block.advanceTrain(this, curVelocity * period);
 			gps = new GPS(positionBlock, (int) (positionMeters + 0.5), curVelocity, (positionDirection == Block.DIRECTION_FWD));
 			if (!isSolo) {
 				postedSpeedLimit = positionBlock.speedLimit;
-				fixedSuggestedAuthority = positionBlock.fbAuthority;
-				fixedSuggestedSpeed = positionBlock.fbSpeed;
-				// mboSuggestedAuthority = XXXXXXX;
-				// mboSuggestedSpeed = XXXXXXX;
+				fixedSuggestedAuthority = positionBlock.getFBAuthority();
+				fixedSuggestedSpeed = positionBlock.getFBSpeed();
+				// mboSuggestedAuthority = XXX;
+				// mboSuggestedSpeed = XXX;
 			}
-//System.out.println("XXX - (int) (positionMeters + 0.5)\t"+((int) (positionMeters + 0.5)));
+		} else {
+			curVelocity = 0.0;
+			curAccel = 0.0;
 		}
-//System.out.println("XXX - positionBlock.id\t"+positionBlock.id);
-//System.out.println("XXX - positionMeters\t"+positionMeters);
 		
 		// Lights
 		if ((issetLightsOnUseManual) || (isSolo)) {
@@ -457,54 +443,76 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 		}
 		
 		// Passengers
-		if ((positionBlock.isStation) && (issetDoorsOpen) && (curVelocity == 0.0)) {
-			// Passengers can only enter/exit the train while the doors are open at a station.
-			
-			Random r = new Random(System.currentTimeMillis());
-			
-			// Some passengers first exit the train.
-			if (numPassengers > 0) {
-				numPassengers -= r.nextInt(numPassengers);
+		if (positionBlock.isStation) {
+			if ((issetDoorsOpen) && (curVelocity == 0.0) && (!justVisitedStation)) {
+				// Passengers can only enter/exit the train while the doors are open at a station.
+				
+				Random r = new Random(System.currentTimeMillis());
+				
+				// Some passengers first exit the train.
+				if (numPassengers > 0) {
+					numPassengers -= r.nextInt(numPassengers);
+				}
+				
+				// Some passengers then board the train.
+				if (isSolo) {
+					numPassengers += r.nextInt(maxCapacityPassengers);
+				} else {
+					/* numPassengers += r.nextInt(XXX SSC_throughput XXX); */
+					numPassengers += r.nextInt(maxCapacityPassengers);
+				}
+				
+				// Limit the total number of passengers.
+				if (numPassengers > maxCapacityPassengers) {
+					numPassengers = maxCapacityPassengers;
+				}
+				
+				justVisitedStation = true;
 			}
-			
-			// Some passengers then board the train.
-			if (isSolo) {
-				numPassengers += r.nextInt(maxCapacityPassengers);
-			} else {
-				/* numPassengers += r.nextInt(XXX throughput XXX); */
-			}
-			
-			// Limit the total number of passengers.
-			if (numPassengers > maxCapacityPassengers) {
-				numPassengers = maxCapacityPassengers;
-			}
+		} else {
+			justVisitedStation = false;
 		}
 		
 		// Crew
-		if (curVelocity == 0.0) {
-			if ((positionBlock.isYard) && (issetDoorsOpen) && (engineer.goOnBreak) && (routeIndex > 0) 
-					&& (routeIndex < route.size() - 1) && (engineer.timeOnBreakStarts >= time) && (numCrew > 0)) {
+		if (positionBlock.isYard) {
+			if ((engineer.goOnBreak) && (routeIndex > 0) 
+					&& (routeIndex < route.size() - 1) && (time >= engineer.timeOnBreakStarts) && (numCrew > 0)) {
 				// Break Starts
+				curVelocity = 0.0;
+				curAccel = 0.0;
+				issetDoorsOpen = true;
+				issetDoorsOpenManual = true;
 				numCrew -= 1;
 				engineer.goOnBreak = false;
 				engineer.onBreak = true;
-			} else if ((positionBlock.isYard) && (engineer.onBreak) && (routeIndex > 0) && (routeIndex < route.size() - 1)) {
+			} else if ((engineer.onBreak) && (routeIndex > 0) && (routeIndex < route.size() - 1)) {
 				// On Break
+				curVelocity = 0.0;
+				curAccel = 0.0;
 				engineer.timeOnBreak += period;
 				
-				if ((issetDoorsOpen) && (engineer.timeOnBreak >= 30 * 60) && (numCrew <= 0)) {
+				if ((issetDoorsOpen) && (numCrew <= 0)
+						&& (((!isSolo) && (engineer.timeOnBreak >= 30 * 60)) || ((isSolo) && (engineer.timeOnBreak >= 60)))) {
 					// Break Ends
 					numCrew += 1;
+					issetDoorsOpen = false;
+					issetDoorsOpenManual = false;
 					engineer.onBreak = false;
 				}
-			} else if ((positionBlock.isYard) && (issetDoorsOpen) && (routeIndex == 0) 
+			} else if ((issetDoorsOpen) && (routeIndex == 0) 
 					&& (((time - period < dispatchTime) && (time >= dispatchTime)) 
 							|| ((time - period < 0) && (24 * 60 * 60 + time - period < dispatchTime))) 
 					&& (numCrew <= 0)) {
 				// Shift Starts
 				numCrew += 1;
-			} else if ((positionBlock.isYard) && (issetDoorsOpen) && (routeIndex == route.size() - 1) && (numCrew > 0)) {
+				issetDoorsOpen = false;
+				issetDoorsOpenManual = false;
+			} else if ((routeIndex == route.size() - 1) && (numCrew > 0)) {
 				// Shift Ends
+				curVelocity = 0.0;
+				curAccel = 0.0;
+				issetDoorsOpen = true;
+				issetDoorsOpenManual = true;
 				numCrew -= 1;
 				engineer.goOnBreak = true;
 				engineer.onBreak = false;
@@ -522,11 +530,11 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 	 */
 	private double round(double x, int places) {
 		if (places == 1) {
-			return ((double) ((int) (x * 10))) / 10.0;
+			return ((double) ((int) (x * 10 + 0.5))) / 10.0;
 		} else if (places == 2) {
-			return ((double) ((int) (x * 100))) / 100.0;
+			return ((double) ((int) (x * 100 + 0.5))) / 100.0;
 		} else if (places == 3) {
-			return ((double) ((int) (x * 1000))) / 1000.0;
+			return ((double) ((int) (x * 1000 + 0.5))) / 1000.0;
 		} else {
 			return 0.0;
 		}

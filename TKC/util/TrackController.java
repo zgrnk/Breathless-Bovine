@@ -47,14 +47,14 @@ public class TrackController {
 		int i = 0;
 		for (Wayside way : redControllerList)
 		{
-			System.out.println("\nRed" + i);
+			//System.out.println("\nRed" + i);
 			way.nextTick();
 			i++;
 		}
 		i = 0;
 		for (Wayside way : greenControllerList)
 		{
-			System.out.println("\nGreen" + i);
+			//System.out.println("\nGreen" + i);
 			way.nextTick();
 			i++;
 		}
@@ -156,7 +156,7 @@ public class TrackController {
 		fourBL.put(73, (Block) layout.getElementById(73));
 		fourBL.put(74, (Block) layout.getElementById(74));
 		fourBL.put(75, (Block) layout.getElementById(75));
-		fourBL.put(30, (Block) layout.getElementById(33));
+		fourBL.put(30, (Block) layout.getElementById(30));
 		fourBL.put(31, (Block) layout.getElementById(31));
 		fourBL.put(32, (Block) layout.getElementById(32));
 		
@@ -213,7 +213,10 @@ public class TrackController {
 		
 		Switch sixSw = (Switch) layout.getElementById(1005);
 		
-		six = new Wayside(sixBL, sixEndBL, ctc, newInfo, sixSw);
+		Component lightXRed = new Component(47,0);
+		SafetyInfo newInfoXRed = new SafetyInfo(switchS, lightXRed, true);
+		
+		six = new Wayside(sixBL, sixEndBL, ctc, newInfoXRed, sixSw);
 		redControllerList.add(six);
 		
 		Wayside seven;
@@ -290,7 +293,10 @@ public class TrackController {
 		
 		Switch zeroGSW = (Switch) layout.greenLine.getElementById(1001);
 		
-		zeroG = new Wayside(zeroGBL, zeroGEBL, ctc, newInfoG, zeroGSW);
+		Component lightXGreen = new Component(19,0);
+		SafetyInfo newInfoXGreen = new SafetyInfo(switchS, lightXGreen, true);
+		
+		zeroG = new Wayside(zeroGBL, zeroGEBL, ctc, newInfoXGreen, zeroGSW);
 		greenControllerList.add(zeroG);
 		
 		

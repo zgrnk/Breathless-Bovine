@@ -358,6 +358,7 @@ public class CTCOffice extends PApplet {
 		//9-1, 16-66, 52-16, 1-9, yard(0) 
 		int i;
 		//route.add((Block)track.getElementById(0));
+		redRoute.add((Block)track_layout.getElementById(0));
 		for (i=9; i>0; i--){
 			redRoute.add((Block)track_layout.getElementById(i));
 		}
