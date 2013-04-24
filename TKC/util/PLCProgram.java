@@ -23,7 +23,7 @@ public class PLCProgram {
 	public SafetyInfo runPLC(Hashtable<Integer, Block> blkTable, ArrayList<Integer> endBlks, 
 			LinkedList<Block> activeBlks, LinkedList<TrainWrapper> trainList, Switch cSwitch) {
 
-		boolean swS = Switch.STATE_STRAIGHT;
+		boolean swS = Switch.STATE_DIVERGENT;
 		Component litS = new Component(0,0);
 		boolean isSafe = true;
 

@@ -82,13 +82,14 @@ public class Wayside {
 		Block temp = blockTable.get(blockID);
 		temp.fbAuthority = current.getAuthority();
 		temp.fbSpeed = current.getSpeedLimit();
+		System.out.println("\nFB_Speed: " + current.getSpeedLimit() + "    FB_Auth : " + current.getAuthority());
 	}
 
 	/**
 	 * Updates the wayside's train list
 	 */
 	private void updateTrainList() {
-		System.out.println("\nupdateTrainList() called");
+		//System.out.println("\nupdateTrainList() called");
 
 		/*If list empty than search if any end blocks currently are active */
 		if (trainList.isEmpty()) {

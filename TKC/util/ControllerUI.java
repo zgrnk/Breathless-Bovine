@@ -336,7 +336,8 @@ public class ControllerUI extends JPanel {
 				String route;
 				
 				if (tTrain.getFutureBlock() != null) {
-					route = "" + tTrain.getBlockLocation().id + " -> " + tTrain.getFutureBlock().id;
+					//route = "" + tTrain.getBlockLocation().id + " -> " + tTrain.getFutureBlock().id;
+					route = "" + tTrain.train.route.get(tTrain.train.routeIndex).id + " -> " + tTrain.train.route.get(tTrain.train.routeIndex + 1).id;
 				} else {
 					if (tTrain.getBlockLocation() != null) {
 						route = "" + tTrain.getBlockLocation().id;
