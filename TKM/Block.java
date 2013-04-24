@@ -272,7 +272,7 @@ public class Block extends TrackElement
             /* Move to next block */
             Block dest = train.positionBlock.getNext(train.positionDirection, false);
 
-            if (dest == line.yard) {
+            if (dest == dest.line.yard) {
                 train.positionMeters = 0.;
             }
 
