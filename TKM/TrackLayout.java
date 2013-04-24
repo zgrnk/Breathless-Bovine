@@ -20,6 +20,8 @@ import TNM.Train;
     
 public class TrackLayout {
 
+    public static final double TRANSPONDER_MIN_DIST =  200; //m
+
     public class TrackLine {
         //private ArrayList<TrackElement> elements;
         private ArrayList<Block> blocks;
@@ -112,29 +114,54 @@ public class TrackLayout {
             }
             
             /* Add transponders to blocks adjacent to stations */
+            /* If the station is two blocks ahead, add it */
+            //~ for (Block curBlk : blocks) {
+                //~ if (curBlk.next instanceof Block && ((Block)curBlk.next).isStation) {
+                    //~ curBlk.transponderMessageFwd = ((Block)curBlk.next).stationName;
+                //~ } else if (curBlk.next instanceof Switch) {
+                    //~ Switch nextSw = (Switch) curBlk.next;
+                    //~ if (
+                            //~ nextSw.blkMain.isStation
+                            //~ && (
+                                //~ nextSw.blkStraight == curBlk
+                                //~ || nextSw.blkDiverg == curBlk
+                            //~ )
+                       //~ ) {
+                        //~ curBlk.transponderMessageFwd = nextSw.blkMain.stationName;
+                    //~ } else if ((nextSw.blkStraight.isStation && nextSw.blkMain == curBlk)
+                       //~ || (nextSw.blkDiverg.isStation && nextSw.blkMain == curBlk)) {
+                           //~ System.out.println("Bad transponder location");
+                    //~ }
+                //~ }
+//~ 
+                //~ if (curBlk.isBidir && curBlk.prev instanceof Block && ((Block)curBlk.prev).isStation) {
+                    //~ curBlk.transponderMessageRev = ((Block)curBlk.prev).stationName;
+                //~ } else if (curBlk.isBidir && curBlk.prev instanceof Switch) {
+                    //~ Switch nextSw = (Switch) curBlk.prev;
+                //~ }
+            //~ }
+
             for (Block curBlk : blocks) {
-                if (curBlk.next instanceof Block && ((Block)curBlk.next).isStation) {
-                    curBlk.transponderMessageFwd = ((Block)curBlk.next).stationName;
-                } else if (curBlk.next instanceof Switch) {
-                    Switch nextSw = (Switch) curBlk.next;
-                    if (
-                            nextSw.blkMain.isStation
-                            && (
-                                nextSw.blkStraight == curBlk
-                                || nextSw.blkDiverg == curBlk
-                            )
-                       ) {
-                        curBlk.transponderMessageFwd = nextSw.blkMain.stationName;
-                    } else if ((nextSw.blkStraight.isStation && nextSw.blkMain == curBlk)
-                       || (nextSw.blkDiverg.isStation && nextSw.blkMain == curBlk)) {
-                           System.out.println("Bad transponder location");
+                /* Check if this block is en route to a station */
+                
+                ArrayList<Block> fwdList = curBlk.getBlocksOnPath(0., Block.DIRECTION_FWD, TRANSPONDER_MIN_DIST);
+                for (Block b : fwdList) {
+                    if (b.isStation) {
+                        curBlk.transponderMessageFwd = b.stationName;
+                        System.out.printf("Block %d has fwd xponder to %s\n", curBlk.id, b.stationName);
+                        break;
                     }
                 }
 
-                if (curBlk.isBidir && curBlk.prev instanceof Block && ((Block)curBlk.prev).isStation) {
-                    curBlk.transponderMessageRev = ((Block)curBlk.prev).stationName;
-                } else if (curBlk.isBidir && curBlk.prev instanceof Switch) {
-                    Switch nextSw = (Switch) curBlk.prev;
+                if (curBlk.isBidir) {
+                    ArrayList<Block> revList = curBlk.getBlocksOnPath(0., Block.DIRECTION_REV, TRANSPONDER_MIN_DIST);
+                    for (Block b : revList) {
+                        if (b.isStation) {
+                            curBlk.transponderMessageRev = b.stationName;
+                            System.out.printf("Block %d has rev xponder to %s\n", curBlk.id, b.stationName);
+                            break;
+                        }
+                    }
                 }
             }
             

@@ -1,10 +1,13 @@
 package TKM;
 import TNM.*;
 
+import java.util.ArrayList;
+
 public class Block extends TrackElement
 {
     public static final boolean DIRECTION_FWD = false;
     public static final boolean DIRECTION_REV = true; 
+    public static final boolean TRAINING_WHEELS = false; 
 
     /* For sane double comparisons */
     public static final double SMALL_DOUBLE = 0.000001;
@@ -20,6 +23,7 @@ public class Block extends TrackElement
     public boolean isYard;
     public boolean isStation;
     public boolean isCrossing;
+    public boolean isCrossingOn;
     public String stationName;
     public String transponderMessage;
     public String transponderMessageFwd;
@@ -94,27 +98,81 @@ public class Block extends TrackElement
         return occupied;
     }
 
+    /* Gets the block at a distance away from the current location. It always
+     * follows the straight switch path */
+    public ArrayList<Block> getBlocksOnPath(double distOnBlock, boolean direction, double distTotal) {
+        ArrayList<Block> retList = new ArrayList<Block>();
+
+        /* Take us to the end of the current block */
+        if (direction == DIRECTION_FWD) {
+            distTotal -= (this.length-distOnBlock);
+        } else {
+            distTotal -= distOnBlock;
+        }
+
+        Block curBlk = this;
+        Block oldBlk = this;
+        
+        while (distTotal > 0.) {
+            oldBlk = curBlk;
+            curBlk = curBlk.getNext(direction);
+            distTotal -= curBlk.length;
+            retList.add(curBlk);
+
+            /* Default direction may have changed */
+            if (curBlk.getNext(direction, true) == oldBlk) {
+                /* Default direction is opposite current default */
+                direction = direction;
+            }
+        }
+
+        /* FIXME require the path to be at least one block */
+        if (retList.isEmpty()) {
+            retList.add(curBlk.getNext(direction));
+        }
+
+        return retList;
+    }
+
+    //~ public double getDistToLocation(double distOnBlock, double direction, double stopBlock)
+    //~ {
+//~ 
+    //~ }
 
     private Block getSwitchDest(Switch sw, boolean dryRun) {
+        return getSwitchDest(sw, dryRun, sw.state);
+    }
+
+    private Block getSwitchDest(Switch sw, boolean dryRun, boolean swState) {
         if (!dryRun) System.out.printf("Switch %d from block %d\n", sw.id, this.id);
         /* NYI: Derail if switch is not set properly */
         
         if (this == sw.blkMain) {
             /* Go in the direction according to the switch state */
-            if (sw.state == Switch.STATE_STRAIGHT)
+            if (swState == Switch.STATE_STRAIGHT)
                 return sw.blkStraight;
-            else if (sw.state == Switch.STATE_DIVERGENT)
+            else if (swState == Switch.STATE_DIVERGENT)
                 return sw.blkDiverg;
         } else if (this == sw.blkStraight) {
-            if (!dryRun && sw.state != Switch.STATE_STRAIGHT) {
-                System.out.printf("CRASH: switch %d auto-flipped to STRAIGHT\n", sw.id);
-                sw.state = Switch.STATE_STRAIGHT;
+            if (!dryRun && swState != Switch.STATE_STRAIGHT) {
+                if (TRAINING_WHEELS) {
+                    System.out.printf("CRASH: switch %d auto-flipped to STRAIGHT\n", sw.id);
+                    sw.state = Switch.STATE_STRAIGHT;
+                } else {
+                    System.out.printf("Derailed at switch %d\n", sw.id);
+                    while(true);
+                }
             }
             return sw.blkMain;
         } else if (this == sw.blkDiverg) {
-            if (!dryRun && sw.state != Switch.STATE_DIVERGENT) {
-                System.out.printf("CRASH: switch %d auto-flipped to DIVERGENT\n", sw.id);
-                sw.state = Switch.STATE_DIVERGENT;
+            if (!dryRun && swState != Switch.STATE_DIVERGENT) {
+                if (TRAINING_WHEELS) {
+                    System.out.printf("CRASH: switch %d auto-flipped to DIVERGENT\n", sw.id);
+                    sw.state = Switch.STATE_DIVERGENT;
+                } else {
+                    System.out.printf("Derailed at switch %d\n", sw.id);
+                    while(true);
+                }
             }
             return sw.blkMain;
         }
@@ -123,10 +181,12 @@ public class Block extends TrackElement
         return null;
     }
 
+    
     public Block getNext(boolean direction) {
         return getNext(direction, true);
     }
-
+    
+    /* Returns the block that is next on the expected path */
     public Block getNext(boolean direction, boolean dryRun) {
 
         Block dest = null;
