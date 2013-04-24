@@ -293,7 +293,7 @@ public class TrackController {
 		
 		Switch zeroGSW = (Switch) layout.greenLine.getElementById(1001);
 		
-		Component lightXGreen = new Component(47,0);
+		Component lightXGreen = new Component(19,0);
 		SafetyInfo newInfoXGreen = new SafetyInfo(switchS, lightXGreen, true);
 		
 		zeroG = new Wayside(zeroGBL, zeroGEBL, ctc, newInfoXGreen, zeroGSW);

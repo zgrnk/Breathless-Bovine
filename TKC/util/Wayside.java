@@ -436,6 +436,18 @@ public class Wayside {
 	 */
 	private void shutdown() {
 		System.out.println("Track is Unsafe and therefore must be shutdown!!!\n");
+		
+		Iterator<Block> itr = blockTable.values().iterator();
+		Block temp;
+
+		activeBlocks = new LinkedList<Block>();
+		System.out.println("BLOCKS: ");
+		Limits emerg = new Limits(0, 0);
+		while (itr.hasNext())
+		{
+			temp = itr.next();
+			setLimits(temp.id, emerg);
+		}
 	}
 
 	public enum ComponentType {
