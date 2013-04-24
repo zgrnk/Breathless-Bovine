@@ -340,6 +340,8 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 //System.out.println("XXX - velBrakes\t\t"+velBrakes);
 //System.out.println("XXX - velGravity\t"+velGravity);
 //System.out.println("XXX - velFriction\t"+velFriction);
+//System.out.println("XXX - issetServiceBrake\t"+issetServiceBrake);
+//System.out.println("XXX - issetEmerBrake\t"+issetEmerBrake);
 			
 			// Current - Acceleration & Velocity (w/ Brakes & Friction)
 			curAccel += (accelBrakes + accelFriction);
@@ -348,8 +350,10 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 			newVelocity = round(newVelocity, 3);
 			
 			// Handle special cases and limit to max speed depending on slope direction.
-			if ((((curVelocity < 0.0) && (newVelocity > 0.0)) || ((curVelocity > 0.0) && (newVelocity < 0.0))) 
-					&& (((!issetBrakeFailure) && ((issetEmerBrake) || (issetServiceBrake))) || flat)) {
+			if (((((!issetBrakeFailure) && ((issetEmerBrake) || (issetServiceBrake))) || flat) 
+						&& (((curVelocity < 0.0) && (newVelocity > 0.0)) || ((curVelocity > 0.0) && (newVelocity < 0.0)))) 
+					|| (((!issetBrakeFailure) && ((issetEmerBrake) || (issetServiceBrake))) 
+						&& (curVelocity == 0.0))) {
 				/*
 				 * If the train's direction of travel has changed and (the brakes are being applied or 
 				 * the slope is flat), then the train should come to a complete stop.
@@ -391,7 +395,7 @@ System.out.println("XXX - ////////////////////////////////////////////////////")
 				curVelocity = newVelocity;
 			}
 			curVelocity = round(curVelocity, 3);
-System.out.println("XXX - curVelocity\t"+curVelocity);
+//System.out.println("XXX - curVelocity\t"+curVelocity);
 //System.out.println("XXX - this.positionDirection\t"+this.positionDirection);
 //System.out.println("XXX - curVelocity * period\t"+(curVelocity * period));
 			// Actually update the position of the train on the track.
@@ -460,9 +464,6 @@ System.out.println("XXX - curVelocity\t"+curVelocity);
 		}
 		
 		// Passengers
-System.out.println("XXX - positionBlock.isStation\t"+(positionBlock.isStation));
-System.out.println("XXX - issetDoorsOpen\t"+(issetDoorsOpen));
-System.out.println("XXX - curVelocity == 0.0\t"+(curVelocity == 0.0));
 		if (positionBlock.isStation) {
 			if ((issetDoorsOpen) && (curVelocity == 0.0) && (!justVisitedStation)) {
 				// Passengers can only enter/exit the train while the doors are open at a station.

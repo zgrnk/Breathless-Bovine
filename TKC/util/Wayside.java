@@ -43,7 +43,12 @@ public class Wayside {
 		this.centralSwitch = cSwitch;
 
 		trainList = new LinkedList<TrainWrapper>();
-		this.loadedPLC = new PLCProgram();
+		boolean on;
+		if (currInfo.lightState.getState() == 0)
+			on = false;
+		else
+			on = true;
+		this.loadedPLC = new PLCProgram(currInfo.lightState.getBlockLocation(), on);
 	}
 
 	/*public void setPLC(PLCProgram plc) {
@@ -60,7 +65,7 @@ public class Wayside {
 		Block temp;
 
 		activeBlocks = new LinkedList<Block>();
-		System.out.println("ACTIVE BLOCKS: ");
+		System.out.println("BLOCKS: ");
 		while (itr.hasNext())
 		{
 			temp = itr.next();
@@ -68,6 +73,8 @@ public class Wayside {
 				activeBlocks.add(temp);
 
 				//DEBUG
+				System.out.println("\t" + temp.id + " Active");
+			} else {
 				System.out.println("\t" + temp.id);
 			}
 		}
@@ -130,7 +137,7 @@ public class Wayside {
 			LinkedList<TrainWrapper> removals = new LinkedList<TrainWrapper>();
 
 			for (TrainWrapper sTrain : trainList) {
-				sTrain.updateLocation();
+				//sTrain.updateLocation();
 				if (!blockIsInZone(sTrain.getBlockLocation()))
 					removals.add(sTrain);
 			}
@@ -260,7 +267,7 @@ public class Wayside {
 		//set safetyInfo
 		if (currStateInfo.safetyState) {
 
-			if (currStateInfo.lightState.getState() != 0) {
+			if (currStateInfo.lightState.getBlockLocation() > 0) {
 				toggleComponent(currStateInfo.lightState.getBlockLocation(), 
 						ComponentType.LIGHT_COMP, currStateInfo.lightState.getState());
 			}
@@ -307,7 +314,10 @@ public class Wayside {
 								if (tempAuth <= distance)
 								{
 									auth = distance - tempAuth;
-									newLimits = new Limits(currSpeed, auth);
+									if (auth > 250.0)
+										newLimits = new Limits(sTrain.getBlockLocation().speedLimit, auth);
+									else
+										newLimits = new Limits(currSpeed, auth);
 									sTrain.setCurrLimits(newLimits);
 									setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
 									notGood = false;
@@ -346,7 +356,10 @@ public class Wayside {
 		switch (type) {
 		case LIGHT_COMP:
 			//set light state
-			//blockTable.get(blkID).lightState = state;
+			if (state == 0)
+				blockTable.get(blkID).isCrossingOn = false;
+			else
+				blockTable.get(blkID).isCrossingOn = true;
 			break;
 		}
 	}
@@ -354,6 +367,7 @@ public class Wayside {
 	private void toggleSwitch(boolean currState) {
 		this.centralSwitch.state = currState;
 	}
+	
 
 	private double distToEndOfZone(TrainWrapper sTrain) {
 		double dist = 0.0;

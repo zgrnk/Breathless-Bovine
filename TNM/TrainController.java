@@ -250,7 +250,7 @@ public class TrainController
        opstate=operator;
        // note that brake commands may still be sent even if brake failure is detected
        brakeFail=issetBrakeFailure;
-       //autspeed=fixedSuggestedSpeed;
+       autspeed=fixedSuggestedSpeed;
        if(mboSuggestedSpeed<autspeed)
        {
        //    autspeed=mboSuggestedSpeed;
