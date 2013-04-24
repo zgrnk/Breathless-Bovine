@@ -7,7 +7,7 @@ public class Block extends TrackElement
 {
     public static final boolean DIRECTION_FWD = false;
     public static final boolean DIRECTION_REV = true; 
-    public static final boolean TRAINING_WHEELS = false; 
+    //public static final boolean TRAINING_WHEELS = false; 
 
     /* For sane double comparisons */
     public static final double SMALL_DOUBLE = 0.000001;
@@ -155,24 +155,14 @@ public class Block extends TrackElement
                 return sw.blkDiverg;
         } else if (this == sw.blkStraight) {
             if (!dryRun && swState != Switch.STATE_STRAIGHT) {
-                if (TRAINING_WHEELS) {
-                    System.out.printf("CRASH: switch %d auto-flipped to STRAIGHT\n", sw.id);
-                    sw.state = Switch.STATE_STRAIGHT;
-                } else {
-                    System.out.printf("Derailed at switch %d\n", sw.id);
-                    while(true);
-                }
+                System.out.printf("switch %d auto-flipped to STRAIGHT\n", sw.id);
+                sw.state = Switch.STATE_STRAIGHT;
             }
             return sw.blkMain;
         } else if (this == sw.blkDiverg) {
             if (!dryRun && swState != Switch.STATE_DIVERGENT) {
-                if (TRAINING_WHEELS) {
-                    System.out.printf("CRASH: switch %d auto-flipped to DIVERGENT\n", sw.id);
-                    sw.state = Switch.STATE_DIVERGENT;
-                } else {
-                    System.out.printf("Derailed at switch %d\n", sw.id);
-                    while(true);
-                }
+                System.out.printf("switch %d auto-flipped to DIVERGENT\n", sw.id);
+                sw.state = Switch.STATE_DIVERGENT;
             }
             return sw.blkMain;
         }
