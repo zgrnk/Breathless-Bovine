@@ -110,11 +110,32 @@ public class Block extends TrackElement
         }
     }
 
-    public void connect(TrackElement prev, TrackElement next){
+    public void connectBlocks(Block prev, Block next) {
+        this.prev = prev;
+        this.next = next;
+        if (prev instanceof Block) {
+            Block prevBlk = (Block) prev;
+            if (prevBlk.next == null) {
+                prevBlk.next = this;
+            } else if (prevBlk.prev == null) {
+                prevBlk.prev = this;
+            }
+        }
+
+        if (next instanceof Block) {
+            Block nextBlk = (Block) next;
+            if (nextBlk.prev == null) {
+                nextBlk.prev = this;
+            } else if (nextBlk.next == null) {
+                nextBlk.next = this;
+            }
+        }
+    }
+    
+    public void connect(TrackElement prev, TrackElement next) {
         this.prev = prev;
         this.next = next;
     }
-                        
 
     public boolean isOccupied() {
         /* TODO: Correctly evaluate failure mode */

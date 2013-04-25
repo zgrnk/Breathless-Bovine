@@ -249,7 +249,7 @@ public class Wayside {
 				/* brokenRailFailure is the state of the failure, not the indicator */
 				//blk.brokenRailFailure = true;
 
-				/* Tell the CTC that there's a broken rail */
+				/* Tell the CTC that there's a broken rail? */
 			}
 		}
 	}
