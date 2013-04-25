@@ -273,8 +273,9 @@ public class TKMControlPanel extends JPanel implements ActionListener {
             cboxBlkUground.setSelected(blk.isUground);
             cboxBlkCrossing.setSelected(blk.isCrossing);
 
-            lblPrevElem.setText(blk.prev.toString());
-            lblNextElem.setText(blk.next.toString());
+            lblPrevElem.setText((blk.prev != null) ? blk.prev.toString() : "dead-end");
+            lblNextElem.setText((blk.next != null) ? blk.next.toString() : "dead-end");
+            
         }
 
         //pMap.setMarker(blk.mapX,blk.mapY);
