@@ -119,7 +119,7 @@ public class CTCOffice extends PApplet {
 			
 			trainList = tnmUI.getTrainList();
 			
-			if (editTrackWindow.isVisible()) { editTrackWindow.repaint(); }
+
 			if (tkmgui.isVisible()) { tkmgui.repaint(); }	
 			
 			try {
@@ -138,7 +138,7 @@ public class CTCOffice extends PApplet {
 		}
 		//welcomescreen
 		else{
-			
+			if (editTrackWindow.isVisible()) { editTrackWindow.repaint(); }
 		}
 
 	}
@@ -166,9 +166,9 @@ public class CTCOffice extends PApplet {
 		startBtn = cp5.addButton("Start").setValue(1).setPosition(150, 500)
 				.setSize(200, 50).setId(1).setVisible(false);
 		editTrackWindowBtn = cp5.addButton("Edit Track").setValue(1).setPosition(75, 170)
-				.setSize(100, 50).setId(2).setVisible(false);
+				.setSize(100, 50).setId(2).setVisible(true);
 		SetSimBtn = cp5.addButton("Set Sim Ratio").setValue(1).setPosition(325, 170)
-				.setSize(100, 50).setId(3).setVisible(false);
+				.setSize(100, 50).setId(3).setVisible(true);
 	}
 	
 	public void addTrackGroup() {
@@ -347,8 +347,6 @@ public class CTCOffice extends PApplet {
 			getScheduleFromSSC();
 			createTrainList();
 			schedulerBtn.setOff();
-			editTrackWindowBtn.setVisible(true);
-			SetSimBtn.setVisible(true);
 			startBtn.setVisible(true);
 		}
 		else if (theEvent.isFrom(editTrackWindowBtn)){
