@@ -244,7 +244,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         }
 
         /* Draw selected block. This ensures we see the whole thing */
-        if (lyt.getSelectedElement() instanceof Block) {
+        if (lyt.getSelectedElement() != null && lyt.getSelectedElement() instanceof Block) {
             drawTrackBlock(g, (Block) lyt.getSelectedElement(), Color.CYAN);
         }
 
