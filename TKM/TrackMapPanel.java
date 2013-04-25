@@ -46,6 +46,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
     }
 
     private void drawTrain(Graphics g, Train tn) {
+        
         /* Draw the train front */
         Block blk = tn.positionBlock;
         double dist_fact = tn.positionMeters/blk.length;
@@ -63,6 +64,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         g2.transform(dirAt);
 
         g2.setPaint(Color.BLUE);
+        g2.setStroke(new BasicStroke(2f));
         //g2.fill(new Ellipse2D.Double(xFr-8,yFr-4,16,8));
         g2.draw(new Line2D.Double(xFr,yFr,xFr-12,yFr-8));
         g2.draw(new Line2D.Double(xFr,yFr,xFr-12,yFr+8));
@@ -80,7 +82,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
         float[] dash = (blk.isUground) ? dashUground : dashAground;
 
-        Stroke s = new BasicStroke(5f, BasicStroke.CAP_ROUND,
+        Stroke s = new BasicStroke(4f, BasicStroke.CAP_ROUND,
                 BasicStroke.JOIN_MITER, 1f, dash, 0f);
 
         g2.setStroke(s);
@@ -150,9 +152,20 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             //g.setColor(Color.MAGENTA);
             //g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
             //g.drawString("X", xAvg + 6, yAvg + 6);
+            g2.setStroke(new BasicStroke(1f));
             g.drawImage(xingIcon, xAvg - 10, yAvg - 10, null);
-        }
+
+            Ellipse2D.Double xingLed = new Ellipse2D.Double(xAvg-5+20,yAvg-5+0,10,10);
             
+            g2.setPaint(Color.BLACK);
+            g2.fill(xingLed);
+            g2.setPaint(Color.RED);
+            if (blk.isCrossingOn) {
+                g2.fill(xingLed);
+            } else {
+                g2.draw(xingLed);
+            }
+        }
     }
 
     private void drawSwitch(Graphics g, Switch sw) {

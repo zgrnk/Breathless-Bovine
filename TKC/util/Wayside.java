@@ -43,7 +43,12 @@ public class Wayside {
 		this.centralSwitch = cSwitch;
 
 		trainList = new LinkedList<TrainWrapper>();
-		this.loadedPLC = new PLCProgram();
+		boolean on;
+		if (currInfo.lightState.getState() == 0)
+			on = false;
+		else
+			on = true;
+		this.loadedPLC = new PLCProgram(currInfo.lightState.getBlockLocation(), on);
 	}
 
 	/*public void setPLC(PLCProgram plc) {
@@ -60,7 +65,7 @@ public class Wayside {
 		Block temp;
 
 		activeBlocks = new LinkedList<Block>();
-		System.out.println("ACTIVE BLOCKS: ");
+		//System.out.println("BLOCKS: ");
 		while (itr.hasNext())
 		{
 			temp = itr.next();
@@ -68,7 +73,9 @@ public class Wayside {
 				activeBlocks.add(temp);
 
 				//DEBUG
-				System.out.println("\t" + temp.id);
+				//System.out.println("\t" + temp.id + " Active");
+			} else {
+				//System.out.println("\t" + temp.id);
 			}
 		}
 	}
@@ -82,13 +89,14 @@ public class Wayside {
 		Block temp = blockTable.get(blockID);
 		temp.fbAuthority = current.getAuthority();
 		temp.fbSpeed = current.getSpeedLimit();
+		System.out.println("\nFB_Speed: " + current.getSpeedLimit() + "    FB_Auth : " + current.getAuthority());
 	}
 
 	/**
 	 * Updates the wayside's train list
 	 */
 	private void updateTrainList() {
-		System.out.println("\nupdateTrainList() called");
+		//System.out.println("\nupdateTrainList() called");
 
 		/*If list empty than search if any end blocks currently are active */
 		if (trainList.isEmpty()) {
@@ -129,7 +137,7 @@ public class Wayside {
 			LinkedList<TrainWrapper> removals = new LinkedList<TrainWrapper>();
 
 			for (TrainWrapper sTrain : trainList) {
-				sTrain.updateLocation();
+				//sTrain.updateLocation();
 				if (!blockIsInZone(sTrain.getBlockLocation()))
 					removals.add(sTrain);
 			}
@@ -237,7 +245,11 @@ public class Wayside {
 			}
 			//block doesn't have a recorded train and therefore contains a malfunction circuit
 			if (!flag) {
-				blk.brokenRailFailure = true;
+				/* XXX modified by Stephen */
+				/* brokenRailFailure is the state of the failure, not the indicator */
+				//blk.brokenRailFailure = true;
+
+				/* Tell the CTC that there's a broken rail */
 			}
 		}
 	}
@@ -249,6 +261,7 @@ public class Wayside {
 	public void nextTick() {
 		updateActiveBlocks();
 		updateTrainList();
+
 		checkForBrokenCircuits();
 
 		//Now stage is set
@@ -259,7 +272,7 @@ public class Wayside {
 		//set safetyInfo
 		if (currStateInfo.safetyState) {
 
-			if (currStateInfo.lightState.getState() != 0) {
+			if (currStateInfo.lightState.getBlockLocation() > 0) {
 				toggleComponent(currStateInfo.lightState.getBlockLocation(), 
 						ComponentType.LIGHT_COMP, currStateInfo.lightState.getState());
 			}
@@ -272,53 +285,63 @@ public class Wayside {
 				//if train's next block is in the zone then it is receiving the train and should edit the limits
 				//otherwise it shouldn't set the limits
 				if (sTrain.getFutureBlock() != null) {
-					if (blockIsInZone(sTrain.getFutureBlock())) {
+					
+					if (TrainWrapper.isEndBlk(endBlocks, sTrain.train.route.get(sTrain.train.routeIndex).id) && 
+							!blockIsInZone(sTrain.train.route.get(sTrain.train.routeIndex + 1))) {
+						continue;
+					} else {
+						if (blockIsInZone(sTrain.getFutureBlock())) {
 
-						Limits newLimits;
-						double auth;
-						double currSpeed = sTrain.train.curVelocity;
+							Limits newLimits;
+							double auth;
+							double currSpeed = sTrain.train.curVelocity;
 
-						double distance = Double.MAX_VALUE;
-						for (TrainWrapper tTrain : trainList)
-						{
-							double temp = sTrain.distToTrain(endBlocks, tTrain);
-							if (temp < distance)
-								distance = temp;
-						}
-
-						//only train on the track or no tracks are ahead or something went wrong somehow
-						if (distance == Double.MAX_VALUE) {
-							distance = 200; //make a safety judgment of
-						}
-
-						double tempAuth = 0;
-						boolean notGood = true;
-						while (currSpeed > 0 && notGood) {
-
-							tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
-							if (tempAuth <= distance)
+							double distance = Double.MAX_VALUE;
+							for (TrainWrapper tTrain : trainList)
 							{
-								auth = distance - tempAuth;
-								newLimits = new Limits(currSpeed, auth);
+								if (tTrain.train.id != sTrain.train.id) {
+									double temp = sTrain.distToTrain(endBlocks, tTrain);
+									if (temp < distance)
+										distance = temp;
+								}
+							}
+
+							//only train on the track or no tracks are ahead or something went wrong somehow
+							if (distance == Double.MAX_VALUE) {
+								distance = distToEndOfZone(sTrain); //make a safety judgment to end of zone
+							}
+
+							double tempAuth = 0;
+							boolean notGood = true;
+							while (currSpeed > 0 && notGood) {
+
+								tempAuth = -Math.pow(currSpeed, 2.0)/(2*-1.2);
+								if (tempAuth <= distance)
+								{
+									auth = distance - tempAuth;
+									if (auth > 250.0)
+										newLimits = new Limits(sTrain.getBlockLocation().speedLimit, auth);
+									else
+										newLimits = new Limits(currSpeed, auth);
+									sTrain.setCurrLimits(newLimits);
+									setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
+									notGood = false;
+								}
+								currSpeed = currSpeed - 1.0;
+							}
+
+							if (notGood)
+							{
+								newLimits = new Limits(sTrain.getBlockLocation().speedLimit, 200.0);
 								sTrain.setCurrLimits(newLimits);
 								setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-								notGood = false;
+
+								// TO-DO must adjust suggested speed
+								System.out.print("Authority Calculation may be incorrect");
+
 							}
-							currSpeed = currSpeed - 1.0;
-						}
-
-						if (notGood)
-						{
-							newLimits = new Limits(0.0, 0.0);
-							sTrain.setCurrLimits(newLimits);
-							setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
-
-							// TO-DO must adjust suggested speed
-							System.out.print("Authority Calculation may be incorrect");
-
 						}
 					}
-
 				}
 			}
 
@@ -338,13 +361,45 @@ public class Wayside {
 		switch (type) {
 		case LIGHT_COMP:
 			//set light state
-			//blockTable.get(blkID).lightState = state;
+			if (state == 0)
+				blockTable.get(blkID).isCrossingOn = false;
+			else
+				blockTable.get(blkID).isCrossingOn = true;
 			break;
 		}
 	}
 
 	private void toggleSwitch(boolean currState) {
 		this.centralSwitch.state = currState;
+	}
+	
+
+	private double distToEndOfZone(TrainWrapper sTrain) {
+		double dist = 0.0;
+		Train train = sTrain.train;
+		int index = train.routeIndex;
+		boolean flag = true;
+
+		if (TrainWrapper.isEndBlk(endBlocks, train.route.get(index).id) && 
+				!blockIsInZone(train.route.get(index + 1))) {
+			return 0.0;
+		}
+		while (flag) {
+			try {
+				if (TrainWrapper.isEndBlk(endBlocks, train.route.get(index + 1).id)) {
+					dist += train.route.get(index + 1).length;
+					flag = false;
+				}else {
+					dist += train.route.get(index + 1).length;
+					index++;
+				}
+			}catch (IndexOutOfBoundsException e) {
+				flag = false;
+			}
+		}
+
+		return dist;
+
 	}
 
 	/**
@@ -386,6 +441,18 @@ public class Wayside {
 	 */
 	private void shutdown() {
 		System.out.println("Track is Unsafe and therefore must be shutdown!!!\n");
+		
+		Iterator<Block> itr = blockTable.values().iterator();
+		Block temp;
+
+		activeBlocks = new LinkedList<Block>();
+		System.out.println("BLOCKS: ");
+		Limits emerg = new Limits(0, 0);
+		while (itr.hasNext())
+		{
+			temp = itr.next();
+			setLimits(temp.id, emerg);
+		}
 	}
 
 	public enum ComponentType {
