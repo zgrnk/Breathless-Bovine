@@ -321,6 +321,16 @@ public class CTCOffice extends PApplet {
 		list.setColorBackground(color(60));
 		list.setColorActive(color(255, 128));
 	}
+	
+	public void resetDropdown(DropdownList list, ArrayList<Block> aList, boolean isTrackList){
+		list.clear();
+		if (isTrackList){
+			list.addItem("DEADEND", 0);
+		}
+		for (int i = 1; i < aList.size(); i++) {
+			list.addItem("" + aList.get(i).id, i);
+		}
+	}
 
 	// Event handling
 	public void controlEvent(ControlEvent theEvent) {
@@ -359,33 +369,37 @@ public class CTCOffice extends PApplet {
 		      if (closeTrack.isVisible()){
 		    	  Block bl = (Block)testTrack.redLine.getBlocks().get( (int)closeTrack.getValue() );
 		    	  bl.isClosed = true;
-		    	  closeTrack.removeItem(""+bl.id);
+		    	  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), false);
 		      } 
 		      else if (removeTrack.isVisible()) {
 		    	  Block bl = (Block)testTrack.redLine.getBlocks().get( (int)removeTrack.getValue() );
 		    	  testTrack.redLine.removeBlock(bl);
-		    	  removeTrack.removeItem(""+bl.id);
+		    	  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), false);
 		      }
 		      else if (addTrack1.isVisible()) {
+		    	  
 		    	  if (addTrack1.getValue() == 0.0 && addTrack2.getValue() == 0.0){
 		    		  // dont do anything
 		    	  }
 		    	  else if (addTrack1.getValue() == 0.0){
-		    		  testTrack.redLine.addBlock(null, 
+		    		  Block blk = testTrack.redLine.addBlock(null, 
 		    				  (Block)testTrack.redLine.getBlocks().get( (int)addTrack2.getValue()));
-		    		  addTrack1.removeItem(""+addTrack1.getValue());
+		    		  pMap.setBlockLocation(blk);
+		    		  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), true);
 		    		
 		    	  }
 		    	  else if (addTrack2.getValue() == 0.0){
-		    			  testTrack.redLine.addBlock((Block)testTrack.redLine.getBlocks().get( (int)addTrack1.getValue()), null);
-		    			  addTrack2.removeItem(""+addTrack1.getValue());
+		    		  Block blk = testTrack.redLine.addBlock((Block)testTrack.redLine.getBlocks().get( (int)addTrack1.getValue()), null);
+		    		  pMap.setBlockLocation(blk);
+		    		  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), true);
 		    	  }
+		    	  
 		    	  else{
 			    	  Block from = (Block)testTrack.redLine.getBlocks().get( (int)addTrack1.getValue() );
 			    	  Block to = (Block)testTrack.redLine.getBlocks().get( (int)addTrack2.getValue() );
-			    	  testTrack.redLine.addBlock(from, to);
-			    	  addTrack1.removeItem(""+addTrack1.getValue());
-			    	  addTrack2.removeItem(""+addTrack2.getValue());
+			    	  Block blk = testTrack.redLine.addBlock(from, to);
+			    	  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), true);
+			    	  pMap.setBlockLocation(blk);
 		    	  }
 
 		      }

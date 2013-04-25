@@ -51,12 +51,12 @@ public class TrackLayout {
         
         public Block addBlock(Block from, Block to) {
 
-            if (from.next == to
+        /*    if (from.next == to
                 || to.prev == from
                 || from.prev == to
                 || to.next == from) {
                     return null;
-            }
+            }*/
             
             if (from != null || to != null) {
                 /* Find max id in the list */
