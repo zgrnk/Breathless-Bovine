@@ -42,7 +42,7 @@ public class CTCOffice extends PApplet {
 	ArrayList<DropdownList> ddLists ;
 	
 	//CTC vars
-	boolean welcomeScreen, init, dropDown1;
+	boolean welcomeScreen, init, reset;
 	int simTimeConstant, lastTick, numTrains, isOpenCnt;
 	int cnt = 0;
 	
@@ -99,7 +99,6 @@ public class CTCOffice extends PApplet {
 
 		welcomeScreen = true;
 		init = false;
-		dropDown1 = true;
 		isOpenCnt = 0;
 		ddLists = new ArrayList<DropdownList>();
 
@@ -238,7 +237,7 @@ public class CTCOffice extends PApplet {
 
 		SimRatioBtn = cp5.addButton("SimRatioBtn").setValue(1)
 				.setPosition(115, 125).setDefaultValue(5)
-				.setSize(75, 25).setId(2).setGroup(simGroup).setLabel("Simulatio");
+				.setSize(75, 25).setId(2).setGroup(simGroup).setLabel("Set");
 
 		/*
 		 * cp5.addSlider("label2") .setPosition(60,100) .setSize(180,15)
@@ -356,13 +355,16 @@ public class CTCOffice extends PApplet {
 			int index = (int)theEvent.getGroup().getValue();
 			if(theEvent.isFrom(addTrack1)  || theEvent.isFrom(addTrack2) ){
 				// 0 set to "DEADEND"
+				System.out.println("ddIndex:"+index);
 				index++;
+				testTrack.setSelectedElement( (Block)testTrack.redLine.getDeadBlocks().get( index ) );
+			}
+			else{
+				testTrack.setSelectedElement( (Block)testTrack.redLine.getBlocks().get( index ) );
 			}
 			submitTrackBtn.setVisible(true);
 			editTrackWindowBtn.setVisible(true);
-			//System.out.println((int)theEvent.getGroup().getValue());
-			//testTrack.setSelectedElement( (Block)testTrack.getElementById( (int)theEvent.getGroup().getValue() ) );
-			testTrack.setSelectedElement( (Block)testTrack.redLine.getBlocks().get( index ) );
+			
 			System.out.println(testTrack.redLine.getBlocks().get( (int)theEvent.getGroup().getValue() ));
 		}
 		else if (theEvent.isFrom(schedulerBtn)){
@@ -402,16 +404,16 @@ public class CTCOffice extends PApplet {
 		    	  }
 		    	  else if (addTrack1.getValue() == 0.0){
 		    		  Block blk = testTrack.redLine.addBlock(null, 
-		    				  (Block)testTrack.redLine.getBlocks().get( (int)addTrack2.getValue()));
+		    				  (Block)testTrack.redLine.getDeadBlocks().get( (int)addTrack2.getValue()));
 		    		  pMap.setBlockLocation(blk);
 		    		  
-		    		  resetDropdown(addTrack1, testTrack.redLine.getBlocks(), true);
+		    		  resetDropdown(addTrack1, testTrack.redLine.getDeadBlocks(), true);
 		    		
 		    	  }
 		    	  else if (addTrack2.getValue() == 0.0){
-		    		  Block blk = testTrack.redLine.addBlock((Block)testTrack.redLine.getBlocks().get( (int)addTrack1.getValue()), null);
+		    		  Block blk = testTrack.redLine.addBlock((Block)testTrack.redLine.getDeadBlocks().get( (int)addTrack1.getValue()), null);
 		    		  pMap.setBlockLocation(blk);
-		    		  resetDropdown(addTrack2, testTrack.redLine.getBlocks(), true);
+		    		  resetDropdown(addTrack2, testTrack.redLine.getDeadBlocks(), true);
 		    	  }
 		    	  
 		    	  else{
@@ -441,18 +443,21 @@ public class CTCOffice extends PApplet {
 
 		else if (theEvent.isFrom(startBtn)) {
 			if (welcomeScreen) {
-				testTrack.setTrainList(trainList);
-				
-				tnmUI = new TrainModelUI();
-				tkmgui = new TKMGui(testTrack);
-				tkc = new TrackController(testTrack, this);
-				tkcgui = new ControllerUI(tkc);
-				
-				mboGUI = new MBO_GUI(trainList);
+				if (!init){
+					tnmUI = new TrainModelUI();
+					tkmgui = new TKMGui(testTrack);
+					tkc = new TrackController(testTrack, this);
+					tkcgui = new ControllerUI(tkc);
+					
+					mboGUI = new MBO_GUI(trainList);
+				}
+				if (!reset) testTrack.setTrainList(trainList);
+	
 				tnmUI.setIsPaused(true);
 				tnmUI.setTrainList(trainList);
 				tnmUI.setSelectedId(trainList.get(0).id);
 				
+				/// set true
 				tkmgui.setVisible(false);
 				tnmUI.setIsVisible(false);
 				tkcgui.setVisible(false);
@@ -464,10 +469,8 @@ public class CTCOffice extends PApplet {
 				simGroup.hide();
 				TLgroup.show();
 				trainInfo.show();
-
 				welcomeScreen = false;
 				init = true;
-
 
 			} 
 			else {
@@ -533,14 +536,15 @@ public class CTCOffice extends PApplet {
 	public void setDropdown(Block block){
 		if (closeTrack.isVisible()) closeTrack.setValue(block.id);
 		if (removeTrack.isVisible()) removeTrack.setValue(block.id);
-		if (addTrack1.isVisible() && dropDown1) {
-			dropDown1 = !dropDown1;
+		/*			if (addTrack1.isVisible() && dropDown1) {
+			/// changeme
+		dropDown1 = !dropDown1;
 			addTrack1.setValue(block.id);
 		}
 		else if( addTrack2.isVisible() && !dropDown1) {
 				dropDown1 = !dropDown1;
 				addTrack2.setValue(block.id);
-		}
+		}*/
 
 	}
 
