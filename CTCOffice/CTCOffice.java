@@ -44,7 +44,7 @@ public class CTCOffice extends PApplet {
 	
 	//CTC vars
 	boolean welcomeScreen, init, reset;
-	int simTimeConstant, lastTick, numTrains, isOpenCnt;
+	int simTimeConstant, lastTick, numTrains, isOpenCnt, schedCreated, setSpeed, setAuth;
 	int cnt = 0;
 	
 	//dates
@@ -182,7 +182,7 @@ public class CTCOffice extends PApplet {
 		schedulerBtn = cp5.addButton("System Scheduler").setValue(1).setPosition(200, 130)
 				.setSize(100, 50).setId(0);
 		startBtn = cp5.addButton("Start").setValue(1).setPosition(150, 500)
-				.setSize(200, 50).setId(1).setVisible(false);
+				.setSize(200, 50).setId(1).setVisible(true);
 		editTrackWindowBtn = cp5.addButton("Edit Track").setValue(1).setPosition(75, 170)
 				.setSize(100, 50).setId(2).setVisible(true);
 		SetSimBtn = cp5.addButton("Set Sim Ratio").setValue(1).setPosition(325, 170)
@@ -248,6 +248,30 @@ public class CTCOffice extends PApplet {
 
 
 	public void addSimStartedWindows() {
+
+		trainInfo = cp5.addGroup("TrainInfo").setPosition(200, 200)
+				.hideBar().setMoveable(true).setVisible(false)
+				.setBackgroundHeight(175).setBackgroundColor(color(255, 50))
+				.setBarHeight(30).setWidth(250).hideArrow().setOpen(true);
+
+		trainInfo_drop = cp5.addDropdownList("Select Train")
+				.setPosition(70, 50).setSize(115, 100).setGroup(trainInfo);
+		
+		customizeDropDownTrain(trainInfo_drop, trainList);
+		
+		cp5.addSlider("setAuth").setPosition(45, 60).setSize(125, 15).setVisible(false)
+		.setDefaultValue(0).setGroup(trainInfo).setMax(70);
+
+		cp5.addSlider("setSpeed").setPosition(40, 85).setSize(125, 15).setVisible(false)
+		.setDefaultValue(0).setGroup(trainInfo).setMax(70);
+
+		setTrainSpd = cp5.addButton("Send to Train").setValue(1).setPosition(75, 115)
+				.setSize(100, 35).setId(2).setGroup(trainInfo);
+		
+
+	}
+	
+	public void addSimButtons(){
 		
 		//TRACKLAYOUT
 		
@@ -259,29 +283,6 @@ public class CTCOffice extends PApplet {
 		//Detailed Train Info
 		
 		//
-
-		trainInfo = cp5.addGroup("TrainInfo").setPosition(200, 200)
-				.hideBar().setMoveable(true).setVisible(false)
-				.setBackgroundHeight(175).setBackgroundColor(color(255, 50))
-				.setBarHeight(30).setWidth(250).hideArrow().setOpen(true);
-
-		trainInfo_drop = cp5.addDropdownList("Select Train")
-				.setPosition(70, 50).setSize(115, 100).setGroup(trainInfo);
-		customizeDropDownTrain(trainInfo_drop, trainList);
-		
-		cp5.addSlider("Authority").setPosition(45, 60).setSize(125, 15)
-		.setDefaultValue(0).setGroup(trainInfo).setMax(70);
-
-		cp5.addSlider("Speed").setPosition(40, 85).setSize(125, 15)
-		.setDefaultValue(0).setGroup(trainInfo).setMax(70);
-
-		setTrainSpd = cp5.addButton("Send to Train").setValue(1).setPosition(75, 115)
-				.setSize(100, 35).setId(2).setGroup(trainInfo);
-		
-
-	}
-	
-	public void addSimButtons(){
 		
 		viewTrackBtn = cp5.addButton("SimRatioBtn").setValue(1).setVisible(false)
 				.setPosition(150, 125).setDefaultValue(5)
@@ -332,7 +333,9 @@ public class CTCOffice extends PApplet {
 		list.getCaptionLabel().setPaddingY(3);
 		list.getCaptionLabel().setPaddingX(3);
 		list.getValueLabel().setPaddingX(3);
+		int c = 0;
 		for (int i = 0; i < aList.size(); i++) {
+			System.out.println(""+c);
 			list.addItem("" + aList.get(i).id, i);
 		}
 		// list.scroll(0);
@@ -350,6 +353,13 @@ public class CTCOffice extends PApplet {
 		}
 		for (int i = 0; i < aList.size(); i++) {
 			list.addItem("" + aList.get(i).id, i+offBy);
+		}
+	}
+	
+	public void resetDropdownTrain(DropdownList list, ArrayList<Train> aList){
+		list.clear();
+		for (int i = 0; i < aList.size(); i++) {
+			list.addItem("" + aList.get(i).id, i);
 		}
 	}
 
@@ -458,6 +468,7 @@ public class CTCOffice extends PApplet {
 			if (welcomeScreen) {
 				if (!init){
 					testTrack.setTrainList(trainList);
+					resetDropdownTrain(trainInfo_drop, trainList);
 					
 					tnmUI = new TrainModelUI();
 					tnmUI.setTrainList(trainList);
