@@ -118,7 +118,7 @@ public class Block extends TrackElement
 
     public boolean isOccupied() {
         /* TODO: Correctly evaluate failure mode */
-        if (trackCircuitFailure && powerFailure) {
+        if (trackCircuitFailure || powerFailure) {
             return false;
         }
         if (brokenRailFailure) {

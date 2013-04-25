@@ -245,7 +245,11 @@ public class Wayside {
 			}
 			//block doesn't have a recorded train and therefore contains a malfunction circuit
 			if (!flag) {
-				blk.brokenRailFailure = true;
+				/* XXX modified by Stephen */
+				/* brokenRailFailure is the state of the failure, not the indicator */
+				//blk.brokenRailFailure = true;
+
+				/* Tell the CTC that there's a broken rail */
 			}
 		}
 	}
@@ -257,6 +261,7 @@ public class Wayside {
 	public void nextTick() {
 		updateActiveBlocks();
 		updateTrainList();
+
 		checkForBrokenCircuits();
 
 		//Now stage is set
