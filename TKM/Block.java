@@ -50,6 +50,11 @@ public class Block extends TrackElement
     public int mapX2;
     public int mapY2;
 
+    public class TrackPosition {
+        public Block block;
+        public boolean direction;
+        public double distance;
+    }
 
     public Block() {
         prev = null;
@@ -221,6 +226,20 @@ public class Block extends TrackElement
         return null;
     }
 
+    public static void getNextPosition(TrackPosition pos) {
+
+        /* Move to next block */
+        Block dest = pos.block.getNext(pos.direction, true);
+
+        /* Default direction may have changed */
+        if (dest.getNext(pos.direction, true) == pos.block) {
+            /* Default direction is opposite current default */
+            pos.direction = !pos.direction;
+        }
+
+        pos.distance = 0;
+        pos.block = dest;
+    }
     
     public Block getNext(boolean direction) {
         return getNext(direction, true);
