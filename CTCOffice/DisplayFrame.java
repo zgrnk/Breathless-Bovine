@@ -14,7 +14,7 @@ public class DisplayFrame extends JFrame{
         panel.add(sketch);
         this.add(panel);
         sketch.init(); //this is the function used to start the execution of the sketch
-        this.setVisible(true);
+        //this.setVisible(true);
         this.setTitle("Breathless Bovine: CTC Office         by Jake Lyons");
 	}
 }
