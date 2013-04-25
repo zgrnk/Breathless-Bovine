@@ -60,7 +60,7 @@ public class TrackLayout {
          */
         public Block addBlock(Block from, Block to) {
 
-            if (from != null ^ to != null) {
+            if ((from != null || to != null) && (from != to)) {
                 /* Find max id in the list */
                 int maxId = 0;
 
@@ -74,6 +74,14 @@ public class TrackLayout {
                                          false, false, false, "", false, false, false);
 
                 newBlk.connectBlocks(from, to);
+                if (from != null) {
+                    newBlk.mapX1 = (from.next == null) ? from.mapX2 : from.mapX1;
+                    newBlk.mapY1 = (from.next == null) ? from.mapY2 : from.mapY1;
+                }
+                if (to != null) {
+                    newBlk.mapX2 = (to.prev == null) ? to.mapX1 : to.mapX2;
+                    newBlk.mapY2 = (to.prev == null) ? to.mapY1 : to.mapY2;
+                }
                 blocks.add(newBlk);
                 return newBlk;
                 

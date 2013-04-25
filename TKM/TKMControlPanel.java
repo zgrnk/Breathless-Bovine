@@ -1,6 +1,7 @@
-package TKM;
 
-/* TKM */
+/* TKMControlPanel.java */
+
+package TKM;
 
 import java.awt.*;
 import java.awt.event.*;
