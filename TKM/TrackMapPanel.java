@@ -298,7 +298,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
                     cPanel.updateBlkInfo(b, true);
                 }
                 if (office != null) {
-                    office.setSelectedBlock(b);
+                    office.setDropdown(b);
                 }
                 repaint();
                 return;
