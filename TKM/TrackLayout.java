@@ -440,7 +440,9 @@ public class TrackLayout {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Caught IOException: " + e.getMessage());
+            //System.err.println("Caught IOException: " + e.getMessage());
+            System.out.println("File track_db.csv not found in working directory. Exiting.");
+        	System.exit(1);
         }
 
         redLine.constructTrack();

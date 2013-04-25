@@ -30,7 +30,7 @@ public class CTCOffice extends PApplet {
 	Group trackGroup, simGroup, trainInfo;
 	Tab trackTab;
 	Button startBtn, setTrainSpd, SimRatioBtn, schedulerBtn, submitTrackBtn, SetSimBtn, editTrackWindowBtn, viewTrackBtn,
-			MBObtn, TNMbtn, TKCbtn, TNCbtn;
+			MBObtn, TNMbtn, TKCbtn, TNCbtn, setTrainAuth;
 	Knob kn_trainSpeed;
 	PImage title;
 	int width, height;
@@ -44,7 +44,7 @@ public class CTCOffice extends PApplet {
 	
 	//CTC vars
 	boolean welcomeScreen, init, reset;
-	int simTimeConstant, lastTick, numTrains, isOpenCnt, schedCreated, setSpeed, setAuth;
+	int simTimeConstant, lastTick, numTrains, isOpenCnt, schedCreated, setSpeed, setAuth, selTrain;
 	int cnt = 0;
 	
 	//dates
@@ -123,8 +123,12 @@ public class CTCOffice extends PApplet {
 			trainList = tnmUI.getTrainList();
 			
 			if (tkmgui.isVisible()) { tkmgui.repaint(); }
+			
 	
 			try {
+				
+				
+				
 				String t_id = trainInfo_drop.getStringValue();
 				if (t_id.length() > 5) {
 					int sp = (int) trainList.get(Integer.parseInt(t_id))
@@ -265,8 +269,11 @@ public class CTCOffice extends PApplet {
 		cp5.addSlider("setSpeed").setPosition(40, 85).setSize(125, 15).setVisible(false)
 		.setDefaultValue(0).setGroup(trainInfo).setMax(70);
 
-		setTrainSpd = cp5.addButton("Send to Train").setValue(1).setPosition(75, 115)
-				.setSize(100, 35).setId(2).setGroup(trainInfo);
+		setTrainSpd = cp5.addButton("SetTrainSpeed").setValue(1).setPosition(40, 115)
+				.setSize(70, 35).setId(2).setGroup(trainInfo).setVisible(false);
+		
+		setTrainAuth = cp5.addButton("SetTrainAuth").setValue(1).setPosition(125, 115)
+				.setSize(70, 35).setId(2).setGroup(trainInfo).setVisible(false);
 		
 
 	}
@@ -387,12 +394,27 @@ public class CTCOffice extends PApplet {
 			
 			System.out.println(testTrack.redLine.getBlocks().get( (int)theEvent.getGroup().getValue() ));
 		}
+		else if (theEvent.isFrom(trainInfo_drop)){
+			int index = (int)theEvent.getGroup().getValue();
+			cp5.getController("setAuth").setVisible(true);
+			cp5.getController("setSpeed").setVisible(true);
+			setTrainSpd.setVisible(true);
+			
+			setTrainAuth.setVisible(true);
+		}
 		else if (theEvent.isFrom(schedulerBtn)){
 			getScheduleFromSSC();
 			createTrainList();
 			schedulerBtn.setOff();
 			startBtn.setVisible(true);
 		}
+		else if (theEvent.isFrom(setTrainAuth)){
+			tnmUI.getTrainList().get(selTrain).fixedSuggestedAuthority = setAuth;
+		}
+		else if (theEvent.isFrom(setTrainSpd)){
+			tnmUI.getTrainList().get(selTrain).fixedSuggestedSpeed = setSpeed;
+		}
+		
 		else if (theEvent.isFrom(SetSimBtn)){
 			simGroup.setVisible(true);
 			trackGroup.setVisible(false);
@@ -523,6 +545,10 @@ public class CTCOffice extends PApplet {
 
 	}
 	
+
+	
+
+	
 	//event handler for radio group
 	public void radio(int index) {
 		if (index == 0) {
@@ -591,6 +617,7 @@ public class CTCOffice extends PApplet {
 		editTrackWindow.setTitle("Edit Track");
 		editTrackWindow.setLocation(1150, 150);
 	}
+	
 	
 	public void createRedRoute(){
 		testTrack = new TrackLayout();	

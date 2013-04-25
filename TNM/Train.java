@@ -77,7 +77,8 @@ public class Train {
 	public double targetTemperatureManual;
 	public boolean issetTargetTemperatureManual;
 	public String announcement;
-	//added for MBO
+	
+	// Added for MBO
 	public double distToNextTrain;
 	public double distToPrevTrain;
 	public double distToNextStation;
@@ -160,7 +161,8 @@ public class Train {
 		targetTemperatureManual = 22.0;
 		issetTargetTemperatureManual = false;
 		announcement = "";
-		//MBO new variables
+		
+		//MBO New Variables
 		distToNextTrain = 0.0;
 		distToPrevTrain = 0.0;
 		distToNextStation = 0.0;
@@ -195,7 +197,7 @@ public class Train {
 	/**
 	 * Performs calculations and updates counts relating to the train.
 	 */
-	public void timeTick(double time, double period, boolean isSolo, boolean isSelectedByTNC) {
+	public void timeTick(double time, double period, boolean isSolo) {
 		
 		// TrainController timeTick and Response
 		ResponseTNC tncResponse = new ResponseTNC(0.0, false, false, false, false, 0.0, "");
@@ -203,7 +205,7 @@ public class Train {
 			tncResponse = tnc.timeTick(time, curVelocity, period, positionBlock, positionBlockTail, 
 										issetSignalPickupFailure, issetEngineFailure, issetBrakeFailure, 
 										fixedSuggestedSpeed, mboSuggestedSpeed, issetEmerBrake, (numCrew > 0), 
-										positionBlock.readTransponder(positionDirection), isSelectedByTNC);
+										positionBlock.readTransponder(positionDirection));
 		}
 		
 		if ((!issetDoorsOpen) && (numCrew > 0)) {

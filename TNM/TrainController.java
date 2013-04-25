@@ -41,12 +41,6 @@ public class TrainController
     public final double Ki=200;
     public double ukprev;
     public double prerr;
-    public double ukOne;
-    public double errOne;
-    public double ukTwo;
-    public double errTwo;
-    public double ukThree;
-    public double errThree;
     public boolean opstate;
     public String nextName;
     public PowJar powone;
@@ -56,11 +50,12 @@ public class TrainController
     public double sptwo;
     public double spthree;
     public int checkid;
+    private ResponseUI overR;
     
     // create test blocks
-    Block negout = new Block(-4, "A", "I", 100.0, 3.0, 60.0, false, false, true, false, false, "You found the secret stop, exit now to collect 100 rupies!", false, false, false);
-    Block negone = new Block(-1, "B", "II", 100.0, 3.0, 55.0, false, false, false, false, false, "Arriving at 0", false, false, false);
-    
+    Block negout = new Block(-3, "A", "I", 100.0, 3.0, 60.0, false, false, true, false, false, "You found the secret stop, exit now to collect 100 rupies!", false, false, false);
+    Block negone = new Block(-1, "B", "II", 100.0, 3.0, 55.0, false, false, false, false, false, "", false, false, false);
+    Block negtwo = new Block(-2, "C", "III", 100.0, 3.0, 55.0, false, true, false, true, false, "-2", false, false, false);
     
     /**
      * Constructor for objects of class TrainController
@@ -76,14 +71,11 @@ public class TrainController
         thisBlock=negone;
         oldBlock=thisBlock;
         time=-1;
-        setpoint=100;
-        autspeed=-1;
+        setpoint=5;
+        autspeed=100;
         slimit=-1;
         setLights();
         safespeed=0;
-        spone=0;
-        sptwo=0;
-        spthree=0;
         currspeed=0;
         signalFail=false;
         brakeFail=false;
@@ -99,14 +91,11 @@ public class TrainController
         opstate=false;
         nextName=null;
         checkid=-1;
+        power=0;
+        overR=new ResponseUI(0, false, 0, 0, false, 0, false, 0, false, 0, false, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, false);
     }
-
-    // Sets target temperature
-    public void setTTemp(double y)
-    {
-        this.tTemp=y;
-    }
-    
+   
     // Turns lights on and off
     public void setLights()
     {
@@ -119,38 +108,6 @@ public class TrainController
         {
             lights=true;
         }
-    }
-      
-    // lights override toggle
-    public void toggleLightsOverride()
-    {
-        if(lights)
-        {
-            lights=false;
-        }
-        else
-        {
-            lights=true;
-        }
-    }
-    
-    // eBrake toggle
-    public void toggleEBrake()
-    {
-        if(eBrake)
-        {
-            lights=false;
-        }
-        else
-        {
-            lights=true;
-        }
-    }
-    
-    // set setpoint
-    public void setSetpoint(double y)
-    {
-        setpoint=y;
     }
     
     // set safe power, set brakes if needed
@@ -201,6 +158,10 @@ public class TrainController
                     thispower=maxpower;
                 }
                 // update Uk otherwise
+                else if(power<0)
+                {
+                    thispower=0;
+                }
                 else
                 {
                     thisuk=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
@@ -255,52 +216,162 @@ public class TrainController
     public ResponseTNC timeTick(double ntime, double curVelocity, double period, Block positionBlock, 
     Block positionBlockTail, boolean issetSignalPickupFailure, boolean issetEngineFailure, 
     boolean issetBrakeFailure, double fixedSuggestedSpeed, double mboSuggestedSpeed, 
-    boolean issetEmerBrake, boolean operator, String nextStationName, boolean uiChosen)
+    boolean issetEmerBrake, boolean operator, String nextStationName)
     {
-       //update info from Train Model
-       time=ntime;
-       tperiod=period;
-       currspeed=curVelocity;
-       thisBlock=positionBlock;
-       oldBlock=positionBlockTail;
-       signalFail=issetSignalPickupFailure;
-       engineFail=issetEngineFailure;
-       opstate=operator;
-       brakeFail=issetBrakeFailure;
-       railFail=positionBlock.brokenRailFailure;
-       trackFail=positionBlock.trackCircuitFailure;
-       powerFail=positionBlock.powerFailure;
-       autspeed=fixedSuggestedSpeed;
-       if(mboSuggestedSpeed<autspeed)
+       // do nothing if paused
+       if(!overR.paused)
        {
-       //    autspeed=mboSuggestedSpeed;
+           //update info from Train Model
+           time=ntime;
+           tperiod=period;
+           currspeed=curVelocity;
+           thisBlock=positionBlock;
+           oldBlock=positionBlockTail;
+           signalFail=issetSignalPickupFailure;
+           engineFail=issetEngineFailure;
+           opstate=operator;
+           brakeFail=issetBrakeFailure;
+           railFail=positionBlock.brokenRailFailure;
+           trackFail=positionBlock.trackCircuitFailure;
+           powerFail=positionBlock.powerFailure;
+           autspeed=fixedSuggestedSpeed;
+           if(mboSuggestedSpeed<autspeed)
+           {
+           //    autspeed=mboSuggestedSpeed;
+           }
+           slimit=positionBlock.speedLimit;
+           nextName=nextStationName;
+           currAnnoun=setAnnouncement();
+           
+           overRider();
+           // begin redundant PLC actions for critical systems
+           spone=setSafeSpeed();
+           sptwo=setSafeSpeed();
+           spthree=setSafeSpeed();
+           safespeed=resolveSpeed(spone, sptwo, spthree);
+           overRider();
+           powone=setPower();
+           powtwo=setPower();
+           powthree=setPower();
+           power=resolvePower(powone, powtwo, powthree);
+           
+           overRider();
+           // do noncritical calculations
+           setLights();
+           checkStation();
+           setDoors();
        }
-       slimit=positionBlock.speedLimit;
-       nextName=nextStationName;
-       currAnnoun=setAnnouncement();
-        
-       // begin redundant PLC actions for critical systems
-       spone=setSafeSpeed();
-       sptwo=setSafeSpeed();
-       spthree=setSafeSpeed();
-       safespeed=resolveSpeed(spone, sptwo, spthree);
-       powone=setPower();
-       powtwo=setPower();
-       powthree=setPower();
-       power=resolvePower(powone, powtwo, powthree);
-       
-       // do noncritical calculations
-       setLights();
-       checkStation();
-       setDoors();
-       
-       if(uiChosen)
-       {
-           updateUI();
-       }
+       // send response to Train Model
        ResponseTNC tnmSignal=new ResponseTNC(power, sBrake, eBrake, lights, doors, tTemp, currAnnoun);
-        
+            
        return tnmSignal; 
+    }
+    
+    // takes values from UI
+    public void overRider()
+    {
+        //updates values from operator
+        setpoint=overR.currSetpoint;
+        tTemp=overR.cit;
+        
+        //checks overrides and updates if they are engaged
+        if(overR.cvoT)
+        {
+            currspeed=overR.cvo;
+        }
+        if(overR.sloT)
+        {
+            slimit=overR.slo;
+        }
+        if(overR.autOT)
+        {
+            autspeed=overR.autO;
+        }
+        if(overR.tbnOT)
+        {
+            if(overR.tbnO==-1)
+            {
+                thisBlock=negone;
+            }
+            else
+            {
+                thisBlock=negtwo;
+            }
+        }
+        if(overR.timeOT)
+        {
+            time=overR.timeO*3600;
+        }
+        if(overR.signalPFoT==1)
+        {
+            signalFail=true;
+        }
+        else if(overR.signalPFoT==2)
+        {
+            signalFail=false;
+        }
+        if(overR.brakeFoT==1)
+        {
+            brakeFail=true;
+        }
+        else if(overR.brakeFoT==2)
+        {
+            brakeFail=false;
+        }
+        if(overR.brokenRoT==1)
+        {
+            railFail=true;
+        }
+        else if(overR.brokenRoT==2)
+        {
+            railFail=false;
+        }
+        if(overR.trackCFoT==1)
+        {
+            trackFail=true;
+        }
+        else if(overR.trackCFoT==2)
+        {
+            trackFail=false;
+        }
+        if(overR.powerFoT==1)
+        {
+            powerFail=true;
+        }
+        else if(overR.powerFoT==2)
+        {
+            powerFail=false;
+        }
+        if(overR.sBrakeOT==1)
+        {
+            sBrake=true;
+        }
+        else if(overR.sBrakeOT==2)
+        {
+            sBrake=false;
+        }
+        if(overR.eBrakeOT==1)
+        {
+            eBrake=true;
+        }
+        else if(overR.eBrakeOT==2)
+        {
+            eBrake=false;
+        }
+        if(overR.trainEFoT==1)
+        {
+            engineFail=true;
+        }
+        else if(overR.trainEFoT==2)
+        {
+            engineFail=false;
+        }
+    }
+    
+    // stores UI values if selected
+    public void updateUI(ResponseUI newR)
+    {
+        overR=newR;
     }
     
     // resolves any PLC conflicts about proper safe speed
@@ -341,12 +412,16 @@ public class TrainController
         {
             eBrake=firsts.jEBrake;
             sBrake=firsts.jSBrake;
+            ukprev=firsts.jUk;
+            prerr=firsts.jErr;
             return firsts.jPower;
         }
         else if(secondi==thirdi)
         {
             eBrake=seconds.jEBrake;
             sBrake=seconds.jSBrake;
+            ukprev=seconds.jUk;
+            prerr=seconds.jErr;
             return seconds.jPower;
         }
         else
@@ -356,12 +431,6 @@ public class TrainController
             eBrake=true;
             return 0;
         }
-    }
-    
-    // public ResponseUI updateUI()
-    public void updateUI()
-    {
-        
     }
     
     // sets the doors open when the train is not moving
@@ -436,4 +505,6 @@ public class TrainController
             checkid=thisBlock.id;
         }
     }
+    
+    
 }

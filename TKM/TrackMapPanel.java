@@ -102,6 +102,8 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         
         if (blk == lyt.getSelectedElement()) {
             g2.setPaint(Color.CYAN);
+        } else if (blk.isClosed) {
+        	g2.setPaint(Color.MAGENTA);
         } else if (blk.isOccupied()) {
             g2.setPaint(Color.YELLOW);
         } else {
