@@ -110,9 +110,10 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
         
         //g.drawLine(blk.mapX1, blk.mapY1, blk.mapX2, blk.mapY2);
-        g2.draw(new Line2D.Double(blk.mapX1, blk.mapY1, blk.mapX2, blk.mapY2));
 
-
+        if ((blk.mapX1 > 0 || blk.mapY1 > 0) && (blk.mapX2 > 0 || blk.mapY2 > 0)) {
+            g2.draw(new Line2D.Double(blk.mapX1, blk.mapY1, blk.mapX2, blk.mapY2));
+        }
     }
 
     private void drawTrackOverlay(Graphics g, Block blk, Color tkColor) {
@@ -280,31 +281,6 @@ public class TrackMapPanel extends JPanel implements MouseListener{
     } 
 
     public void mouseClicked(MouseEvent e) {
-        /* Check if we clicked a track block */
-        for (Block b : lyt.getBlocks())
-        {
-             /* Is the mouse on the line? */
-            int xAvg = (b.mapX1 + b.mapX2)/2;
-            int yAvg = (b.mapY1 + b.mapY2)/2;
-            double len = Math.sqrt((b.mapX2 - b.mapX1)*(b.mapX2 - b.mapX1)
-                         +(b.mapY2 - b.mapY1)*(b.mapY2 - b.mapY1));
-
-            double dx = (e.getX()-xAvg);
-            double dy = (e.getY()-yAvg);
-            double rad = len/2;
-
-            if (dx*dx + dy*dy < rad*rad) {
-                lyt.setSelectedElement(b);
-                if (cPanel != null) {
-                    cPanel.updateBlkInfo(b, true);
-                }
-                if (office != null) {
-                    office.setDropdown(b);
-                }
-                repaint();
-                return;
-            }
-        }
 
         if (blockClickState == 1) {
             blockClickBlock.mapX1 = e.getX();
@@ -316,7 +292,34 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             blockClickBlock.mapY2 = e.getY();
             blockClickState = 0;
             //repaint();
+        } else {
+            /* Check if we clicked a track block */
+            for (Block b : lyt.getBlocks())
+            {
+                 /* Is the mouse on the line? */
+                int xAvg = (b.mapX1 + b.mapX2)/2;
+                int yAvg = (b.mapY1 + b.mapY2)/2;
+                double len = Math.sqrt((b.mapX2 - b.mapX1)*(b.mapX2 - b.mapX1)
+                             +(b.mapY2 - b.mapY1)*(b.mapY2 - b.mapY1));
+
+                double dx = (e.getX()-xAvg);
+                double dy = (e.getY()-yAvg);
+                double rad = len/2;
+
+                if (dx*dx + dy*dy < rad*rad) {
+                    lyt.setSelectedElement(b);
+                    if (cPanel != null) {
+                        cPanel.updateBlkInfo(b, true);
+                    }
+                    if (office != null) {
+                        office.setDropdown(b);
+                    }
+                    repaint();
+                    return;
+                }
+            }
         }
+
 
         /* Check if we clicked a switch */
         repaint();

@@ -47,6 +47,9 @@ public class TrackLayout {
             if (blk.next != null) {
                 blk.next.disconnect(blk);
             }
+            
+            blk.prev = null;
+            blk.next = null;
             blocks.remove(blk);
 
             if (blk == lyt.getSelectedElement()) {
@@ -75,7 +78,6 @@ public class TrackLayout {
                 Block newBlk = new Block(maxId+1, this.id, "", 50, 0, 50, true, false,
                                          false, false, false, "", false, false, false);
 
-                newBlk.connectBlocks(from, to);
                 if (from != null) {
                     newBlk.mapX1 = (from.next == null) ? from.mapX2 : from.mapX1;
                     newBlk.mapY1 = (from.next == null) ? from.mapY2 : from.mapY1;
@@ -84,6 +86,10 @@ public class TrackLayout {
                     newBlk.mapX2 = (to.prev == null) ? to.mapX1 : to.mapX2;
                     newBlk.mapY2 = (to.prev == null) ? to.mapY1 : to.mapY2;
                 }
+                
+                newBlk.connectBlocks(from, to);
+                newBlk.prev = from;
+                newBlk.next = to;
                 blocks.add(newBlk);
                 return newBlk;
                 
@@ -99,8 +105,9 @@ public class TrackLayout {
             ArrayList<Block> dBlocks = new ArrayList<Block>();
 
             for (Block b : blocks) {
-                if (b.prev == null || b.next == null) {
+                if (!b.isYard && (b.prev == null || b.next == null)) {
                     dBlocks.add(b);
+                    System.out.println(b + "is dead");
                 }
             }
 
