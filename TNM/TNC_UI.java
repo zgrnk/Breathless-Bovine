@@ -129,9 +129,9 @@ public class TNC_UI
         pScroll.setViewportView(pMain);
         theWindow.setContentPane(pScroll);
 
-        theWindow.setSize(950,750);
+        theWindow.setSize(950,530);
         GridBagLayout gridBagLayout = new GridBagLayout();
-        gridBagLayout.columnWidths = new int[]{278, 134, 75, 32, 278, 108, 0};
+        gridBagLayout.columnWidths = new int[]{278, 134, 75, 32};
         gridBagLayout.rowHeights = new int[] {30, 29, 30, 29, 29, 16, 30, 16, 30, 29, 29, 30, 29, 16, 29, 30, 29, 16, 30, 29, 16, 30};
         gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
         gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
