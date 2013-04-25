@@ -49,6 +49,7 @@ public class ControllerUI extends JPanel {
 	public JLabel waysideLabel;
 	public JLabel trainTotalLabel;
 	public JLabel blockTotalLabel;
+	public JFrame frame;
 	
 	/**
 	 * Launch the application.
@@ -85,7 +86,7 @@ public class ControllerUI extends JPanel {
 		}
 		
 		//Create and set up the window.
-        JFrame frame = new JFrame("Track Controller - UI");
+        frame = new JFrame("Track Controller - UI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(100, 100, 778, 481);
         
