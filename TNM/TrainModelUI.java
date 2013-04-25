@@ -328,7 +328,7 @@ public class TrainModelUI {
 			
 			// Set up the TNC UI.
 			if (!isSolo) {
-				tncUI = new TNC_UI();
+				tncUI = new TNC_UI(false);
 			}
 			
 			
@@ -517,11 +517,12 @@ public class TrainModelUI {
 			
 			for (int i = 0; i < trainList.size(); i++) {
 				// Update the data for each train.
-				boolean isSelectedByTNC = false;
 				if (!isSolo) {
-					isSelectedByTNC = tncUI.uiSelect(trainList.get(i).id);
+					tncUI.lsize = trainList.size();
+					ResponseUI tncData = tncUI.updateUI(trainList.get(tncUI.currTrain - 1).tnc);
+					trainList.get(tncUI.currTrain - 1).tnc.updateUI(tncData);
 				}
-				trainList.get(i).timeTick(time, ((double) (delta)) / 1000.0, isSolo, isSelectedByTNC);
+				trainList.get(i).timeTick(time, ((double) (delta)) / 1000.0, isSolo);
 			}
 			
 			if (refreshUI >= 1000) {
