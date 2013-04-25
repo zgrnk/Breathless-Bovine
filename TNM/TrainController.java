@@ -41,11 +41,17 @@ public class TrainController
     public final double Ki=200;
     public double ukprev;
     public double prerr;
+    public double ukOne;
+    public double errOne;
+    public double ukTwo;
+    public double errTwo;
+    public double ukThree;
+    public double errThree;
     public boolean opstate;
     public String nextName;
-    public double powone;
-    public double powtwo;
-    public double powthree;
+    public PowJar powone;
+    public PowJar powtwo;
+    public PowJar powthree;
     public double spone;
     public double sptwo;
     public double spthree;
@@ -53,7 +59,7 @@ public class TrainController
     
     // create test blocks
     Block negout = new Block(-4, "A", "I", 100.0, 3.0, 60.0, false, false, true, false, false, "You found the secret stop, exit now to collect 100 rupies!", false, false, false);
-	Block negone = new Block(-1, "B", "II", 100.0, 3.0, 55.0, false, false, false, false, false, "Arriving at 0", false, false, false);
+    Block negone = new Block(-1, "B", "II", 100.0, 3.0, 55.0, false, false, false, false, false, "Arriving at 0", false, false, false);
     
     
     /**
@@ -71,10 +77,13 @@ public class TrainController
         oldBlock=thisBlock;
         time=-1;
         setpoint=100;
-        autspeed=100;
+        autspeed=-1;
         slimit=-1;
         setLights();
         safespeed=0;
+        spone=0;
+        sptwo=0;
+        spthree=0;
         currspeed=0;
         signalFail=false;
         brakeFail=false;
@@ -145,42 +154,47 @@ public class TrainController
     }
     
     // set safe power, set brakes if needed
-    public double setPower()
+    public PowJar setPower()
     {
         // coast if negative power request
         double thispower=0;
+        double thisuk=0;
+        double thiserr=0;
+        boolean thiseBrake=eBrake;
+        boolean thissBrake=sBrake;
+        
         if(currspeed==0)
         {
-            ukprev=0;
+            thisuk=0;
         }
         if(railFail||trackFail)
         {
             // cuts engine power, activates the eBrake, and releases passengers after a stop
             // has been reached for more serious problems.
-            eBrake=true;
+            thiseBrake=true;
         }
-        else if(engineFail||brakeFail)
+        else if(powerFail)
         {
-            // cuts engine power if a moderate problem is detected
+            // service brake activates if there is a power failure, train will 
+            // resume when power is restured
+            thissBrake=true;
+        }
+        else if(engineFail||brakeFail||signalFail)
+        {
+            // cuts engine power if the above problems are detected
             // releases passengers when stopped
-        }
-        else if(signalFail||powerFail)
-        {
-            // cuts engine power if a minor problem is detected
-            // train will resume operation if the problem is fixed.
-            thispower=0;
         }
         else
         {
             if((currspeed < safespeed)&&(!eBrake))
             {
                 //disengage service brake and close doors if needed
-                sBrake=false;
+                thissBrake=false;
                 doors=false;
                 
                 // increase power
                 thispower=(safespeed-currspeed)*Kp+Ki*(ukprev+tperiod*(safespeed-currspeed+prerr)/2);
-                prerr=safespeed-currspeed;
+                thiserr=safespeed-currspeed;
                 // engine can't deliver more power than max
                 if(power>maxpower)
                 {
@@ -189,36 +203,34 @@ public class TrainController
                 // update Uk otherwise
                 else
                 {
-                    ukprev=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
+                    thisuk=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
                 }
             }
             else if(currspeed+1>safespeed)
             {
-                // engage service brake if going 5km/h or more over safe speed
-                sBrake=true;
-                prerr=safespeed-currspeed;
-                ukprev=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
+                // engage service brake if going 1m/s or more over safe speed
+                thissBrake=true;
+                thiserr=safespeed-currspeed;
+                thisuk=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
             }
             else
             {
-                // coast if going over safe speed but less than 5km/h over
-                sBrake=false;
-                prerr=safespeed-currspeed;
-                ukprev=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
+                // coast if going over safe speed but less than 1m/s over
+                thissBrake=false;
+                thiserr=safespeed-currspeed;
+                thisuk=ukprev+tperiod*(safespeed-currspeed+prerr)/2;
             }
         }
-        return thispower;
+        
+        PowJar currJar=new PowJar(thispower, thisuk, thiserr, thiseBrake, thissBrake);
+        return currJar;
     }
     
     // sets safe speed
     public double setSafeSpeed()
     {
         double thisspeed=0;
-        
-        if((nextName!=null)&&(nextName.length()!=0))
-        {
-            slimit=5;
-        }
+        //checks which speed is the safest
         if((autspeed<slimit)&&(autspeed<setpoint))
         {
             thisspeed=autspeed;
@@ -231,6 +243,11 @@ public class TrainController
         {
             thisspeed=setpoint;
         }
+        //slows down if approaching station
+        if((nextName!=null)&&(nextName.length()!=0)&&(thisspeed>5))
+        {
+            thisspeed=5;
+        }
         return thisspeed;
     }
     
@@ -238,8 +255,9 @@ public class TrainController
     public ResponseTNC timeTick(double ntime, double curVelocity, double period, Block positionBlock, 
     Block positionBlockTail, boolean issetSignalPickupFailure, boolean issetEngineFailure, 
     boolean issetBrakeFailure, double fixedSuggestedSpeed, double mboSuggestedSpeed, 
-    boolean issetEmerBrake, boolean operator, String nextStationName)
+    boolean issetEmerBrake, boolean operator, String nextStationName, boolean uiChosen)
     {
+       //update info from Train Model
        time=ntime;
        tperiod=period;
        currspeed=curVelocity;
@@ -248,33 +266,108 @@ public class TrainController
        signalFail=issetSignalPickupFailure;
        engineFail=issetEngineFailure;
        opstate=operator;
-       // note that brake commands may still be sent even if brake failure is detected
        brakeFail=issetBrakeFailure;
-       //autspeed=fixedSuggestedSpeed;
+       railFail=positionBlock.brokenRailFailure;
+       trackFail=positionBlock.trackCircuitFailure;
+       powerFail=positionBlock.powerFailure;
+       autspeed=fixedSuggestedSpeed;
        if(mboSuggestedSpeed<autspeed)
        {
-           autspeed=mboSuggestedSpeed;
+       //    autspeed=mboSuggestedSpeed;
        }
        slimit=positionBlock.speedLimit;
        nextName=nextStationName;
        currAnnoun=setAnnouncement();
         
-       //begin computer actions
-       //spone
-       safespeed=setSafeSpeed();
-       power=setPower();
+       // begin redundant PLC actions for critical systems
+       spone=setSafeSpeed();
+       sptwo=setSafeSpeed();
+       spthree=setSafeSpeed();
+       safespeed=resolveSpeed(spone, sptwo, spthree);
+       powone=setPower();
+       powtwo=setPower();
+       powthree=setPower();
+       power=resolvePower(powone, powtwo, powthree);
+       
+       // do noncritical calculations
        setLights();
        checkStation();
        setDoors();
+       
+       if(uiChosen)
+       {
+           updateUI();
+       }
        ResponseTNC tnmSignal=new ResponseTNC(power, sBrake, eBrake, lights, doors, tTemp, currAnnoun);
         
        return tnmSignal; 
     }
     
+    // resolves any PLC conflicts about proper safe speed
+    public double resolveSpeed(double firsts, double seconds, double thirds)
+    {
+        // ignores differences past 3 decimal places
+        int firsti=(int)(Math.round(firsts*1000));
+        int secondi=(int)(Math.round(seconds*1000));
+        int thirdi=(int)(Math.round(thirds*1000));
+        
+        //compares PLC values
+        if((firsti==secondi)||(firsti==thirdi))
+        {
+            return firsts;
+        }
+        else if(secondi==thirdi)
+        {
+            return seconds;
+        }
+        else
+        {
+            // if two or more PLCs are broken, the safe speed is set to 0
+            System.out.println("Error: No Majority PLC speed");
+            return 0;
+        }
+    }
+    
+    // resolves any PLC conflicts about proper power output
+    public double resolvePower(PowJar firsts, PowJar seconds, PowJar thirds)
+    {
+        // ignores differences past 3 decimal places
+        int firsti=(int)(Math.round(firsts.jPower*1000));
+        int secondi=(int)(Math.round(seconds.jPower*1000));
+        int thirdi=(int)(Math.round(thirds.jPower*1000));
+        
+        //compares PLC values
+        if((firsti==secondi)||(firsti==thirdi))
+        {
+            eBrake=firsts.jEBrake;
+            sBrake=firsts.jSBrake;
+            return firsts.jPower;
+        }
+        else if(secondi==thirdi)
+        {
+            eBrake=seconds.jEBrake;
+            sBrake=seconds.jSBrake;
+            return seconds.jPower;
+        }
+        else
+        {
+            // if two or more PLCs are broken, the power is set to 0 and the emergency brake is engaged
+            System.out.println("Error: No Majority PLC power");
+            eBrake=true;
+            return 0;
+        }
+    }
+    
+    // public ResponseUI updateUI()
+    public void updateUI()
+    {
+        
+    }
+    
     // sets the doors open when the train is not moving
     public void setDoors()
     {
-        if(currspeed!=0||stationState==2)
+        if((currspeed!=0)||(stationState==2))
         {
             doors=false;
         }

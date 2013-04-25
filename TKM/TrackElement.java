@@ -7,5 +7,6 @@ public abstract class TrackElement {
     public String sectionId;
     public String lineId;
     public TrackLayout.TrackLine line;
+    abstract public void disconnect(TrackElement te);
     abstract public String toString();
 }

@@ -32,6 +32,18 @@ public class Switch extends TrackElement {
         this.blkDiverg = diverg;
     }
 
+    public void disconnect(TrackElement blk) {
+        if ((Block)blk == blkMain) {
+            blkMain = null;
+        }
+        if ((Block)blk == blkStraight) {
+            blkStraight = null;
+        }
+        if ((Block)blk == blkDiverg) {
+            blkDiverg = null;
+        }
+    }
+
     public String toString()
     {
         return ("Switch " + Integer.toString(id));
