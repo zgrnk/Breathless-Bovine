@@ -1050,6 +1050,10 @@ public class TNC_UI
         }
     }
     
+    public void setVisible(boolean b){
+    	theWindow.setVisible(b);
+    }
+    
     private void timeCalc(double ntime)
     {
         timeS=(int)(ntime%3600);

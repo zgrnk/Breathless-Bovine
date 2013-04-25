@@ -27,7 +27,7 @@ public class CTCOffice extends PApplet {
 	ControlP5 cp5;
 	DropdownList closeTrack, removeTrack, addTrack1, addTrack2, trainInfo_drop;
 	RadioButton trackRadio, simRadio;
-	Group trackGroup, simGroup, sched, TLgroup, trainInfo;
+	Group trackGroup, simGroup, trainInfo;
 	Tab trackTab;
 	Button startBtn, setTrainSpd, SimRatioBtn, schedulerBtn, submitTrackBtn, SetSimBtn, editTrackWindowBtn;
 	Knob kn_trainSpeed;
@@ -180,13 +180,13 @@ public class CTCOffice extends PApplet {
 		ddLists.add(addTrack2);
 
 		schedulerBtn = cp5.addButton("System Scheduler").setValue(1).setPosition(200, 130)
-				.setSize(100, 50).setId(0);
+				.setSize(100, 50).setId(0).setVisible(false);
 		startBtn = cp5.addButton("Start").setValue(1).setPosition(150, 500)
 				.setSize(200, 50).setId(1).setVisible(true);
 		editTrackWindowBtn = cp5.addButton("Edit Track").setValue(1).setPosition(75, 170)
-				.setSize(100, 50).setId(2).setVisible(true);
+				.setSize(100, 50).setId(2).setVisible(false);
 		SetSimBtn = cp5.addButton("Set Sim Ratio").setValue(1).setPosition(325, 170)
-				.setSize(100, 50).setId(3).setVisible(true);
+				.setSize(100, 50).setId(3).setVisible(false);
 	}
 	
 	public void addTrackGroup() {
@@ -247,34 +247,21 @@ public class CTCOffice extends PApplet {
 	}
 
 
-	public void addScheduleGroup() {
-
-		sched = cp5.addGroup("Configure Schedule").setPosition(250, 75)
-				.setBackgroundHeight(200).setBackgroundColor(color(255, 75))
-				.setBarHeight(30).setWidth(450).hideArrow().setOpen(false)
-				.setMoveable(true);
-
-		/*
-		 * cp5.addSlider("label3") .setPosition(60,50) .setSize(180,15)
-		 * .setGroup(sched) ;
-		 * 
-		 * cp5.addSlider("label4") .setPosition(60,100) .setSize(180,15)
-		 * .setGroup(sched) ;
-		 */
-
-	}
-
-
 	public void addSimStartedWindows() {
-		TLgroup = cp5.addGroup("Track Layout").setPosition(75, 150)
-				.setBackgroundHeight(350).setBackgroundColor(color(255, 50))
-				.setBarHeight(30).setWidth(500).hideArrow().setOpen(true)
-				.setMoveable(true).disableCollapse().hide();
+		
+		//TRACKLAYOUT
+		//Wayside Info
+		
+		////trains
+		//MBO Speed
+		//Detailed Train Info
+		//Detailed Train Control
+		//
 
-		trainInfo = cp5.addGroup("Train Info").setPosition(600, 150)
-				.setBackgroundHeight(350).setBackgroundColor(color(255, 50))
-				.setBarHeight(30).setWidth(300).hideArrow().setOpen(false)
-				.setMoveable(true).hide();
+		trainInfo = cp5.addGroup("TrainInfo").setPosition(200, 200)
+				.hideBar().setMoveable(true).setVisible(true)
+				.setBackgroundHeight(280).setBackgroundColor(color(255, 50))
+				.setBarHeight(30).setWidth(250).hideArrow().setOpen(true);
 
 		trainInfo_drop = cp5.addDropdownList("Select Train")
 				.setPosition(50, 50).setSize(200, 200).setGroup(trainInfo);
@@ -338,6 +325,7 @@ public class CTCOffice extends PApplet {
 	
 	public void resetDropdown(DropdownList list, ArrayList<Block> aList, boolean isTrackList){
 		list.clear();
+		//list.setCaptionLabel("");
 		if (isTrackList){
 			list.addItem("DEADEND", 0);
 		}
@@ -348,10 +336,8 @@ public class CTCOffice extends PApplet {
 
 	// Event handling
 	public void controlEvent(ControlEvent theEvent) {
-		System.out.println("E id:");
 		
-		if (theEvent.isFrom(closeTrack) || theEvent.isFrom(removeTrack) 
-				|| theEvent.isFrom(addTrack1)  || theEvent.isFrom(addTrack2)){
+		if (theEvent.isFrom(closeTrack) || theEvent.isFrom(removeTrack) || theEvent.isFrom(addTrack1)  || theEvent.isFrom(addTrack2)){
 			int index = (int)theEvent.getGroup().getValue();
 			if(theEvent.isFrom(addTrack1)  || theEvent.isFrom(addTrack2) ){
 				// 0 set to "DEADEND"
@@ -436,53 +422,54 @@ public class CTCOffice extends PApplet {
 				removeTrack.hide();
 				addTrack1.hide();
 				addTrack2.hide();
-				//radio(-1);
-				//cp5.get("radio").setValue(-1);
+
 
 		}
 
 		else if (theEvent.isFrom(startBtn)) {
 			if (welcomeScreen) {
 				if (!init){
+					testTrack.setTrainList(trainList);
+					
 					tnmUI = new TrainModelUI();
+					tnmUI.setTrainList(trainList);
+					tnmUI.setIsPaused(false);
+					tnmUI.setSelectedId(trainList.get(0).id);
+					tnmUI.setIsVisible(false);
+					tnmUI.tncUI.setVisible(false);
+
 					tkmgui = new TKMGui(testTrack);
+					tkmgui.frame.setVisible(false);
 					tkc = new TrackController(testTrack, this);
 					tkcgui = new ControllerUI(tkc);
+					tkcgui.frame.setVisible(false);
 					
 					mboGUI = new MBO_GUI(trainList);
+					mboGUI.setVisible(false);
 				}
-				if (!reset) testTrack.setTrainList(trainList);
-	
-				tnmUI.setIsPaused(true);
-				tnmUI.setTrainList(trainList);
-				tnmUI.setSelectedId(trainList.get(0).id);
-				
-				/// set true
-				tkmgui.setVisible(false);
-				tnmUI.setIsVisible(false);
-				tkcgui.setVisible(false);
-				mboGUI.setVisible(false);
-				
-				tnmUI.setIsPaused(false);
+
+
 				startBtn.setCaptionLabel("Pause");
 				trackGroup.hide();
 				simGroup.hide();
-				TLgroup.show();
-				trainInfo.show();
+				schedulerBtn.hide();
+				editTrackWindowBtn.hide();
+				SetSimBtn.hide();
 				welcomeScreen = false;
 				init = true;
+				
 
 			} 
 			else {
 				tnmUI.setIsPaused(true);
 				startBtn.setCaptionLabel("Resume");
-				trackGroup.show();
-				simGroup.show();
-				sched.show();
-				TLgroup.hide();
 				trainInfo.hide();
 				System.out.println("SYSTEM PAUSED");
+				schedulerBtn.show();
+				editTrackWindowBtn.show();
+				SetSimBtn.show();
 				welcomeScreen = true;
+				
 			}
 		} 
 
@@ -517,7 +504,6 @@ public class CTCOffice extends PApplet {
 	public void simRadio(int index){
 		if (index == 0){
 			simTimeConstant = 1000;
-			System.out.println(1000);
 		}
 		else simTimeConstant = 100;
 
