@@ -113,7 +113,7 @@ public class CTCOffice extends PApplet {
 	}
 
 	public void draw() {
-		background(193, 205, 193);
+		background(16, 159, 202);
 
 		if (simStarted) {
 			//mapwindow.repaint();
@@ -139,8 +139,6 @@ public class CTCOffice extends PApplet {
 			}
 			
 		}
-
-
 
 	}
 	
@@ -426,29 +424,13 @@ public class CTCOffice extends PApplet {
 	}
 
 	public void testInit() {
-		//tnmUI = new TrainModelUI();
 		
-		// should change time variable name 
 		tempTime.set(Calendar.HOUR_OF_DAY,7);
 		tempTime.set(Calendar.MINUTE,59);
 		tempTime.set(Calendar.SECOND,0);
 		tempTime.set(Calendar.MILLISECOND,0);
 		currentSimTime = tempTime.getTime();
 
-/*		trainList = new ArrayList<Train>();
-		idArray = new String[numTrains];
-		// Create the trains.
-		for (int i = 0; i < numTrains; i++) {
-			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
-					(8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), redRoute,
-					new Engineer(true, false, 0.0,
-							(8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60)
-									% (24 * 60 * 60)), bYard);
-			trainList.add(tempTrain);
-			Integer tempInt = new Integer(i + 1);
-			idArray[i] = new String("T"+(i+1));
-		}
-		track_layout.setTrainList(trainList);*/
 	}
 	
 	public void createTKMGUI(){
@@ -466,7 +448,7 @@ public class CTCOffice extends PApplet {
 		//create red line route
 		//9-1, 16-66, 52-16, 1-9, yard(0) 
 		int i;
-		//route.add((Block)track.getElementById(0));
+		testRoute.add((Block)testTrack.getElementById(0));
 		for (i=9; i>0; i--){
 			testRoute.add((Block)testTrack.getElementById(i));
 		}
@@ -483,7 +465,7 @@ public class CTCOffice extends PApplet {
 			testRoute.add((Block)testTrack.getElementById(i));
 		}
 		//yard
-		testRoute.add((Block)testTrack.getElementById(0));
+		//testRoute.add((Block)testTrack.getElementById(0));
 	}
 
 	//SSC
