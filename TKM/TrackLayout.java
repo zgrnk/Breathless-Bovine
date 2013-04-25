@@ -40,8 +40,13 @@ public class TrackLayout {
         }
 
         public void removeBlock(Block blk) {
-            blk.prev.disconnect(blk);
-            blk.next.disconnect(blk);
+
+            if (blk.prev != null) {
+                blk.prev.disconnect(blk);
+            }
+            if (blk.next != null) {
+                blk.next.disconnect(blk);
+            }
             blocks.remove(blk);
 
             if (blk == lyt.getSelectedElement()) {
