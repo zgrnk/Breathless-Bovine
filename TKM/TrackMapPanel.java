@@ -202,7 +202,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.println("rep");
+        //System.out.println("rep");
         Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);

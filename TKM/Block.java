@@ -321,6 +321,9 @@ public class Block extends TrackElement
 
     public String toString()
     {
-        return ("Block " + Integer.toString(id));
+        if (isYard) {
+            return "Yard";
+        }
+        return (lineId + " Block " + Integer.toString(id));
     }
 }
