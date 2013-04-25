@@ -77,6 +77,10 @@ public class Train {
 	public double targetTemperatureManual;
 	public boolean issetTargetTemperatureManual;
 	public String announcement;
+	//added for MBO
+	public double distToNextTrain;
+	public double distToPrevTrain;
+	public double distToNextStation;
 	
 	// Other Values
 	public GPS gps;
@@ -156,6 +160,10 @@ public class Train {
 		targetTemperatureManual = 22.0;
 		issetTargetTemperatureManual = false;
 		announcement = "";
+		//MBO new variables
+		distToNextTrain = 0.0;
+		distToPrevTrain = 0.0;
+		distToNextStation = 0.0;
 		
 		// Initialize the following other values.
 		gps = new GPS(positionBlock, (int) positionMeters, curVelocity, (positionDirection == Block.DIRECTION_FWD));

@@ -1,7 +1,7 @@
 package MBO;
 
-
-
+import CTCOffice.*;
+import TNM.*;
 
 import java.awt.*;
 import javax.swing.*;
@@ -10,8 +10,7 @@ import java.util.*;
 
 public class MBO_GUI extends JFrame{
 
-	public MBO_Test mbo_Test;
-	public JComboBox comboBox;
+	public JComboBox<String> comboBox;
 	public JLabel lbl_line_val;
 	public JLabel lbl_signal_pickup_val;
 	public JLabel lbl_current_block_val;
@@ -31,8 +30,11 @@ public class MBO_GUI extends JFrame{
 	public JToggleButton btn_toggle_speed;
 	public JButton btn_manual_authority;
 	public JButton btn_manual_speed;
-
-	public MBO_GUI() {
+	
+	public MBO_Listener mboListener;
+	
+	
+	public MBO_GUI(ArrayList<Train> trainList) {
 
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -50,7 +52,7 @@ public class MBO_GUI extends JFrame{
 		setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		setTitle("MBO-MGP14");
 		setResizable(false);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 
 		JPanel panel_left = new JPanel();
@@ -195,12 +197,12 @@ public class MBO_GUI extends JFrame{
 		gbl_panel_right.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		panel_right.setLayout(gbl_panel_right);
 
-		comboBox = new JComboBox();
+		comboBox = new JComboBox<String>();
 		comboBox.setMinimumSize(new Dimension(25, 20));
 		comboBox.setPreferredSize(new Dimension(25, 20));
 
-		for(int i=0; i<mbo_Test.trainList.size(); i++){
-			comboBox.addItem(mbo_Test.trainList.get(i).stringId);
+		for(int i=0; i<trainList.size(); i++){
+			comboBox.addItem(trainList.get(i).stringId);
 		}
 
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
@@ -338,7 +340,8 @@ public class MBO_GUI extends JFrame{
 		gpsLabels.add(lbl_calc_speed_val);
 		gpsLabels.add(lbl_calc_authority_val);
 
-		MBO_Listener mboListener = new MBO_Listener(this);
+		//MBO_Listener mboListener = new MBO_Listener(this, trainList);
+		mboListener = new MBO_Listener(this, trainList);
 		comboBox.addActionListener(mboListener);
 		btn_toggle_authority.addActionListener(mboListener);
 		btn_toggle_speed.addActionListener(mboListener);
@@ -349,7 +352,7 @@ public class MBO_GUI extends JFrame{
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 		
-		setVisible(true);
+		//setVisible(true);			////////////////////////////////////////////////////////////////////////////////
 
 	}
 }

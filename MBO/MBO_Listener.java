@@ -1,9 +1,13 @@
 package MBO;
 
-
+import TNM.*;
+import TKM.*;
+import CTCOffice.*;
 
 
 import java.awt.event.*;
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
@@ -11,12 +15,15 @@ import javax.swing.Timer;
 public class MBO_Listener implements ActionListener{
 
 	private MBO_GUI mbo_GUI;
-	public MBO_Test mbo_Test;
-	
+	//public MBO_Test mbo_Test;
+	private CTCOffice ctc;	
+	private ArrayList<Train> trainList;
 
-	public MBO_Listener(MBO_GUI mbo_GUI) {
+	
+	public MBO_Listener(MBO_GUI mbo_GUI, ArrayList<Train> trainList) {
 		this.mbo_GUI = mbo_GUI;
-		this.mboTimer.start();
+		this.trainList = trainList;
+		//this.mboTimer.start();
 		this.labelTimer.start();
 	}
 
@@ -91,19 +98,19 @@ public class MBO_Listener implements ActionListener{
 	}
 
 
-	public Timer mboTimer = new Timer(50, new ActionListener() {
+	public Timer mboTimer = new Timer(100, new ActionListener() {
 		public void actionPerformed(ActionEvent evt) { 
-			for(Train train : mbo_Test.trainList){
+			for(Train train : trainList){
 
 				if(!train.issetSignalPickupFailure){
-					//MBO_Calculator mbo_Calc = new MBO_Calculator(train);
+					MBO_Calculator mbo_Calc = new MBO_Calculator(train, trainList);
 					
-					//train.trainAheadDist = mbo_Calc.getNextTrainFrontDist();
-					//train.trainBehindDist = mbo_Calc.getNextTrainBehindDist();
-					//train.nextStationDist = mbo_Calc.getNextStationDist();
+					train.distToNextTrain = mbo_Calc.getDistToNextTrain();
+					train.distToPrevTrain = mbo_Calc.getDistToPrevTrain();
+					train.distToNextStation = mbo_Calc.getDistToNextStation();
 					
-					//train.mboSuggestedAuthority = mbo_Calc.calculateAuthority();
-					//train.mboSuggestedSpeed = mbo_Calc.calculateSetspeed();
+					train.mboSuggestedAuthority = mbo_Calc.calculateAuthority();
+					train.mboSuggestedSpeed = mbo_Calc.calculateSetspeed();
 				}
 				else{
 					train.mboSuggestedAuthority = 0;
@@ -117,18 +124,19 @@ public class MBO_Listener implements ActionListener{
 	public Timer labelTimer = new Timer(200, new ActionListener() {
 		public void actionPerformed(ActionEvent evt) { 
 			String trainID = mbo_GUI.comboBox.getSelectedItem().toString();
-
-			Train train = mbo_Test.trainTable.get(trainID);	
+			int index = Integer.valueOf(trainID.substring(1, 2));
+			
+			Train train = trainList.get(index);	
 			mbo_GUI.lbl_line_val.setText(train.line);		
 			mbo_GUI.lbl_signal_pickup_val.setText(String.valueOf(!train.issetSignalPickupFailure));
 
 			if(!train.issetSignalPickupFailure){
 				mbo_GUI.lbl_current_block_val.setText(Integer.toString(train.gps.block.id));
-				mbo_GUI.lbl_current_speed_val.setText(Double.toString((int)train.gps.speed));
+				mbo_GUI.lbl_current_speed_val.setText(Double.toString((int)(train.gps.speed * 1000 / 360)));
 
-				mbo_GUI.lbl_train_ahead_dist_val.setText(Double.toString((int)train.trainAheadDist));
-				mbo_GUI.lbl_train_behind_dist_val.setText(Double.toString((int)train.trainBehindDist));
-				mbo_GUI.lbl_next_station_dist_val.setText(Double.toString((int)train.nextStationDist));
+				mbo_GUI.lbl_train_ahead_dist_val.setText(Double.toString((int)train.distToNextTrain));
+				mbo_GUI.lbl_train_behind_dist_val.setText(Double.toString((int)train.distToPrevTrain));
+				mbo_GUI.lbl_next_station_dist_val.setText(Double.toString((int)train.distToNextStation));
 
 				mbo_GUI.lbl_calc_authority_val.setText(Double.toString((int)train.mboSuggestedAuthority));
 				mbo_GUI.lbl_calc_speed_val.setText(Double.toString((int)train.mboSuggestedSpeed));

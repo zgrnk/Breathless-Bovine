@@ -34,4 +34,25 @@ public class Engineer {
 		this.timeOnBreak = timeOnBreak;
 		this.timeOnBreakStarts = timeOnBreakStarts;
 	}
+	
+	//copied from mario's updates
+	public boolean getGoOnBreak()
+	{
+		return goOnBreak;
+	}
+	
+	public boolean getOnBreak()
+	{
+		return onBreak;
+	}
+	
+	public double getTimeOnBreak()
+	{
+		return timeOnBreak;
+	}
+	
+	public double getTimeOnBreakStarts()
+	{
+		return timeOnBreakStarts;
+	}
 }

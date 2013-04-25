@@ -56,7 +56,13 @@ public class CTCOffice extends PApplet {
 	TrackController tkc;
 
 	JFrame mapwindow;
-	TrackLayout track_layout;
+	//TrackLayout track_layout;
+	TrackLayout testTrack;
+	Button schedulerBtn;
+	//
+	//ADDED BY MARIO
+	MBO_GUI mboGUI;
+	SSC_GUI sscGUI;
 
 
 	public static void main(String args[]) {
@@ -86,11 +92,12 @@ public class CTCOffice extends PApplet {
 		init = false;
 
 
-		createTKMGUI();
+		//createTKMGUI();
 		getTrack();
 		
-		testInit();
-		//track_layout = new trackLayout();
+		//mario may not need this?
+		//testInit();
+
 		//
 		//ADDED BY MARIO
 		//
@@ -105,7 +112,7 @@ public class CTCOffice extends PApplet {
 		tnmUI.setIsPaused(true);
 		tnmUI.setTrainList(trainList);
 		tnmUI.setSelectedId(trainList.get(0).id);
-		tnmUI.setIsVisible(true);
+		tnmUI.setIsVisible(false);
 
 		//new SSC_GUI();
 
@@ -116,6 +123,11 @@ public class CTCOffice extends PApplet {
 
 		if (simStarted) {
 			mapwindow.repaint();
+			//
+			//ADDED BY MARIO
+			//
+			//AS OF NOW THIS HALTS ENTIRE SYSTEM - STUCK IN WHILE LOOPS
+			//
 			targetTime.setTime(currentTime);
 			targetTime.add(Calendar.MILLISECOND,1000);
 
@@ -343,7 +355,6 @@ public class CTCOffice extends PApplet {
 				simStarted = true;
 				tnmUI.setIsPaused(false);
 				startBtn.setCaptionLabel("Pause");
-				timer.reset();
 				track.hide();
 				g_clock.hide();
 				sched.hide();
@@ -368,13 +379,12 @@ public class CTCOffice extends PApplet {
 				simStarted = true;
 				tnmUI.setIsPaused(false);
 				startBtn.setCaptionLabel("Pause");
-				timer.reset();
 				track.hide();
 				g_clock.hide();
 				sched.hide();
 				TLgroup.show();
 				trainInfo.show();
-				mapwindow.setVisible(true);
+				//mapwindow.setVisible(true);
 				System.out.println("SYSTEM RESUMED");
 			}
 		} 
@@ -432,7 +442,7 @@ public class CTCOffice extends PApplet {
 //		track_layout.setTrainList(trainList);
 //	}
 	
-	public void createTKMGUI(){
+	/*public void createTKMGUI(){
 		track_layout = new TrackLayout();	
 		track_layout.parseTrackDB("track_db.csv");	
 		mapwindow = new JFrame();
@@ -443,6 +453,35 @@ public class CTCOffice extends PApplet {
 
 		redRoute = new ArrayList<Block>();
 		
+		//create red line route
+		//9-1, 16-66, 52-16, 1-9, yard(0) 
+		int i;
+		//route.add((Block)track.getElementById(0));
+		for (i=9; i>0; i--){
+			testRoute.add((Block)testTrack.getElementById(i));
+		}
+		for (i=16; i<67; i++){
+			testRoute.add((Block)testTrack.getElementById(i));
+		}
+		for (i=52; i>15; i--){
+			testRoute.add((Block)testTrack.getElementById(i));
+		}
+		for (i=52; i>15; i--){
+			testRoute.add((Block)testTrack.getElementById(i));
+		}
+		for (i=1; i<10; i++){
+			testRoute.add((Block)testTrack.getElementById(i));
+		}
+		//yard
+		testRoute.add((Block)testTrack.getElementById(0));
+	}*/
+	
+	public void getTrack(){
+		testTrack = new TrackLayout();	
+		testTrack.parseTrackDB("track_db.csv");	
+		bYard = testTrack.redLine.yard;
+		testRoute = new ArrayList<Block>();
+
 		//create red line route
 		//9-1, 16-66, 52-16, 1-9, yard(0) 
 		int i;

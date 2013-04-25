@@ -1,79 +1,117 @@
 package MBO;
 
+import java.util.ArrayList;
+
+import TNM.*;
+import TKM.*;
+
 
 
 
 public class MBO_Calculator{
 
-	MBO_Test mbo_Test;
-	Train train;
-	double distanceToNext=0;
-	double distanceToPrev=0;
+	//MBO_Test mbo_Test;
+	private Train train;
+	private double distanceToNext=0;
+	private double distanceToPrev=0;
+	private ArrayList<Train> trainList;
+	
 
-	public MBO_Calculator(Train train){
+	public MBO_Calculator(Train train, ArrayList<Train> trainList){
 		this.train = train;
+		this.trainList = trainList;
 	}
 
 
-	public double getNextTrainFrontDist(){
+	public double getDistToNextTrain(){
 		
 		this.distanceToPrev = 0;
 		
 		Block testBlock = this.train.gps.block;
-		this.distanceToNext += testBlock.length;
-		testBlock = testBlock.getNext(false);
+		this.distanceToNext = testBlock.length - this.train.gps.metersIntoBlock;
+		testBlock = testBlock.getNext(false); //!this.train.gps.travelDirection ??
 		
 		while(testBlock.occupied == false){
 			this.distanceToNext += testBlock.length;
 			testBlock = testBlock.getNext(false);
+			
+			
+			//GETTING STUCK IN HERE
+			//if test block is a switch, get next block that is default direction...?
 		}
 		
-		Train nextTrain = testBlock.trainOnBlock;
-
-		return this.distanceToNext - this.train.gps.metersIntoBlock + nextTrain.gps.metersIntoBlock - nextTrain.length;
+		Train nextTrain = this.train;
+		for(Train t : trainList){
+			if(t.gps.block.equals(testBlock)){
+				nextTrain = t;
+			}
+		}
+		
+		if(!nextTrain.equals(this.train)){
+			return this.distanceToNext + nextTrain.gps.metersIntoBlock - nextTrain.length;
+		}
+		else{
+			return this.distanceToNext - this.train.length; //may not be correct
+		}
 	}
 
 	
-	public double getNextTrainBehindDist(){
+	public double getDistToPrevTrain(){
 		
 		this.distanceToPrev = 0;
 		
-		Block testBlock = this.train.gps.block.getNext(true);
+		Block testBlock = this.train.gps.block;
+		this.distanceToPrev = this.train.gps.metersIntoBlock - this.train.length;
+		testBlock = testBlock.getNext(true); //!this.train.gps.travelDirection ??
+		
 		while(testBlock.occupied == false){
 			this.distanceToPrev += testBlock.length;
 			testBlock = testBlock.getNext(true);
+			
+			
+			//GETTING STUCK IN HERE
+			//if test block is a switch, get prev block that is not default direction...?
 		}
 		
-		Train nextTrain = testBlock.trainOnBlock;
+		Train prevTrain = this.train;
+		for(Train t : trainList){
+			if(t.gps.block.equals(testBlock)){
+				prevTrain = t;
+			}
+		}
+		
+		if(!prevTrain.equals(this.train)){
+			return this.distanceToPrev + testBlock.length - prevTrain.gps.metersIntoBlock;
+		}
+		else{
+			return this.distanceToPrev + testBlock.length - this.train.gps.metersIntoBlock; //may not be correct
 
-		return this.distanceToPrev - this.train.length + this.train.gps.metersIntoBlock + testBlock.length - nextTrain.gps.metersIntoBlock;
+		}
 	}
 
 	
-	public double getNextStationDist(){
+	public double getDistToNextStation(){
 		
-		/*
 		double distance = 0;
 		
 		Block testBlock = this.train.gps.block;
 	
-		while(testBlock.stationOnBlock == null){
+		while(testBlock.isStation == false){
 			distance += testBlock.length;
-			testBlock = testBlock.next;
+			testBlock = testBlock.getNext(false);
+			
+			
+			//GETTING STUCK IN HERE
+			//if test block is a switch, get next block that is default direction...?
 		}
 		
-		Station nextStation = testBlock.stationOnBlock;
-
-		return distance = distance + nextStation.metersIntoBlock - this.train.gps.metersIntoBlock;
-		*/
-		return 0;
+		return distance = distance + this.train.gps.metersIntoBlock;
 	}
 	
 	
 	public double calculateAuthority(){
 		
 		double brakingDistance = -((this.train.gps.speed * 1000 / 3600) * (this.train.gps.speed * 1000 / 3600)) / (2*(-1.2));
-		
 		
 		double authority = this.distanceToNext - brakingDistance - 20;  //buffer?
 		
