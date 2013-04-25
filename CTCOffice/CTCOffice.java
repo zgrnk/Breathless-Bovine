@@ -183,7 +183,7 @@ public class CTCOffice extends PApplet {
 		schedulerBtn = cp5.addButton("System Scheduler").setValue(1).setPosition(200, 130)
 				.setSize(100, 50).setId(0);
 		startBtn = cp5.addButton("Start").setValue(1).setPosition(150, 500)
-				.setSize(200, 50).setId(1).setVisible(false);
+				.setSize(200, 50).setId(1).setVisible(true);
 		editTrackWindowBtn = cp5.addButton("Edit Track").setValue(1).setPosition(75, 170)
 				.setSize(100, 50).setId(2).setVisible(true);
 		SetSimBtn = cp5.addButton("Set Sim Ratio").setValue(1).setPosition(325, 170)
@@ -238,7 +238,7 @@ public class CTCOffice extends PApplet {
 
 		SimRatioBtn = cp5.addButton("SimRatioBtn").setValue(1)
 				.setPosition(115, 125).setDefaultValue(5)
-				.setSize(75, 25).setId(2).setGroup(simGroup);
+				.setSize(75, 25).setId(2).setGroup(simGroup).setLabel("Simulatio");
 
 		/*
 		 * cp5.addSlider("label2") .setPosition(60,100) .setSize(180,15)
@@ -514,6 +514,7 @@ public class CTCOffice extends PApplet {
 	public void simRadio(int index){
 		if (index == 0){
 			simTimeConstant = 1000;
+			System.out.println(1000);
 		}
 		else simTimeConstant = 100;
 
