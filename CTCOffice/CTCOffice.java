@@ -29,7 +29,8 @@ public class CTCOffice extends PApplet {
 	RadioButton trackRadio, simRadio;
 	Group trackGroup, simGroup, trainInfo;
 	Tab trackTab;
-	Button startBtn, setTrainSpd, SimRatioBtn, schedulerBtn, submitTrackBtn, SetSimBtn, editTrackWindowBtn;
+	Button startBtn, setTrainSpd, SimRatioBtn, schedulerBtn, submitTrackBtn, SetSimBtn, editTrackWindowBtn, viewTrackBtn,
+			MBObtn, TNMbtn, TKCbtn, TNCbtn;
 	Knob kn_trainSpeed;
 	PImage title;
 	int width, height;
@@ -109,8 +110,7 @@ public class CTCOffice extends PApplet {
 		addTrackGroup();
 		addSimRatioGroup();
 		addSimStartedWindows();
-
-		
+		addSimButtons();
 
 	}
 
@@ -180,13 +180,13 @@ public class CTCOffice extends PApplet {
 		ddLists.add(addTrack2);
 
 		schedulerBtn = cp5.addButton("System Scheduler").setValue(1).setPosition(200, 130)
-				.setSize(100, 50).setId(0).setVisible(false);
+				.setSize(100, 50).setId(0);
 		startBtn = cp5.addButton("Start").setValue(1).setPosition(150, 500)
-				.setSize(200, 50).setId(1).setVisible(true);
+				.setSize(200, 50).setId(1).setVisible(false);
 		editTrackWindowBtn = cp5.addButton("Edit Track").setValue(1).setPosition(75, 170)
-				.setSize(100, 50).setId(2).setVisible(false);
+				.setSize(100, 50).setId(2).setVisible(true);
 		SetSimBtn = cp5.addButton("Set Sim Ratio").setValue(1).setPosition(325, 170)
-				.setSize(100, 50).setId(3).setVisible(false);
+				.setSize(100, 50).setId(3).setVisible(true);
 	}
 	
 	public void addTrackGroup() {
@@ -201,7 +201,7 @@ public class CTCOffice extends PApplet {
 				.addItem("Add", 2).setGroup(trackGroup);
 
 		closeTrack = cp5.addDropdownList("Select Track")
-				.setPosition(90, 125).setSize(115, 200).setGroup(trackGroup).bringToFront();
+				.setPosition(90, 125).setSize(115, 200).setGroup(trackGroup);
 
 		removeTrack = cp5.addDropdownList("Select Track ")
 				.setPosition(90, 125).setSize(115, 200).setGroup(trackGroup);
@@ -235,9 +235,9 @@ public class CTCOffice extends PApplet {
 				.setSize(20, 15).setColorLabel(145).setColorActive(-1)
 				.addItem("Real Time", 0).addItem("x10", 1).setGroup(simGroup);
 
-		SimRatioBtn = cp5.addButton("SimRatioBtn").setValue(1)
+		viewTrackBtn = cp5.addButton("viewTrack").setValue(1)
 				.setPosition(115, 125).setDefaultValue(5)
-				.setSize(75, 25).setId(2).setGroup(simGroup).setLabel("Set");
+				.setSize(150, 50).setId(2).setGroup(simGroup).setLabel("Set");
 
 		/*
 		 * cp5.addSlider("label2") .setPosition(60,100) .setSize(180,15)
@@ -250,39 +250,55 @@ public class CTCOffice extends PApplet {
 	public void addSimStartedWindows() {
 		
 		//TRACKLAYOUT
+		
 		//Wayside Info
+		//Detailed Train Control
 		
 		////trains
 		//MBO Speed
 		//Detailed Train Info
-		//Detailed Train Control
+		
 		//
 
 		trainInfo = cp5.addGroup("TrainInfo").setPosition(200, 200)
-				.hideBar().setMoveable(true).setVisible(true)
-				.setBackgroundHeight(280).setBackgroundColor(color(255, 50))
+				.hideBar().setMoveable(true).setVisible(false)
+				.setBackgroundHeight(175).setBackgroundColor(color(255, 50))
 				.setBarHeight(30).setWidth(250).hideArrow().setOpen(true);
 
 		trainInfo_drop = cp5.addDropdownList("Select Train")
-				.setPosition(50, 50).setSize(200, 200).setGroup(trainInfo);
-
-		cp5.addSlider("Select Speed").setPosition(60, 250).setSize(180, 15)
+				.setPosition(70, 50).setSize(115, 100).setGroup(trainInfo);
+		customizeDropDownTrain(trainInfo_drop, trainList);
+		
+		cp5.addSlider("Authority").setPosition(45, 60).setSize(125, 15)
 		.setDefaultValue(0).setGroup(trainInfo).setMax(70);
 
-		kn_trainSpeed = cp5.addKnob("knob").setRange(0, 70)
-				.setValue(cp5.getController("Select Speed").getValue())
-				.setPosition(100, 100).setRadius(50)
-				.setCaptionLabel("Current Speed").setGroup(trainInfo).lock();
+		cp5.addSlider("Speed").setPosition(40, 85).setSize(125, 15)
+		.setDefaultValue(0).setGroup(trainInfo).setMax(70);
 
-		setTrainSpd = cp5.addButton("Set").setValue(1).setPosition(115, 285)
-				.setSize(75, 25).setId(2).setGroup(trainInfo);
+		setTrainSpd = cp5.addButton("Send to Train").setValue(1).setPosition(75, 115)
+				.setSize(100, 35).setId(2).setGroup(trainInfo);
+		
 
-		customizeDropDownTrain(trainInfo_drop, trainList);
-
-		/*
-		 * track_layout.pre(); // use cc.post(); to draw on top of existing
-		 * controllers. cp5.addCanvas(track_layout) .setGroup() ;
-		 */
+	}
+	
+	public void addSimButtons(){
+		
+		viewTrackBtn = cp5.addButton("SimRatioBtn").setValue(1).setVisible(false)
+				.setPosition(150, 125).setDefaultValue(5)
+				.setSize(200, 50).setId(2).setLabel("View The Track Layout");
+		
+		MBObtn = cp5.addButton("MBObtn").setValue(1).setVisible(false)
+				.setPosition(50, 235).setDefaultValue(5)
+				.setSize(110, 35).setId(2).setLabel("GPS Location");
+		
+/*		TNMbtn = cp5.addButton("SimRatioBtn").setValue(1).setVisible(false)
+				.setPosition(150, 125).setDefaultValue(5)
+				.setSize(200, 50).setId(2).setLabel("View The Track Layout");
+		
+		TKCbtn = cp5.addButton("SimRatioBtn").setValue(1).setVisible(false)
+				.setPosition(150, 125).setDefaultValue(5)
+				.setSize(200, 50).setId(2).setLabel("View The Track Layout");
+				TNCbtn*/
 	}
 
 	public void customizeDropDownBlock(DropdownList list, ArrayList<Block> aList, boolean isTrackList) {
@@ -307,10 +323,9 @@ public class CTCOffice extends PApplet {
 	}
 
 	public void customizeDropDownTrain(DropdownList list, ArrayList<Train> aList) {
-		// a convenience function to customize a DropdownList
 		list.setBackgroundColor(color(190));
 		list.setItemHeight(30);
-		list.setBarHeight(30);
+		list.setBarHeight(20);
 		// list.getCaptionLabel().setText("dropdown");
 		list.getCaptionLabel().setPaddingY(3);
 		list.getCaptionLabel().setPaddingX(3);
@@ -435,21 +450,28 @@ public class CTCOffice extends PApplet {
 					tnmUI.setTrainList(trainList);
 					tnmUI.setIsPaused(false);
 					tnmUI.setSelectedId(trainList.get(0).id);
-					tnmUI.setIsVisible(false);
-					tnmUI.tncUI.setVisible(false);
+					tnmUI.setIsVisible(true);
+					tnmUI.tncUI.setVisible(true);
+					tnmUI.tncUI.setFrameLoc(1150, 100);
 
 					tkmgui = new TKMGui(testTrack);
-					tkmgui.frame.setVisible(false);
+					tkmgui.frame.setVisible(true);
+					tkmgui.frame.setLocation(1000, 200);
+					
 					tkc = new TrackController(testTrack, this);
 					tkcgui = new ControllerUI(tkc);
-					tkcgui.frame.setVisible(false);
+					tkcgui.frame.setVisible(true);
+					tkcgui.frame.setLocation(1000, 200);
 					
 					mboGUI = new MBO_GUI(trainList);
-					mboGUI.setVisible(false);
+					mboGUI.setVisible(true);
+					mboGUI.setLocation(1150, 200);
 				}
 
-
 				startBtn.setCaptionLabel("Pause");
+				viewTrackBtn.show();
+				MBObtn.show();
+				trainInfo.show();
 				trackGroup.hide();
 				simGroup.hide();
 				schedulerBtn.hide();

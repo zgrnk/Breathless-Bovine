@@ -1054,6 +1054,10 @@ public class TNC_UI
     	theWindow.setVisible(b);
     }
     
+    public void setFrameLoc(int x, int y){
+    	theWindow.setLocation(x, y);
+    }
+    
     private void timeCalc(double ntime)
     {
         timeS=(int)(ntime%3600);
