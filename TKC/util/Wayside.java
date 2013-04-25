@@ -89,7 +89,7 @@ public class Wayside {
 		Block temp = blockTable.get(blockID);
 		temp.fbAuthority = current.getAuthority();
 		temp.fbSpeed = current.getSpeedLimit();
-		System.out.println("\nFB_Speed: " + current.getSpeedLimit() + "    FB_Auth : " + current.getAuthority());
+		//System.out.println("\nFB_Speed: " + current.getSpeedLimit() + "    FB_Auth : " + current.getAuthority());
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class Wayside {
 		/*If list empty than search if any end blocks currently are active */
 		if (trainList.isEmpty()) {
 			for (Block blk : activeBlocks) {
-				System.out.println("\nBlock :" + blk.id + " is active");
+				//System.out.println("\nBlock :" + blk.id + " is active");
 				if (TrainWrapper.isEndBlk(endBlocks, blk.id)) {
 					Block fwd = blk.getNext(Block.DIRECTION_FWD);
 					Block rev = blk.getNext(Block.DIRECTION_REV);		
@@ -337,7 +337,7 @@ public class Wayside {
 								setLimits(sTrain.getBlockLocation().id,sTrain.getCurrLimits());
 
 								// TO-DO must adjust suggested speed
-								System.out.print("Authority Calculation may be incorrect");
+								//System.out.print("Authority Calculation may be incorrect");
 
 							}
 						}
@@ -446,7 +446,7 @@ public class Wayside {
 		Block temp;
 
 		activeBlocks = new LinkedList<Block>();
-		System.out.println("BLOCKS: ");
+		//System.out.println("BLOCKS: ");
 		Limits emerg = new Limits(0, 0);
 		while (itr.hasNext())
 		{
