@@ -11,6 +11,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import TNM.Train;
+import CTCOffice.CTCOffice;
 
 
 /* TrackMapPanel will provide a sophisticated track map */
@@ -23,7 +24,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
     BufferedImage xingIcon;
     private TrackLayout lyt;
     private TKMControlPanel cPanel;
-    private CTCOffice office
+    private CTCOffice office;
 
     private boolean needClick = false;
     private Point clickPoint;
@@ -37,8 +38,8 @@ public class TrackMapPanel extends JPanel implements MouseListener{
     private ArrayList<Block> foundStations;
 
     public TrackMapPanel(TrackLayout lyt, CTCOffice office) {
-        this.office = office;
         this(lyt);
+        this.office = office;
     }
 
     public TrackMapPanel(TrackLayout lyt) {

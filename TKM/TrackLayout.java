@@ -43,9 +43,7 @@ public class TrackLayout {
             blocks.remove(blk);
         }
         
-        public Block addBlock(Block from, Block to
-
-            Block newBlk = null;
+        public Block addBlock(Block from, Block to) {
 
             if (from.next == to
                 || to.prev == from
