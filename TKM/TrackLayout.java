@@ -48,17 +48,15 @@ public class TrackLayout {
                 lyt.setSelectedElement(null);
             }
         }
-        
+
+        /* adds a new block to the line, connecting it to one or two existing
+         * blocks. from and to must be dead-ends
+         * i.e. (.prev == null ^ .next == null)
+         */
         public Block addBlock(Block from, Block to) {
 
-        /*    if (from.next == to
-                || to.prev == from
-                || from.prev == to
-                || to.next == from) {
-                    return null;
-            }*/
-            
-            if (from != null || to != null) {
+            if (from != null ^ to != null) {
+
                 /* Find max id in the list */
                 int maxId = 0;
 
@@ -80,13 +78,29 @@ public class TrackLayout {
                 return null;
             }
         }
-    
+
+        /* Returns all blocks in this line with dead ends */
+        public ArrayList<Block> getDeadBlocks()
+        {
+            ArrayList<Block> dBlocks = new ArrayList<Block>();
+
+            for (Block b : blocks) {
+                if (b.prev == null || b.next == null) {
+                    dBlocks.add(b);
+                }
+            }
+
+            return dBlocks;
+        }
+
+        /* Returns all blocks in this line */
         public ArrayList<Block> getBlocks()
         {
             //ArrayList
             return blocks;
         }
-        
+
+        /* Returns all switches in this line */
         public ArrayList<Switch> getSwitches()
         {
             return switches;

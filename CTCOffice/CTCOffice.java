@@ -39,9 +39,11 @@ public class CTCOffice extends PApplet {
 	ArrayList<Button> startButtons;
 	ArrayList<Button> buttonsB;
 	
+	ArrayList<DropdownList> ddLists ;
+	
 	//CTC vars
 	boolean welcomeScreen, init, dropDown1;
-	int simTimeRatio, lastTick, numTrains;
+	int simTimeRatio, lastTick, numTrains, isOpenCnt;
 	int cnt = 0;
 	
 	//dates
@@ -98,6 +100,8 @@ public class CTCOffice extends PApplet {
 		welcomeScreen = true;
 		init = false;
 		dropDown1 = true;
+		isOpenCnt = 0;
+		ddLists = new ArrayList<DropdownList>();
 
 		createRedRoute();
 		createEditTrackGUI();
@@ -137,12 +141,19 @@ public class CTCOffice extends PApplet {
 		}
 		//welcomescreen
 		else{
-			if (closeTrack.isOpen() || removeTrack.isOpen()	|| addTrack1.isOpen()  || addTrack2.isOpen()){ 
-				submitTrackBtn.setVisible(false);	
+			if ( (closeTrack.isOpen()   || removeTrack.isOpen()	|| addTrack1.isOpen()  || addTrack2.isOpen())){
+				System.out.println("DDopen");
+				isOpenCnt++;
+				if (isOpenCnt > 3){
+					submitTrackBtn.setVisible(false);
+					isOpenCnt = 0;
+				}
+	
 			}
 			if (editTrackWindow.isVisible()) { editTrackWindow.repaint(); }
-			
 		}
+			
+		
 
 	}
 	
@@ -164,6 +175,11 @@ public class CTCOffice extends PApplet {
 
 	// GUI init functions
 	public void addHomeButtons(){
+		ddLists.add(closeTrack);
+		ddLists.add(removeTrack);
+		ddLists.add(addTrack1);
+		ddLists.add(addTrack2);
+
 		schedulerBtn = cp5.addButton("System Scheduler").setValue(1).setPosition(200, 130)
 				.setSize(100, 50).setId(0);
 		startBtn = cp5.addButton("Start").setValue(1).setPosition(150, 500)
@@ -197,8 +213,8 @@ public class CTCOffice extends PApplet {
 
 		customizeDropDownBlock(closeTrack, testTrack.redLine.getBlocks(), false);
 		customizeDropDownBlock(removeTrack, testTrack.redLine.getBlocks(), false);
-		customizeDropDownBlock(addTrack1, testTrack.redLine.getBlocks(), true);
-		customizeDropDownBlock(addTrack2, testTrack.redLine.getBlocks(), true);
+		customizeDropDownBlock(addTrack1, testTrack.redLine.getDeadBlocks(), true);
+		customizeDropDownBlock(addTrack2, testTrack.redLine.getDeadBlocks(), true);
 		closeTrack.hide();
 		removeTrack.hide();
 		addTrack1.hide();
@@ -334,6 +350,8 @@ public class CTCOffice extends PApplet {
 
 	// Event handling
 	public void controlEvent(ControlEvent theEvent) {
+		System.out.println("E id:");
+		
 		if (theEvent.isFrom(closeTrack) || theEvent.isFrom(removeTrack) 
 				|| theEvent.isFrom(addTrack1)  || theEvent.isFrom(addTrack2)){
 			int index = (int)theEvent.getGroup().getValue();
@@ -346,7 +364,7 @@ public class CTCOffice extends PApplet {
 			//System.out.println((int)theEvent.getGroup().getValue());
 			//testTrack.setSelectedElement( (Block)testTrack.getElementById( (int)theEvent.getGroup().getValue() ) );
 			testTrack.setSelectedElement( (Block)testTrack.redLine.getBlocks().get( index ) );
-			//System.out.println(testTrack.redLine.getBlocks().get( (int)theEvent.getGroup().getValue() ));
+			System.out.println(testTrack.redLine.getBlocks().get( (int)theEvent.getGroup().getValue() ));
 		}
 		else if (theEvent.isFrom(schedulerBtn)){
 			getScheduleFromSSC();
@@ -366,6 +384,8 @@ public class CTCOffice extends PApplet {
 		}
 		
 		else if (theEvent.isFrom(submitTrackBtn)){
+
+			//System.out.println(Arrays.toString(testTrack.redLine.getBlocks().toArray()));
 		      if (closeTrack.isVisible()){
 		    	  Block bl = (Block)testTrack.redLine.getBlocks().get( (int)closeTrack.getValue() );
 		    	  bl.isClosed = true;
@@ -374,7 +394,7 @@ public class CTCOffice extends PApplet {
 		      else if (removeTrack.isVisible()) {
 		    	  Block bl = (Block)testTrack.redLine.getBlocks().get( (int)removeTrack.getValue() );
 		    	  testTrack.redLine.removeBlock(bl);
-		    	  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), false);
+		    	  resetDropdown(removeTrack, testTrack.redLine.getBlocks(), false);
 		      }
 		      else if (addTrack1.isVisible()) {
 		    	  
@@ -385,13 +405,14 @@ public class CTCOffice extends PApplet {
 		    		  Block blk = testTrack.redLine.addBlock(null, 
 		    				  (Block)testTrack.redLine.getBlocks().get( (int)addTrack2.getValue()));
 		    		  pMap.setBlockLocation(blk);
-		    		  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), true);
+		    		  
+		    		  resetDropdown(addTrack1, testTrack.redLine.getBlocks(), true);
 		    		
 		    	  }
 		    	  else if (addTrack2.getValue() == 0.0){
 		    		  Block blk = testTrack.redLine.addBlock((Block)testTrack.redLine.getBlocks().get( (int)addTrack1.getValue()), null);
 		    		  pMap.setBlockLocation(blk);
-		    		  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), true);
+		    		  resetDropdown(addTrack2, testTrack.redLine.getBlocks(), true);
 		    	  }
 		    	  
 		    	  else{
@@ -401,8 +422,22 @@ public class CTCOffice extends PApplet {
 			    	  resetDropdown(closeTrack, testTrack.redLine.getBlocks(), true);
 			    	  pMap.setBlockLocation(blk);
 		    	  }
+		    	  
 
 		      }
+				submitTrackBtn.setVisible(false);
+				trackRadio.deactivateAll();
+				resetDropdown(closeTrack, testTrack.redLine.getBlocks(), false);
+				resetDropdown(removeTrack, testTrack.redLine.getBlocks(), false);
+				resetDropdown(addTrack1, testTrack.redLine.getDeadBlocks(), true);
+				resetDropdown(addTrack2, testTrack.redLine.getDeadBlocks(), true);			
+				closeTrack.hide();
+				removeTrack.hide();
+				addTrack1.hide();
+				addTrack2.hide();
+				//radio(-1);
+				//cp5.get("radio").setValue(-1);
+
 		}
 
 		else if (theEvent.isFrom(startBtn)) {
