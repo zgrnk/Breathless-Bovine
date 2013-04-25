@@ -29,7 +29,7 @@ public class CTCOffice extends PApplet {
 	RadioButton trackRadio;
 	Group trackGroup, g_clock, sched, TLgroup, trainInfo;
 	Tab trackTab;
-	Button startBtn, setTrainSpd, SimRatioBtn, schedulerBtn, editTrackBtn, SetSimBtn, editTrackWindowBtn;
+	Button startBtn, setTrainSpd, SimRatioBtn, schedulerBtn, submitTrackBtn, SetSimBtn, editTrackWindowBtn;
 	Knob kn_trainSpeed;
 	PImage title;
 	int width, height;
@@ -53,6 +53,7 @@ public class CTCOffice extends PApplet {
 	ArrayList<Train> trainList = new ArrayList<Train>();
 	ArrayList<Block> testRedRoute;
 	TrackLayout testTrack;
+	TrackMapPanel pMap;
 	Block bYard, b01, b02, b03, b04, b05, b06, b07, b08, b09, b10, b11, b12, 
 	b13, b14, b15, b16, b17;
 
@@ -116,10 +117,8 @@ public class CTCOffice extends PApplet {
 		
 		if (!welcomeScreen) {
 			sendTicks();
-			
 			trainList = tnmUI.getTrainList();
 			
-
 			if (tkmgui.isVisible()) { tkmgui.repaint(); }	
 			
 			try {
@@ -192,17 +191,17 @@ public class CTCOffice extends PApplet {
 		addTrack2 = cp5.addDropdownList("End Block")
 				.setPosition(160, 125).setSize(75, 200).setGroup(trackGroup);
 
-		customizeDropDownBlock(closeTrack, testRedRoute, false);
-		customizeDropDownBlock(removeTrack, testRedRoute, false);
-		customizeDropDownBlock(addTrack1, testRedRoute, true);
-		customizeDropDownBlock(addTrack2, testRedRoute, true);
+		customizeDropDownBlock(closeTrack, testTrack.redLine.getBlocks(), false);
+		customizeDropDownBlock(removeTrack, testTrack.redLine.getBlocks(), false);
+		customizeDropDownBlock(addTrack1, testTrack.redLine.getBlocks(), true);
+		customizeDropDownBlock(addTrack2, testTrack.redLine.getBlocks(), true);
 		closeTrack.hide();
 		removeTrack.hide();
 		addTrack1.hide();
 		addTrack2.hide();
 		
 		
-		editTrackBtn = cp5.addButton("Submit").setValue(1).setPosition(100, 150)
+		submitTrackBtn = cp5.addButton("Submit").setValue(1).setPosition(100, 150)
 				.setSize(75, 25).setId(1).setGroup(trackGroup).setVisible(false);
 	}
 
@@ -296,6 +295,7 @@ public class CTCOffice extends PApplet {
 		// list.scroll(0);
 		list.setColorBackground(color(60));
 		list.setColorActive(color(255, 128));
+		list.bringToFront();
 	}
 
 	public void customizeDropDownTrain(DropdownList list, ArrayList<Train> aList) {
@@ -338,10 +338,12 @@ public class CTCOffice extends PApplet {
 		} 
 		else if (theEvent.isFrom(closeTrack) || theEvent.isFrom(removeTrack)
 				|| theEvent.isFrom(addTrack1)  || theEvent.isFrom(addTrack2) ){
-			editTrackBtn.setVisible(true);
+			submitTrackBtn.setVisible(true);
 			editTrackWindowBtn.setVisible(true);
-			testTrack.setSelectedElement( (Block)testTrack.getElementById( (int)theEvent.getGroup().getValue() ) );
-
+			System.out.println((int)theEvent.getGroup().getValue());
+			//testTrack.setSelectedElement( (Block)testTrack.getElementById( (int)theEvent.getGroup().getValue() ) );
+			testTrack.setSelectedElement( (Block)testTrack.redLine.getBlocks().get( (int)theEvent.getGroup().getValue() ) );
+			System.out.println(testTrack.redLine.getBlocks().get( (int)theEvent.getGroup().getValue() ));
 		}
 		else if (theEvent.isFrom(schedulerBtn)){
 			getScheduleFromSSC();
@@ -353,7 +355,26 @@ public class CTCOffice extends PApplet {
 			trackGroup.setVisible(true);
 			editTrackWindow.setVisible(true);
 		}
+		else if (theEvent.isFrom(submitTrackBtn)){
+			if (closeTrack.isVisible()){
+				Block bl = (Block)testTrack.redLine.getBlocks().get( (int)closeTrack.getValue() );
+				bl.isClosed = true;
+				closeTrack.removeItem(""+bl.id);
+			} 
+			else if (removeTrack.isVisible()) {
+				Block bl = (Block)testTrack.redLine.getBlocks().get( (int)removeTrack.getValue() );
+				testTrack.redLine.removeBlock(bl);
+				removeTrack.removeItem(""+bl.id);
+			}
+			else if (addTrack1.isVisible()) {
+				Block from = (Block)testTrack.redLine.getBlocks().get( (int)addTrack1.getValue() );
+				Block to = (Block)testTrack.redLine.getBlocks().get( (int)addTrack2.getValue() );
+				testTrack.redLine.addBlock(from, to);
+				addTrack1.removeItem(""+from.id);
+				addTrack2.removeItem(""+to.id);
+			}
 
+		}
 		else if (theEvent.isFrom(startBtn)) {
 			if (welcomeScreen) {
 				testTrack.setTrainList(trainList);
@@ -422,7 +443,8 @@ public class CTCOffice extends PApplet {
 	
 	public void createEditTrackGUI(){
 		editTrackWindow = new JFrame();
-		editTrackWindow.setContentPane(new TrackMapPanel(testTrack)); //,this
+		pMap = new TrackMapPanel(testTrack, this);
+		editTrackWindow.setContentPane(pMap); //,this
 		editTrackWindow.setSize(550, 710);
 		editTrackWindow.setTitle("Edit Track");
 		editTrackWindow.setLocation(1150, 150);

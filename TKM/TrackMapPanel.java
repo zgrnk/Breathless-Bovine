@@ -202,7 +202,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        System.out.println("rep");
         Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -310,15 +310,16 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             blockClickBlock.mapX1 = e.getX();
             blockClickBlock.mapY1 = e.getY();
             blockClickState = 0;
-            repaint();
+            //repaint();
         } else if (blockClickState == 2) {
             blockClickBlock.mapX2 = e.getX();
             blockClickBlock.mapY2 = e.getY();
             blockClickState = 0;
-            repaint();
+            //repaint();
         }
 
         /* Check if we clicked a switch */
+        repaint();
     }
     public void mouseEntered(MouseEvent e) {
     }
