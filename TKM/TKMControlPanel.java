@@ -32,6 +32,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
     JCheckBox cboxBlkUground;
     JCheckBox cboxBlkYard;
     JCheckBox cboxBlkCrossing;
+    JCheckBox cboxBlkClosed;
     
     JCheckBox cboxSwDiv;
     JLabel lblMainBlk;
@@ -109,14 +110,16 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         cboxBlkUground.addActionListener(this);
         cboxBlkCrossing = new JCheckBox();
         cboxBlkCrossing.addActionListener(this);
+        cboxBlkClosed = new JCheckBox();
+        cboxBlkClosed.addActionListener(this);
 
         lblPrevElem = new JLabel();
         lblNextElem = new JLabel();
 
         btnRemoveTrack = new JButton("Remove this block");
         btnRemoveTrack.addActionListener(this);
-        btnAddTrack = new JButton("Add new block");
-        btnAddTrack.addActionListener(this);
+        //btnAddTrack = new JButton("Add new block");
+        //btnAddTrack.addActionListener(this);
 
         cboxSwDiv = new JCheckBox();
         cboxSwDiv.addActionListener(this);
@@ -124,6 +127,9 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         lblStraightBlk = new JLabel();
         lblDivBlk = new JLabel();
 
+        
+        pBlkInfo.add(new JLabel("Click the map to"));
+        pBlkInfo.add(new JLabel("select a block"));
         pBlkInfo.add(new JLabel("Select Line"));
         pBlkInfo.add(cbLine);
         pBlkInfo.add(new JLabel("Select Block"));
@@ -144,8 +150,12 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         pBlkInfo.add(cboxBlkUground);
         pBlkInfo.add(new JLabel("Is Crossing"));
         pBlkInfo.add(cboxBlkCrossing);
+        pBlkInfo.add(new JLabel("Is Closed for Maintenance"));
+        pBlkInfo.add(cboxBlkClosed);
+        pBlkInfo.add(new JLabel(""));
         pBlkInfo.add(btnRemoveTrack);
-        pBlkInfo.add(btnAddTrack);
+        
+        //pBlkInfo.add(btnAddTrack);
 
         pBlkInfo.add(new JLabel("Previous Element"));
         pBlkInfo.add(lblPrevElem);
@@ -248,6 +258,8 @@ public class TKMControlPanel extends JPanel implements ActionListener {
             cboxBlkUground.setEnabled(false);
             cboxBlkCrossing.setSelected(false);
             cboxBlkCrossing.setEnabled(false);
+            cboxBlkClosed.setSelected(false);
+            cboxBlkClosed.setEnabled(false);
             lblPrevElem.setText("");
             lblNextElem.setText("");
         } else {
@@ -258,6 +270,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
             cboxBlkBidir.setEnabled(true);
             cboxBlkUground.setEnabled(true);
             cboxBlkCrossing.setEnabled(true);
+            cboxBlkClosed.setEnabled(true);
             
             fieldBlkSection.setText(blk.sectionId);
             fieldBlkLength.setText(Double.toString(blk.length));
@@ -273,6 +286,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
             cboxBlkBidir.setSelected(blk.isBidir);
             cboxBlkUground.setSelected(blk.isUground);
             cboxBlkCrossing.setSelected(blk.isCrossing);
+            cboxBlkClosed.setSelected(blk.isClosed);
 
             lblPrevElem.setText((blk.prev != null) ? blk.prev.toString() : "dead-end");
             lblNextElem.setText((blk.next != null) ? blk.next.toString() : "dead-end");
@@ -338,6 +352,9 @@ public class TKMControlPanel extends JPanel implements ActionListener {
         }
         if(e.getSource() == cboxBlkCrossing) {
             selectedBlock.isCrossing = cboxBlkCrossing.isSelected();
+        }
+        if(e.getSource() == cboxBlkClosed) {
+            selectedBlock.isClosed = cboxBlkClosed.isSelected();
         }
         if(e.getSource() == fieldBlkStationName) {
             selectedBlock.isUground = cboxBlkUground.isSelected();
