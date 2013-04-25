@@ -325,6 +325,9 @@ public class TKMControlPanel extends JPanel implements ActionListener {
             selectedBlock.sectionId = fieldBlkSection.getText();
         }
         if(e.getSource() == fieldBlkStationName) {
+            if (fieldBlkStationName.getText().equals("")) {
+                selectedBlock.isStation = false;
+            }
             selectedBlock.stationName = fieldBlkStationName.getText();
         }
         
@@ -342,7 +345,8 @@ public class TKMControlPanel extends JPanel implements ActionListener {
             removeTrackDialog();
         }
         if (e.getSource() == btnAddTrack) {
-            System.out.println("add track");
+            pMap.setBlockLocation(selectedBlock);
+            //System.out.printf("(%d,%d)\n", pt.getX(), pt.getY());
         }
 
         if (pMap != null) {

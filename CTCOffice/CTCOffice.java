@@ -381,8 +381,10 @@ public class CTCOffice extends PApplet {
 				g_clock.hide();
 				TLgroup.show();
 				trainInfo.show();
+
 				welcomeScreen = false;
 				init = true;
+
 
 			} 
 			else {

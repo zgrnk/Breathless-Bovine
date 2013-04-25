@@ -43,6 +43,40 @@ public class TrackLayout {
             blocks.remove(blk);
         }
         
+        public Block addBlock(Block from, Block to
+
+            Block newBlk = null;
+
+            if (from.next == to
+                || to.prev == from
+                || from.prev == to
+                || to.next == from) {
+                    return null;
+            }
+            
+            if (from != null || to != null) {
+                /* Find max id in the list */
+                int maxId = 0;
+
+                for (Block b : blocks) {
+                    if (b.id > maxId) {
+                        maxId = b.id;
+                    }
+                }
+                
+                Block newBlk = new Block(maxId+1, this.id, "", 50, 0, 50, true, false,
+                                         false, false, false, "", false, false, false);
+
+                newBlk.connectBlocks(from, to);
+                blocks.add(newBlk);
+                return newBlk;
+                
+            } else {
+                System.out.println("Nothing added");
+                return null;
+            }
+        }
+    
         public AbstractCollection<Block> getBlocks()
         {
             //ArrayList
@@ -243,7 +277,6 @@ public class TrackLayout {
         return allSwitches;
     }
 
- 
 
     public void parseTrackDB (String pathname) {
         redLine = new TrackLine("Red Line");

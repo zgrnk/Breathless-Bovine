@@ -23,11 +23,23 @@ public class TrackMapPanel extends JPanel implements MouseListener{
     BufferedImage xingIcon;
     private TrackLayout lyt;
     private TKMControlPanel cPanel;
+    private CTCOffice office
+
+    private boolean needClick = false;
+    private Point clickPoint;
+
+    private int blockClickState = 0;
+    private Block blockClickBlock = null;
 
     private int x;
     private int y;
 
     private ArrayList<Block> foundStations;
+
+    public TrackMapPanel(TrackLayout lyt, CTCOffice office) {
+        this.office = office;
+        this(lyt);
+    }
 
     public TrackMapPanel(TrackLayout lyt) {
         try {
@@ -109,13 +121,6 @@ public class TrackMapPanel extends JPanel implements MouseListener{
                 BasicStroke.JOIN_MITER);
         g2.setStroke(s);
 
-        if (blk == lyt.getSelectedElement()) {
-            g2.setPaint(Color.CYAN);
-        } else if (blk.isOccupied()) {
-            g2.setPaint(Color.YELLOW);
-        } else {
-            g2.setPaint(Color.WHITE);
-        }
 
         int xAvg = (blk.mapX1 + blk.mapX2)/2;
         int yAvg = (blk.mapY1 + blk.mapY2)/2;
@@ -136,9 +141,17 @@ public class TrackMapPanel extends JPanel implements MouseListener{
                     foundStations.add(b);
                 }
             }
+
+            if (blk == lyt.getSelectedElement()) {
+                g2.setPaint(Color.CYAN);
+            } else if (blk.isOccupied()) {
+                g2.setPaint(Color.YELLOW);
+            } else {
+                g2.setPaint(Color.WHITE);
+            }
             
             g2.fill(new Ellipse2D.Double(xAvg-5,yAvg-5,10,10));
-
+            
             if (!foundStations.contains(blk))
             {
                 g.setColor(Color.WHITE);
@@ -147,6 +160,7 @@ public class TrackMapPanel extends JPanel implements MouseListener{
             }
 
         }
+
 
         if (blk.isCrossing) {
             //g.setColor(Color.MAGENTA);
@@ -244,6 +258,26 @@ public class TrackMapPanel extends JPanel implements MouseListener{
         }
     }
 
+    public void setBlockLocation(Block blk)
+    {
+        blockClickBlock = blk;
+        if (blk.prev == null && blk.next == null) {
+            JOptionPane.showMessageDialog(this.getTopLevelAncestor(),
+                              "Can't have 2 dead ends.");
+        }
+        if (blk.prev == null) {
+            JOptionPane.showMessageDialog(this.getTopLevelAncestor(),
+                                          "Click a \"from\" point for this block.");
+            blockClickState = 1;
+        } else if (blk.next == null) {
+            JOptionPane.showMessageDialog(this.getTopLevelAncestor(),
+                                          "Click a \"to\" point for this block.");
+            blockClickState = 2;
+        } else {
+            /* Neither is null */
+        }
+    } 
+
     public void mouseClicked(MouseEvent e) {
         /* Check if we clicked a track block */
         for (Block b : lyt.getBlocks())
@@ -263,9 +297,24 @@ public class TrackMapPanel extends JPanel implements MouseListener{
                 if (cPanel != null) {
                     cPanel.updateBlkInfo(b, true);
                 }
+                if (office != null) {
+                    office.setSelectedBlock(b);
+                }
                 repaint();
                 return;
             }
+        }
+
+        if (blockClickState == 1) {
+            blockClickBlock.mapX1 = e.getX();
+            blockClickBlock.mapY1 = e.getY();
+            blockClickState = 0;
+            repaint();
+        } else if (blockClickState == 2) {
+            blockClickBlock.mapX2 = e.getX();
+            blockClickBlock.mapY2 = e.getY();
+            blockClickState = 0;
+            repaint();
         }
 
         /* Check if we clicked a switch */
