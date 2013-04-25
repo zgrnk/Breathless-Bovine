@@ -75,13 +75,13 @@ public class TrackLayout {
             }
         }
     
-        public AbstractCollection<Block> getBlocks()
+        public ArrayList<Block> getBlocks()
         {
             //ArrayList
             return blocks;
         }
         
-        public AbstractCollection<Switch> getSwitches()
+        public ArrayList<Switch> getSwitches()
         {
             return switches;
         }
@@ -257,7 +257,7 @@ public class TrackLayout {
         return line.getElementById(id);
     }
 
-    public AbstractCollection<Block> getBlocks()
+    public ArrayList<Block> getBlocks()
     {
         ArrayList<Block> allBlocks = new ArrayList();
         allBlocks.addAll(redLine.getBlocks());
@@ -266,7 +266,7 @@ public class TrackLayout {
         return allBlocks;
     }
     
-    public AbstractCollection<Switch> getSwitches()
+    public ArrayList<Switch> getSwitches()
     {
         ArrayList<Switch> allSwitches = new ArrayList();
         allSwitches.addAll(redLine.getSwitches());
