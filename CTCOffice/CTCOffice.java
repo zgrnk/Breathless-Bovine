@@ -43,7 +43,7 @@ public class CTCOffice extends PApplet {
 	
 	//CTC vars
 	boolean welcomeScreen, init, dropDown1;
-	int simTimeRatio, lastTick, numTrains, isOpenCnt;
+	int simTimeConstant, lastTick, numTrains, isOpenCnt;
 	int cnt = 0;
 	
 	//dates
@@ -86,9 +86,9 @@ public class CTCOffice extends PApplet {
 		frameRate(10);
 		lastTick = 0;
 		//in GUI set simToRealtime = 10
-		//simTimeRatio = above * FrameRate
+		//simTimeConstant = above * FrameRate
 		//milliSecPerFrame = 1000
-		simTimeRatio = 100;
+		simTimeConstant = 100;
 		
 		title = loadImage("BBtext.png");
 		title.resize(300,0);
@@ -163,11 +163,11 @@ public class CTCOffice extends PApplet {
 		int count = 0;
 
 		while(currentSimTime.getTime() < targetTime.getTime().getTime()){
-			tnmUI.timeTick(currentSimTime, simTimeRatio);
+			tnmUI.timeTick(currentSimTime, simTimeConstant);
 			tkc.nextTick();
 
 			tempTime.setTime(currentSimTime);
-			tempTime.add(Calendar.MILLISECOND,simTimeRatio);
+			tempTime.add(Calendar.MILLISECOND,simTimeConstant);
 			currentSimTime = tempTime.getTime();
 			count++;
 		}
@@ -232,11 +232,11 @@ public class CTCOffice extends PApplet {
 				.setBarHeight(30).setWidth(300).hideArrow().setOpen(true);
 
 
-		simRadio = cp5.addRadioButton("sim_radio").setPosition(85, 50).setSpacingRow(5)
+		simRadio = cp5.addRadioButton("simRadio").setPosition(85, 50).setSpacingRow(5)
 				.setSize(20, 15).setColorLabel(145).setColorActive(-1)
 				.addItem("Real Time", 0).addItem("x10", 1).setGroup(simGroup);
 
-		SimRatioBtn = cp5.addButton("SetRatio").setValue(1)
+		SimRatioBtn = cp5.addButton("SimRatioBtn").setValue(1)
 				.setPosition(115, 125).setDefaultValue(5)
 				.setSize(75, 25).setId(2).setGroup(simGroup);
 
@@ -511,7 +511,11 @@ public class CTCOffice extends PApplet {
 		}
 	}
 	
-	public void SetRatio(){
+	public void simRadio(int index){
+		if (index == 0){
+			simTimeConstant = 1000;
+		}
+		else simTimeConstant = 100;
 
 	}
 	
