@@ -28,19 +28,25 @@ public class TrackLayout {
         private ArrayList<Switch> switches;
         public Block yard;
         public String id;
+        public TrackLayout lyt;
 
-        public TrackLine(String lineId)
+        public TrackLine(String lineId, TrackLayout lyt)
         {
             //elements = new ArrayList<TrackElement>();
             blocks = new ArrayList<Block>();
             switches = new ArrayList<Switch>();
             id = lineId;
+            this.lyt = lyt;
         }
 
         public void removeBlock(Block blk) {
             blk.prev.disconnect(blk);
             blk.next.disconnect(blk);
             blocks.remove(blk);
+
+            if (blk == lyt.getSelectedElement()) {
+                lyt.setSelectedElement(null);
+            }
         }
         
         public Block addBlock(Block from, Block to) {
@@ -277,8 +283,8 @@ public class TrackLayout {
 
 
     public void parseTrackDB (String pathname) {
-        redLine = new TrackLine("Red Line");
-        greenLine = new TrackLine("Green Line");
+        redLine = new TrackLine("Red Line", this);
+        greenLine = new TrackLine("Green Line", this);
 
         TrackLine tLine = redLine;
         
