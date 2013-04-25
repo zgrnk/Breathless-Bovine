@@ -234,10 +234,9 @@ public class CTCOffice extends PApplet {
 
 		simRadio = cp5.addRadioButton("sim_radio").setPosition(85, 50).setSpacingRow(5)
 				.setSize(20, 15).setColorLabel(145).setColorActive(-1)
-				.addItem("Real Time", 0).addItem("x10", 1)
-				.addItem("x100", 2).setGroup(simGroup);
+				.addItem("Real Time", 0).addItem("x10", 1).setGroup(simGroup);
 
-		SimRatioBtn = cp5.addButton("Set Ratio").setValue(1)
+		SimRatioBtn = cp5.addButton("SetRatio").setValue(1)
 				.setPosition(115, 125).setDefaultValue(5)
 				.setSize(75, 25).setId(2).setGroup(simGroup);
 
@@ -510,6 +509,10 @@ public class CTCOffice extends PApplet {
 			closeTrack.hide();
 			removeTrack.hide();
 		}
+	}
+	
+	public void SetRatio(){
+
 	}
 	
 	public void Start(boolean b){
