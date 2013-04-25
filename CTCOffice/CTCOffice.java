@@ -26,8 +26,8 @@ public class CTCOffice extends PApplet {
 	//GUI vars
 	ControlP5 cp5;
 	DropdownList closeTrack, removeTrack, addTrack1, addTrack2, trainInfo_drop;
-	RadioButton trackRadio;
-	Group trackGroup, g_clock, sched, TLgroup, trainInfo;
+	RadioButton trackRadio, simRadio;
+	Group trackGroup, simGroup, sched, TLgroup, trainInfo;
 	Tab trackTab;
 	Button startBtn, setTrainSpd, SimRatioBtn, schedulerBtn, submitTrackBtn, SetSimBtn, editTrackWindowBtn;
 	Knob kn_trainSpeed;
@@ -104,7 +104,7 @@ public class CTCOffice extends PApplet {
 
 		addHomeButtons();
 		addTrackGroup();
-		addClockGroup();
+		addSimRatioGroup();
 		addSimStartedWindows();
 
 		
@@ -119,8 +119,8 @@ public class CTCOffice extends PApplet {
 			sendTicks();
 			trainList = tnmUI.getTrainList();
 			
-			if (tkmgui.isVisible()) { tkmgui.repaint(); }	
-			
+			if (tkmgui.isVisible()) { tkmgui.repaint(); }
+	
 			try {
 				String t_id = trainInfo_drop.getStringValue();
 				if (t_id.length() > 5) {
@@ -137,7 +137,11 @@ public class CTCOffice extends PApplet {
 		}
 		//welcomescreen
 		else{
+			if (closeTrack.isOpen() || removeTrack.isOpen()	|| addTrack1.isOpen()  || addTrack2.isOpen()){ 
+				submitTrackBtn.setVisible(false);	
+			}
 			if (editTrackWindow.isVisible()) { editTrackWindow.repaint(); }
+			
 		}
 
 	}
@@ -148,11 +152,11 @@ public class CTCOffice extends PApplet {
 		int count = 0;
 
 		while(currentSimTime.getTime() < targetTime.getTime().getTime()){
-			tnmUI.timeTick(currentSimTime, 100);
+			tnmUI.timeTick(currentSimTime, simTimeRatio);
 			tkc.nextTick();
 
 			tempTime.setTime(currentSimTime);
-			tempTime.add(Calendar.MILLISECOND,100);
+			tempTime.add(Calendar.MILLISECOND,simTimeRatio);
 			currentSimTime = tempTime.getTime();
 			count++;
 		}
@@ -182,7 +186,7 @@ public class CTCOffice extends PApplet {
 				.addItem("Add", 2).setGroup(trackGroup);
 
 		closeTrack = cp5.addDropdownList("Select Track")
-				.setPosition(90, 125).setSize(115, 200).setGroup(trackGroup);
+				.setPosition(90, 125).setSize(115, 200).setGroup(trackGroup).bringToFront();
 
 		removeTrack = cp5.addDropdownList("Select Track ")
 				.setPosition(90, 125).setSize(115, 200).setGroup(trackGroup);
@@ -205,23 +209,25 @@ public class CTCOffice extends PApplet {
 				.setSize(75, 25).setId(1).setGroup(trackGroup).setVisible(false);
 	}
 
-	public void addClockGroup() {
-		g_clock = cp5.addGroup("Simulation to Realtime Ratio")
-				.setPosition(550, 400).setBackgroundHeight(200)
-				.setBackgroundColor(color(255, 50)).setBarHeight(30)
-				.setWidth(300).hideArrow().setOpen(false).setMoveable(true);
+	public void addSimRatioGroup() {
+		simGroup = 	cp5.addGroup("Simulation to Realtime Ratio").setPosition(100, 250)
+				.hideBar().setMoveable(true).setVisible(false)
+				.setBackgroundHeight(200).setBackgroundColor(color(255, 50))
+				.setBarHeight(30).setWidth(300).hideArrow().setOpen(true);
 
-		cp5.addSlider("Select").setPosition(60, 75).setSize(180, 15)
-		.setGroup(g_clock);
+
+		simRadio = cp5.addRadioButton("sim_radio").setPosition(85, 50).setSpacingRow(5)
+				.setSize(20, 15).setColorLabel(145).setColorActive(-1)
+				.addItem("Real Time", 0).addItem("x10", 1)
+				.addItem("x100", 2).setGroup(simGroup);
 
 		SimRatioBtn = cp5.addButton("Set Ratio").setValue(1)
-				.setPosition(115, 150).setDefaultValue(5)
-
-				.setSize(75, 25).setId(2).setGroup(g_clock);
+				.setPosition(115, 125).setDefaultValue(5)
+				.setSize(75, 25).setId(2).setGroup(simGroup);
 
 		/*
 		 * cp5.addSlider("label2") .setPosition(60,100) .setSize(180,15)
-		 * .setGroup(g_clock) ;
+		 * .setGroup(simGroup) ;
 		 */
 
 	}
@@ -281,7 +287,7 @@ public class CTCOffice extends PApplet {
 	public void customizeDropDownBlock(DropdownList list, ArrayList<Block> aList, boolean isTrackList) {
 		list.setBackgroundColor(color(190));
 		list.setItemHeight(30);
-		list.setBarHeight(15);
+		list.setBarHeight(20);
 		// list.getCaptionLabel().setText("dropdown");
 		list.getCaptionLabel().setPaddingY(3);
 		list.getCaptionLabel().setPaddingX(3);
@@ -302,7 +308,7 @@ public class CTCOffice extends PApplet {
 		// a convenience function to customize a DropdownList
 		list.setBackgroundColor(color(190));
 		list.setItemHeight(30);
-		list.setBarHeight(15);
+		list.setBarHeight(30);
 		// list.getCaptionLabel().setText("dropdown");
 		list.getCaptionLabel().setPaddingY(3);
 		list.getCaptionLabel().setPaddingX(3);
@@ -317,26 +323,7 @@ public class CTCOffice extends PApplet {
 
 	// Event handling
 	public void controlEvent(ControlEvent theEvent) {
-		if (theEvent.isFrom(trackRadio)) {
-			int index = (int) theEvent.getValue();
-			if (index == 0) {
-				closeTrack.show();
-				removeTrack.hide();
-				addTrack1.hide();
-				addTrack2.hide();
-			} else if (index == 1) {
-				closeTrack.hide();
-				removeTrack.show();
-				addTrack1.hide();
-				addTrack2.hide();
-			} else {
-				addTrack1.show();
-				addTrack2.show();
-				closeTrack.hide();
-				removeTrack.hide();
-			}
-		} 
-		else if (theEvent.isFrom(closeTrack) || theEvent.isFrom(removeTrack)
+		if (theEvent.isFrom(closeTrack) || theEvent.isFrom(removeTrack)
 				|| theEvent.isFrom(addTrack1)  || theEvent.isFrom(addTrack2) ){
 			submitTrackBtn.setVisible(true);
 			editTrackWindowBtn.setVisible(true);
@@ -351,30 +338,17 @@ public class CTCOffice extends PApplet {
 			schedulerBtn.setOff();
 			startBtn.setVisible(true);
 		}
+		else if (theEvent.isFrom(SetSimBtn)){
+			simGroup.setVisible(true);
+			trackGroup.setVisible(false);
+			editTrackWindow.setVisible(false);
+		}
 		else if (theEvent.isFrom(editTrackWindowBtn)){
 			trackGroup.setVisible(true);
 			editTrackWindow.setVisible(true);
+			simGroup.setVisible(false);
 		}
-		else if (theEvent.isFrom(submitTrackBtn)){
-			if (closeTrack.isVisible()){
-				Block bl = (Block)testTrack.redLine.getBlocks().get( (int)closeTrack.getValue() );
-				bl.isClosed = true;
-				closeTrack.removeItem(""+bl.id);
-			} 
-			else if (removeTrack.isVisible()) {
-				Block bl = (Block)testTrack.redLine.getBlocks().get( (int)removeTrack.getValue() );
-				testTrack.redLine.removeBlock(bl);
-				removeTrack.removeItem(""+bl.id);
-			}
-			else if (addTrack1.isVisible()) {
-				Block from = (Block)testTrack.redLine.getBlocks().get( (int)addTrack1.getValue() );
-				Block to = (Block)testTrack.redLine.getBlocks().get( (int)addTrack2.getValue() );
-				testTrack.redLine.addBlock(from, to);
-				addTrack1.removeItem(""+from.id);
-				addTrack2.removeItem(""+to.id);
-			}
 
-		}
 		else if (theEvent.isFrom(startBtn)) {
 			if (welcomeScreen) {
 				testTrack.setTrainList(trainList);
@@ -397,7 +371,7 @@ public class CTCOffice extends PApplet {
 				tnmUI.setIsPaused(false);
 				startBtn.setCaptionLabel("Pause");
 				trackGroup.hide();
-				g_clock.hide();
+				simGroup.hide();
 				TLgroup.show();
 				trainInfo.show();
 
@@ -410,7 +384,7 @@ public class CTCOffice extends PApplet {
 				tnmUI.setIsPaused(true);
 				startBtn.setCaptionLabel("Resume");
 				trackGroup.show();
-				g_clock.show();
+				simGroup.show();
 				sched.show();
 				TLgroup.hide();
 				trainInfo.hide();
@@ -419,6 +393,37 @@ public class CTCOffice extends PApplet {
 			}
 		} 
 
+	}
+	
+	//event handler for radio group
+	public void radio(int index) {
+		if (index == 0) {
+			closeTrack.show();
+			removeTrack.hide();
+			addTrack1.hide();
+			addTrack2.hide();
+		} else if (index == 1) {
+			closeTrack.hide();
+			removeTrack.show();
+			addTrack1.hide();
+			addTrack2.hide();
+		} else if(index == 2){
+			addTrack1.show();
+			addTrack2.show();
+			closeTrack.hide();
+			removeTrack.hide();
+		}
+		else {
+			addTrack1.hide();
+			addTrack2.hide();
+			closeTrack.hide();
+			removeTrack.hide();
+		}
+	}
+	
+	public void Start(boolean b){
+		System.out.println("dfgdfgd");
+		
 	}
 
 	public ArrayList<Train> getTrainsInBlock(int blockNum){
