@@ -43,7 +43,7 @@ public class CTCOffice extends PApplet {
 	ArrayList<DropdownList> ddLists ;
 	
 	//CTC vars
-	boolean welcomeScreen, init, reset;
+	boolean welcomeScreen, init, reset, tnmOpen;
 	int simTimeConstant, lastTick, numTrains, isOpenCnt, schedCreated, setSpeed, setAuth, selTrain;
 	int cnt = 0;
 	
@@ -80,6 +80,7 @@ public class CTCOffice extends PApplet {
 
 	// processing functions
 	public void setup() {
+		tnmOpen = false;
 		width = 500;
 		height = 600;
 		size(width, height);
@@ -297,16 +298,20 @@ public class CTCOffice extends PApplet {
 		
 		MBObtn = cp5.addButton("MBObtn").setValue(1).setVisible(false)
 				.setPosition(50, 235).setDefaultValue(5)
-				.setSize(110, 35).setId(2).setLabel("GPS Location");
+				.setSize(110, 35).setId(2).setLabel("View MBO");
+
+		TNMbtn = cp5.addButton("TNMbtn").setValue(1).setVisible(false)
+				.setPosition(50, 285).setDefaultValue(5)
+				.setSize(110, 35).setId(2).setLabel("More Train Info");
 		
-/*		TNMbtn = cp5.addButton("SimRatioBtn").setValue(1).setVisible(false)
-				.setPosition(150, 125).setDefaultValue(5)
-				.setSize(200, 50).setId(2).setLabel("View The Track Layout");
+		TKCbtn = cp5.addButton("TKCbtn").setValue(1).setVisible(false)
+				.setPosition(125, 450).setDefaultValue(5)
+				.setSize(110, 35).setId(2).setLabel("View  Wayside");
 		
-		TKCbtn = cp5.addButton("SimRatioBtn").setValue(1).setVisible(false)
-				.setPosition(150, 125).setDefaultValue(5)
-				.setSize(200, 50).setId(2).setLabel("View The Track Layout");
-				TNCbtn*/
+		TNCbtn = cp5.addButton("TNCbtn").setValue(1).setVisible(false)
+				.setPosition(260, 450).setDefaultValue(5)
+				.setSize(110, 35).setId(2).setLabel("View TNC");
+				
 	}
 
 	public void customizeDropDownBlock(DropdownList list, ArrayList<Block> aList, boolean isTrackList) {
@@ -399,15 +404,67 @@ public class CTCOffice extends PApplet {
 			cp5.getController("setAuth").setVisible(true);
 			cp5.getController("setSpeed").setVisible(true);
 			setTrainSpd.setVisible(true);
-			
 			setTrainAuth.setVisible(true);
 		}
 		else if (theEvent.isFrom(schedulerBtn)){
+
 			getScheduleFromSSC();
 			createTrainList();
 			schedulerBtn.setOff();
 			startBtn.setVisible(true);
+			init = false;
+			if (startBtn.getCaptionLabel().getText().compareTo("Pause") == 0){
+				startBtn.setCaptionLabel("Restart");
+			}
+			
 		}
+		else if (theEvent.isFrom(viewTrackBtn)){
+			if (tkmgui.frame.isVisible()){
+				tkmgui.frame.setVisible(false);
+			}
+			else{
+				tkmgui.frame.setVisible(true);
+				tkmgui.frame.setLocation(1000, 200);
+			}
+
+
+		}
+		
+		else if (theEvent.isFrom(MBObtn)){
+			if (mboGUI.isVisible()){
+				mboGUI.setVisible(false);
+			}
+			else{
+				mboGUI.setVisible(true);
+				mboGUI.setLocation(1150, 200);
+			}
+	
+		}
+		else if (theEvent.isFrom(TNMbtn)){
+			if (!tnmOpen){
+				tnmUI.setIsVisible(true);
+				tnmOpen = true;
+			}
+
+			else{
+				tnmUI.setIsVisible(false);
+				tnmOpen = false;
+			}
+			
+		}
+		else if (theEvent.isFrom(TNCbtn)){
+			if (!tnmOpen){
+				tnmUI.tncUI.setVisible(true);
+				tnmOpen = true;
+			}
+
+			else{
+				tnmUI.tncUI.setVisible(false);
+				tnmOpen = false;
+			}
+			
+		}		
+		
 		else if (theEvent.isFrom(setTrainAuth)){
 			tnmUI.getTrainList().get(selTrain).fixedSuggestedAuthority = setAuth;
 		}
@@ -496,27 +553,30 @@ public class CTCOffice extends PApplet {
 					tnmUI.setTrainList(trainList);
 					tnmUI.setIsPaused(false);
 					tnmUI.setSelectedId(trainList.get(0).id);
-					tnmUI.setIsVisible(true);
-					tnmUI.tncUI.setVisible(true);
-					tnmUI.tncUI.setFrameLoc(1150, 100);
+					tnmUI.setIsVisible(false);
+					tnmUI.tncUI.setVisible(false);
 
-					tkmgui = new TKMGui(testTrack);
-					tkmgui.frame.setVisible(true);
-					tkmgui.frame.setLocation(1000, 200);
+					tkmgui = new TKMGui(testTrack);	
+					tkmgui.frame.setVisible(false);
 					
 					tkc = new TrackController(testTrack, this);
 					tkcgui = new ControllerUI(tkc);
-					tkcgui.frame.setVisible(true);
-					tkcgui.frame.setLocation(1000, 200);
-					
+					tkcgui.frame.setVisible(false);
+	
 					mboGUI = new MBO_GUI(trainList);
-					mboGUI.setVisible(true);
-					mboGUI.setLocation(1150, 200);
+					mboGUI.setVisible(false);
+	
+			
 				}
 
 				startBtn.setCaptionLabel("Pause");
 				viewTrackBtn.show();
 				MBObtn.show();
+				TNMbtn.show();
+				
+				TKCbtn.show();
+				
+				TNCbtn.show();
 				trainInfo.show();
 				trackGroup.hide();
 				simGroup.hide();
@@ -526,13 +586,23 @@ public class CTCOffice extends PApplet {
 				welcomeScreen = false;
 				init = true;
 				
+				
 
 			} 
 			else {
+				if (init){
+					startBtn.setCaptionLabel("Pause");
+				}
+				else startBtn.setCaptionLabel("Restart");
+				
 				tnmUI.setIsPaused(true);
-				startBtn.setCaptionLabel("Resume");
 				viewTrackBtn.hide();
 				MBObtn.hide();
+				TNMbtn.hide();
+				
+				TKCbtn.hide();
+				
+				TNCbtn.hide();
 				trainInfo.hide();
 				System.out.println("SYSTEM PAUSED");
 				schedulerBtn.show();
@@ -648,6 +718,7 @@ public class CTCOffice extends PApplet {
 	}
 
 	public void getScheduleFromSSC() {
+		init = false;
 		sscGUI = new SSC_GUI();
 		sscGUI.setLocation(1150, 350);
 
