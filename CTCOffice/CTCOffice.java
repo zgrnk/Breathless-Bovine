@@ -498,6 +498,8 @@ public class CTCOffice extends PApplet {
 			else {
 				tnmUI.setIsPaused(true);
 				startBtn.setCaptionLabel("Resume");
+				viewTrackBtn.hide();
+				MBObtn.hide();
 				trainInfo.hide();
 				System.out.println("SYSTEM PAUSED");
 				schedulerBtn.show();
