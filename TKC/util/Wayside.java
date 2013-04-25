@@ -245,7 +245,7 @@ public class Wayside {
 			}
 			//block doesn't have a recorded train and therefore contains a malfunction circuit
 			if (!flag) {
-				blk.brokenRailFailure = true;
+				//blk.brokenRailFailure = true;
 			}
 		}
 	}

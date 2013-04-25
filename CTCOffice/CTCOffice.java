@@ -38,7 +38,7 @@ public class CTCOffice extends PApplet {
 	TrainModelUI tnmUI;
 
 	//
-	//CHANGED BY MARIO
+	//CHANGED 
 	//
 	ArrayList<Train> trainList = new ArrayList<Train>(); 
 
@@ -47,7 +47,7 @@ public class CTCOffice extends PApplet {
 	Block bYard, b01, b02, b03, b04, b05, b06, b07, b08, b09, b10, b11, b12,
 	b13, b14, b15, b16, b17;
 	double current_clock_sec;
-	Date currentTime; 
+	Date currentSimTime; 
 	Calendar targetTime;
 	Calendar tempTime; 
 
@@ -59,8 +59,7 @@ public class CTCOffice extends PApplet {
 	//TrackLayout track_layout;
 	TrackLayout testTrack;
 	Button schedulerBtn;
-	//
-	//ADDED BY MARIO
+
 	MBO_GUI mboGUI;
 	SSC_GUI sscGUI;
 
@@ -91,28 +90,23 @@ public class CTCOffice extends PApplet {
 		simStarted = false;
 		init = false;
 
-
 		//createTKMGUI();
 		getTrack();
-		
 		//mario may not need this?
 		//testInit();
-
-		//
-		//ADDED BY MARIO
-		//
-		addSchedulerButton();
 		
 		addTrackGroup();
 		addClockGroup();
-		addScheduleGroup();
 		addStartButton();
 		addSimStartedWindows();
+		//addScheduleGroup(); 
+		addSchedulerButton(); //SSC
 
+/*		tnmUI = new TrainModelUI();
 		tnmUI.setIsPaused(true);
 		tnmUI.setTrainList(trainList);
 		tnmUI.setSelectedId(trainList.get(0).id);
-		tnmUI.setIsVisible(false);
+		tnmUI.setIsVisible(false);*/
 
 		//new SSC_GUI();
 
@@ -122,43 +116,48 @@ public class CTCOffice extends PApplet {
 		background(193, 205, 193);
 
 		if (simStarted) {
-			mapwindow.repaint();
-			//
-			//ADDED BY MARIO
-			//
-			//AS OF NOW THIS HALTS ENTIRE SYSTEM - STUCK IN WHILE LOOPS
-			//
-			targetTime.setTime(currentTime);
-			targetTime.add(Calendar.MILLISECOND,1000);
+			//mapwindow.repaint();
 
-			while(currentTime.getTime() < targetTime.getTime().getTime()){
-				tnmUI.timeTick(currentTime, 100);
-				tkc.nextTick();
+			sendTicks();
 
-				tempTime.setTime(currentTime);
-				tempTime.add(Calendar.MILLISECOND,100);
-				currentTime = tempTime.getTime();
-			}
 			tkmgui.repaint();
 			
+			//update trainlist
 			trainList = tnmUI.getTrainList();
+			
+			try {
+				String t_id = trainInfo_drop.getStringValue();
+				if (t_id.length() > 5) {
+					int sp = (int) trainList.get(Integer.parseInt(t_id))
+							.curVelocity;
+					kn_trainSpeed.setValue((float) sp);
+					// kn_trainSpeed.update();
+				}
+			}
+			catch (Exception e) {
+
+			}
 			
 		}
 
-		try {
-			String t_id = trainInfo_drop.getStringValue();
-			if (t_id.length() > 5) {
-				int sp = (int) trainList.get(Integer.parseInt(t_id))
-						.curVelocity;
-				kn_trainSpeed.setValue((float) sp);
-				// kn_trainSpeed.update();
-			}
+
+
+	}
+	
+	public void sendTicks(){
+		targetTime.setTime(currentSimTime);
+		targetTime.add(Calendar.MILLISECOND,1000);
+		int count = 0;
+
+		while(currentSimTime.getTime() < targetTime.getTime().getTime()){
+			tnmUI.timeTick(currentSimTime, 100);
+			tkc.nextTick();
+
+			tempTime.setTime(currentSimTime);
+			tempTime.add(Calendar.MILLISECOND,100);
+			currentSimTime = tempTime.getTime();
+			count++;
 		}
-
-		catch (Exception e) {
-
-		}
-
 	}
 
 	// GUI init functions
@@ -206,9 +205,6 @@ public class CTCOffice extends PApplet {
 
 	}
 
-	//
-	//ADDED BY MARIO
-	//
 	public void addSchedulerButton(){
 		schedulerBtn = cp5.addButton("System Scheduler").setValue(1).setPosition(10, 10)
 				.setSize(100, 50).setId(0);
@@ -317,34 +313,26 @@ public class CTCOffice extends PApplet {
 
 			}
 		} else if (theEvent.isFrom(schedulerBtn)){
-
-			getSchedule();
-
+			getScheduleFromSSC();
+			createTrainList();
 		}
 
 		else if (theEvent.isFrom(startBtn)) {
 
-			//
-			//CHANGED BY MARIO
-			//
-			if(startBtn.getCaptionLabel().equals("Start")){
-
+/*			if(startBtn.getCaptionLabel().equals("Start")){
+				
+				//getScheduleFromSSC();
+				
 				testTrack.setTrainList(trainList);
+				
 				tkmgui = new TKMGui(testTrack);
-
 				tkc = new TrackController(testTrack, this);
 				tkcgui = new ControllerUI(tkc);
-
-				//
-				//ADDED BY MARIO
-				//
+				
 				mboGUI = new MBO_GUI(trainList);
 				tnmUI.setIsPaused(true);
 				tnmUI.setTrainList(trainList);
 
-				//
-				//ADDED BY MARIO
-				//
 				tkmgui.setVisible(true);
 				tnmUI.setIsVisible(true);
 				tkcgui.setVisible(true);
@@ -352,7 +340,7 @@ public class CTCOffice extends PApplet {
 
 				System.out.println("SYSTEM STARTED");
 
-				simStarted = true;
+				
 				tnmUI.setIsPaused(false);
 				startBtn.setCaptionLabel("Pause");
 				track.hide();
@@ -360,9 +348,10 @@ public class CTCOffice extends PApplet {
 				sched.hide();
 				TLgroup.show();
 				trainInfo.show();
-			}
-			else if (simStarted) {
-				simStarted = false;
+				simStarted = true;
+			}*/
+			if (simStarted) {
+				
 				tnmUI.setIsPaused(true);
 				startBtn.setCaptionLabel("Resume");
 				track.show();
@@ -370,14 +359,40 @@ public class CTCOffice extends PApplet {
 				sched.show();
 				TLgroup.hide();
 				trainInfo.hide();
-
 				System.out.println("SYSTEM PAUSED");
+				simStarted = false;
 
 
 			} else {
+				
+				testTrack.setTrainList(trainList);
+				
+				tkmgui = new TKMGui(testTrack);
+				tkc = new TrackController(testTrack, this);
+				tkcgui = new ControllerUI(tkc);
+				
+				mboGUI = new MBO_GUI(trainList);
+				tnmUI.setIsPaused(true);
+				tnmUI.setTrainList(trainList);
+				tnmUI.setSelectedId(trainList.get(0).id);
+				tkmgui.setVisible(true);
+				tnmUI.setIsVisible(true);
+				tkcgui.setVisible(true);
+				mboGUI.setVisible(true);
 
-				simStarted = true;
+				System.out.println("SYSTEM STARTED");
+
+				
 				tnmUI.setIsPaused(false);
+				startBtn.setCaptionLabel("Pause");
+				track.hide();
+				g_clock.hide();
+				//sched.hide();
+				TLgroup.show();
+				trainInfo.show();
+				simStarted = true;
+				
+/*				tnmUI.setIsPaused(false);
 				startBtn.setCaptionLabel("Pause");
 				track.hide();
 				g_clock.hide();
@@ -386,17 +401,14 @@ public class CTCOffice extends PApplet {
 				trainInfo.show();
 				//mapwindow.setVisible(true);
 				System.out.println("SYSTEM RESUMED");
+				simStarted = true;*/
 			}
 		} 
 
-		//
-		//ADDED BY MARIO
-		//
 		else if (theEvent.isFrom(sched)){
-
-			sscGUI = new SSC_GUI();
+			//sscGUI = new SSC_GUI();
+			//getSchedule();
 		}
-
 
 		else if (theEvent.isGroup()) {
 			/*println("got an event from group " + theEvent.getGroup().getName()
@@ -413,68 +425,37 @@ public class CTCOffice extends PApplet {
 		return tnmUI.getTrainsInBlock(blockNum);
 	}
 
-//	public void testInit() {
-//		tnmUI = new TrainModelUI();
-
-//		//SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");	
-//		tempTime.set(Calendar.HOUR_OF_DAY,7);
-//		tempTime.set(Calendar.MINUTE,59);
-//		tempTime.set(Calendar.SECOND,0);
-//		tempTime.set(Calendar.MILLISECOND,0);
+	public void testInit() {
+		//tnmUI = new TrainModelUI();
 		
-//		currentTime = tempTime.getTime();
-		
-		//current_clock_sec = 7 * 60 * 60 + 59 * 60 + 30;
+		// should change time variable name 
+		tempTime.set(Calendar.HOUR_OF_DAY,7);
+		tempTime.set(Calendar.MINUTE,59);
+		tempTime.set(Calendar.SECOND,0);
+		tempTime.set(Calendar.MILLISECOND,0);
+		currentSimTime = tempTime.getTime();
 
-//		trainList = new ArrayList<Train>();
-//		idArray = new String[numTrains];
+/*		trainList = new ArrayList<Train>();
+		idArray = new String[numTrains];
 		// Create the trains.
-//		for (int i = 0; i < numTrains; i++) {
-//			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
-//					(8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), redRoute,
-//					new Engineer(true, false, 0.0,
-//							(8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60)
-//									% (24 * 60 * 60)), bYard);
-//			trainList.add(tempTrain);
-//			Integer tempInt = new Integer(i + 1);
-//			idArray[i] = new String("T"+(i+1));
-//		}
-//		track_layout.setTrainList(trainList);
-//	}
+		for (int i = 0; i < numTrains; i++) {
+			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
+					(8 * 60 * 60 + i * 30 * 60) % (24 * 60 * 60), redRoute,
+					new Engineer(true, false, 0.0,
+							(8 * 60 * 60 + i * 30 * 60 + 4 * 60 * 60)
+									% (24 * 60 * 60)), bYard);
+			trainList.add(tempTrain);
+			Integer tempInt = new Integer(i + 1);
+			idArray[i] = new String("T"+(i+1));
+		}
+		track_layout.setTrainList(trainList);*/
+	}
 	
-	/*public void createTKMGUI(){
-		track_layout = new TrackLayout();	
-		track_layout.parseTrackDB("track_db.csv");	
+	public void createTKMGUI(){
 		mapwindow = new JFrame();
-		mapwindow.setContentPane(new TrackMapPanel(track_layout));
+		mapwindow.setContentPane(new TrackMapPanel(testTrack));
 		mapwindow.setSize(550, 653);
-	
-		bYard = track_layout.redLine.yard;	
-
-		redRoute = new ArrayList<Block>();
-		
-		//create red line route
-		//9-1, 16-66, 52-16, 1-9, yard(0) 
-		int i;
-		//route.add((Block)track.getElementById(0));
-		for (i=9; i>0; i--){
-			testRoute.add((Block)testTrack.getElementById(i));
-		}
-		for (i=16; i<67; i++){
-			testRoute.add((Block)testTrack.getElementById(i));
-		}
-		for (i=52; i>15; i--){
-			testRoute.add((Block)testTrack.getElementById(i));
-		}
-		for (i=52; i>15; i--){
-			testRoute.add((Block)testTrack.getElementById(i));
-		}
-		for (i=1; i<10; i++){
-			testRoute.add((Block)testTrack.getElementById(i));
-		}
-		//yard
-		testRoute.add((Block)testTrack.getElementById(0));
-	}*/
+	}
 	
 	public void getTrack(){
 		testTrack = new TrackLayout();	
@@ -505,61 +486,64 @@ public class CTCOffice extends PApplet {
 		testRoute.add((Block)testTrack.getElementById(0));
 	}
 
-
-	public void getSchedule() {
-		//
-		//CHANGED BY MARIO
-		//
-
+	//SSC
+	public void getScheduleFromSSC() {
+		//call this function on btn click, init here instead
+		sscGUI = new SSC_GUI();
 		tnmUI = new TrainModelUI();
+		tnmUI.setIsVisible(false);
 
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-
-		/*
-		tempTime.set(Calendar.HOUR_OF_DAY,7);
-		tempTime.set(Calendar.MINUTE,59);
-		tempTime.set(Calendar.SECOND,0);
-		tempTime.set(Calendar.MILLISECOND,0);
-		 */
-
-		//currentTime = tempTime.getTime();
-
-		//current_clock_sec = 7 * 60 * 60 + 59 * 60 + 30;
-
-
-		sscGUI = new SSC_GUI();
+		Calendar thisTempTime = Calendar.getInstance();
 
 		while(sscGUI.lbl_start_time.getText().equals("------")){
 			wait(1);
 		}
 
 		try {
-			tempTime.setTime(sdf.parse(sscGUI.sscListener.scheduler.startTime + ":00"));
+			thisTempTime.setTime(sdf.parse(sscGUI.sscListener.scheduler.startTime + ":00"));
 		} catch (ParseException e) {}
 		
-		tempTime.add(Calendar.MINUTE, -1);
+		thisTempTime.add(Calendar.MINUTE, -1);
 
 		/*
-		tempTime.set(Calendar.HOUR_OF_DAY,Integer.valueOf(sscGUI.sscListener.scheduler.startTime.substring(0, 2)));
-		tempTime.set(Calendar.MINUTE,Integer.valueOf(sscGUI.sscListener.scheduler.startTime.substring(0, 2)));
-		tempTime.set(Calendar.SECOND,0);
-		tempTime.set(Calendar.MILLISECOND,0);
+		thisTempTime.set(Calendar.HOUR_OF_DAY,Integer.valueOf(sscGUI.sscListener.scheduler.startTime.substring(0, 2)));
+		thisTempTime.set(Calendar.MINUTE,Integer.valueOf(sscGUI.sscListener.scheduler.startTime.substring(0, 2)));
+		thisTempTime.set(Calendar.SECOND,0);
+		thisTempTime.set(Calendar.MILLISECOND,0);
 		 */
 
-		currentTime = tempTime.getTime();
+		currentSimTime = thisTempTime.getTime();
+		System.out.println("set time: "+currentSimTime);
 
 		//
 		//NOT SURE WHERE TO INITIALIZE SSC? NEEDS TO BE LAST THING BEFORE START
 		//
 
-
-		//
-		//MUST WAIT UNTIL SSC IS FINISHED TO DO THIS
-		//
 		while(sscGUI.lbl_generate_sch.getText().equals("------")){
 			wait(1);
 		}
 
+
+
+		/*
+		trainList = new ArrayList<Train>();
+		idArray = new String[numTrains];
+		// Create the trains.
+		for (i = 0; i < numTrains; i++) {
+			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
+					(8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), testRoute,
+					new Engineer(true, false, 0.0,
+							(8 * 60 * 60 + i * 15 * 60 + 4 * 60 * 60)
+							% (24 * 60 * 60)), bYard);
+			trainList.add(tempTrain);
+			Integer tempInt = new Integer(i + 1);
+			idArray[i] = new String("T"+(i+1));
+		}
+		 */
+	}
+	
+	public void createTrainList(){
 		trainList = new ArrayList<Train>();
 
 		ArrayList<String> routesList = sscGUI.sscListener.scheduler.routesSch;
@@ -588,22 +572,6 @@ public class CTCOffice extends PApplet {
 
 			trainList.add(tempTrain);
 		}
-
-		/*
-		trainList = new ArrayList<Train>();
-		idArray = new String[numTrains];
-		// Create the trains.
-		for (i = 0; i < numTrains; i++) {
-			Train tempTrain = new Train(i + 1, "T"+(i+1), "Test",
-					(8 * 60 * 60 + i * 15 * 60) % (24 * 60 * 60), testRoute,
-					new Engineer(true, false, 0.0,
-							(8 * 60 * 60 + i * 15 * 60 + 4 * 60 * 60)
-							% (24 * 60 * 60)), bYard);
-			trainList.add(tempTrain);
-			Integer tempInt = new Integer(i + 1);
-			idArray[i] = new String("T"+(i+1));
-		}
-		 */
 	}
 
 /*
@@ -613,9 +581,6 @@ public class CTCOffice extends PApplet {
 		tkc = new TrackController(track_layout, this);
 		tkcgui = new ControllerUI(tkc);  */
 
-	//
-	//TEMPORARILY ADDED BY MARIO
-	//
 	public static void wait (int k){
 		long time0, time1;
 		time0 = System.currentTimeMillis();

@@ -1,0 +1,3 @@
+TRAIN	LINE	DISPATCH	ROUTE
+T0		Red	23:34		[list of blocks]
+T1		Red	23:49		[list of blocks]
