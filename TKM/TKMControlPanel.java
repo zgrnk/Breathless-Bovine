@@ -283,7 +283,7 @@ public class TKMControlPanel extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
 		
-        System.out.println(e.getActionCommand());
+        //System.out.println(e.getActionCommand());
 
         if (e.getSource() == cboxSwDiv) {
             selectedSwitch.state = cboxSwDiv.isSelected();
