@@ -3,7 +3,10 @@
 
 package TKM;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.List;
@@ -324,21 +327,28 @@ public class TrackLayout {
         TrackLine tLine = redLine;
         
         /* open csv */
-        Path path = Paths.get(pathname);
-
-        Scanner scanner;
+        //Path path = Paths.get(pathname);
+        //Scanner scanner;
+        InputStream is = getClass().getResourceAsStream("track_db.csv");
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        //StringBuffer sb = new StringBuffer();
+        String line;
+        
         try {
 
-            scanner = new Scanner(path); //StandardCharsets.UTF_8.name());
+            //scanner = new Scanner(path); //StandardCharsets.UTF_8.name());
 
             /* parse csv */
             int mode = -1;
             boolean skip = false;
 
-            System.out.println("Parsing track database");
-            while (scanner.hasNextLine()){
+            System.out.println("Parsing track database");       
+           
+            //while (scanner.hasNextLine()){
+            while ((line = br.readLine()) != null) {
                 
-                String line = scanner.nextLine();
+                //String line = scanner.nextLine();
                 //System.out.println(line);
 
                 if (skip) {
@@ -439,11 +449,15 @@ public class TrackLayout {
                     }
                 }
             }
+            br.close();
+            isr.close();
+            is.close();
         } catch (IOException e) {
             //System.err.println("Caught IOException: " + e.getMessage());
             System.out.println("File track_db.csv not found in working directory. Exiting.");
         	System.exit(1);
         }
+        
 
         redLine.constructTrack();
         greenLine.constructTrack();

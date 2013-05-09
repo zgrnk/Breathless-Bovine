@@ -187,7 +187,7 @@ public class CTCOffice extends PApplet {
 		schedulerBtn = cp5.addButton("System Scheduler").setValue(1).setPosition(200, 130)
 				.setSize(100, 50).setId(0);
 		startBtn = cp5.addButton("Start").setValue(1).setPosition(150, 500)
-				.setSize(200, 50).setId(1).setVisible(true);
+				.setSize(200, 50).setId(1).setVisible(false);
 		editTrackWindowBtn = cp5.addButton("Edit Track").setValue(1).setPosition(75, 170)
 				.setSize(100, 50).setId(2).setVisible(true);
 		SetSimBtn = cp5.addButton("Set Sim Ratio").setValue(1).setPosition(325, 170)
